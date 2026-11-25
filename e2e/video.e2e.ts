@@ -86,3 +86,17 @@ test("crossing into the stacked layout stops the pinned copy and starts the inli
   await expect.poll(() => playing(page, stage)).toBe(false);
   await expect.poll(() => playing(page, ".story-inline-phone video"), { timeout: 15_000 }).toBe(true);
 });
+
+test("at the end, the hero loops back past the login screen, not to 0", async ({ page }) => {
+  await page.goto("/");
+  await expect.poll(() => playing(page, stage), { timeout: 15_000 }).toBe(true);
+  await page.evaluate((s) => {
+    const v = document.querySelector<HTMLVideoElement>(s)!;
+    v.currentTime = v.duration - 0.3;
+  }, stage);
+  await page.waitForTimeout(1200);
+  const t = await page.evaluate((s) => document.querySelector<HTMLVideoElement>(s)!.currentTime, stage);
+  expect(t).toBeGreaterThan(4.5);
+  expect(t).toBeLessThan(8);
+  expect(await playing(page, stage)).toBe(true);
+});

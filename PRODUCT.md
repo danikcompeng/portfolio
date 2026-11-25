@@ -46,8 +46,9 @@ a written, reviewed AI workflow that is shown, not described.
 - Next.js (App Router), TypeScript, Tailwind, Motion (Framer Motion), deployed on Vercel.
 - Flat CSS-perspective phone in the hero first; a 3D (React Three Fiber) phone only if time
   allows, lazy-loaded, never on phones or with Reduce Motion.
-- Never invent numbers or claims. Anything Dani still has to supply is shown in
-  `[BRACKETS]` (photos, one-liners), never filled with made-up material.
+- Never invent numbers or claims. Anything Dani still has to supply (photos, the resume)
+  stays hidden behind a flag until it exists; nothing bracketed or made up ships.
+- The site covers engineering work and school only.
 - Undecided: Network CRM appears only once it is live; the case study page; a phone-free
   resume PDF (the current one lists a phone number, so it cannot be published).
 
@@ -68,8 +69,7 @@ a written, reviewed AI workflow that is shown, not described.
   `impeccable-before/` and `impeccable-after/`.
 - Network CRM: screenshots in `~/Documents/network-crm/docs/screenshots/`.
 - Reviewer logs with real findings in each repo's `plans/*.md`.
-- **Absent, must not be fabricated:** a headshot, photos of the Spotify ESP32 display, any
-  media of the Unity racing game, testimonials, usage numbers for any app.
+- **Absent, must not be fabricated:** a headshot, testimonials, usage numbers for any app.
 
 ## Product Principles
 

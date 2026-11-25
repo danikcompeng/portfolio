@@ -31,15 +31,7 @@ export function Nav() {
             <a href={resumeHref} className={wideLinkClass}>
               Resume
             </a>
-          ) : (
-            <span
-              className="t-data mx-1 hidden rounded-md border border-dashed border-line-strong px-1.5 py-0.5 text-ink-muted md:inline-block"
-              data-placeholder
-              title="Resume PDF without the phone number, still to come"
-            >
-              [Resume]
-            </span>
-          )}
+          ) : null}
           <ThemeToggle />
         </div>
       </nav>

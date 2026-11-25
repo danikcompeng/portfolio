@@ -8,7 +8,8 @@ import loopPosterDark from "@/public/media/bitewise-loop-poster-dark.png";
 import loopPosterLight from "@/public/media/bitewise-loop-poster-light.png";
 import tourPosterDark from "@/public/media/bitewise-tour-poster-dark.png";
 import tourPosterLight from "@/public/media/bitewise-tour-poster-light.png";
-import scan from "@/public/media/bitewise-scan.png";
+import scanDark from "@/public/media/bitewise-scan-dark.png";
+import scanLight from "@/public/media/bitewise-scan-light.png";
 import swapDark from "@/public/media/bitewise-swap-dark.png";
 import swapLight from "@/public/media/bitewise-swap-light.png";
 import todayDark from "@/public/media/bitewise-today-dark.png";
@@ -19,7 +20,7 @@ import orbitLight from "@/public/media/orbit-map-light.png";
 export const screens = {
   today: { dark: todayDark, light: todayLight },
   swap: { dark: swapDark, light: swapLight },
-  scan,
+  scan: { dark: scanDark, light: scanLight },
   cost: { dark: costDark, light: costLight },
 } as const;
 
@@ -35,6 +36,8 @@ export const tour = {
   // The Recipes list: a part of the tour the story above doesn't show.
   posters: { dark: tourPosterDark, light: tourPosterLight },
   start: 51.8,
+  /** After the first pass, loop from Today (past the login). */
+  loopFrom: 5,
 };
 
 export const ascendScreen = { dark: ascendDark, light: ascendLight };

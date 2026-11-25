@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "screens": "playwright test e2e/screens.e2e.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "postbuild": "node scripts/check-built-html.mjs"
   },
   "dependencies": {
     "next": "16.4.6",

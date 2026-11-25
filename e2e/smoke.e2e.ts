@@ -30,11 +30,12 @@ test("external links open in a new tab safely, and none point anywhere unplanned
   }
 });
 
-test("nothing is a dead link: no resume or case study yet", async ({ page }) => {
+test("nothing unsupplied shows: no resume or case study link, no [placeholder] text", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator('a[href$=".pdf"]')).toHaveCount(0);
   await expect(page.locator('a[href^="/work/"]')).toHaveCount(0);
-  await expect(page.locator("[data-placeholder]").first()).toBeVisible();
+  const text = await page.locator("body").innerText();
+  expect(text).not.toContain("[");
 });
 
 for (const [name, opts] of [
@@ -128,6 +129,20 @@ test("the theme toggle is remembered and applied before paint", async ({ browser
   expect(await page.evaluate(() => document.documentElement.getAttribute("data-theme"))).toBe("light");
   await ctx.close();
 });
+
+for (const width of [1024, 1200, 1440]) {
+  test(`How I build: agent names stay on one line at ${width} px`, async ({ browser }) => {
+    const ctx = await browser.newContext({ viewport: { width, height: 800 }, reducedMotion: "reduce" });
+    const page = await ctx.newPage();
+    await page.goto("/");
+    const lines = await page.$$eval("#how h3.font-mono", (hs) =>
+      hs.map((h) => ({ name: h.textContent, lines: h.getBoundingClientRect().height / parseFloat(getComputedStyle(h).lineHeight) })),
+    );
+    expect(lines.length).toBe(3);
+    for (const l of lines) expect(l.lines, l.name ?? "").toBeLessThan(1.5);
+    await ctx.close();
+  });
+}
 
 test("unknown pages get the 404 in the same world", async ({ page }) => {
   const res = await page.goto("/nope");

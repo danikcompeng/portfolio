@@ -1,7 +1,7 @@
-import { about, flags, links, resumeHref } from "@/content/site";
+import Image from "next/image";
+import { about, flags, headshotSrc, links, resumeHref } from "@/content/site";
 import { CopyEmail } from "./copy-email";
 import { ArrowUpRight } from "./icons";
-import { InlinePlaceholder, Placeholder } from "./placeholder";
 import { Reveal } from "./reveal";
 
 function OutLink({ href, children }: { href: string; children: string }) {
@@ -23,10 +23,15 @@ export function About() {
   return (
     <section id="about" className="mx-auto max-w-[var(--max)] px-[var(--gutter)] py-[clamp(96px,12vw,160px)]" aria-labelledby="about-title">
       <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
-        <Reveal className="order-last lg:order-none lg:col-span-4">
-          <Placeholder label={about.photo} ratio="4 / 5" className="max-w-[360px]" />
-        </Reveal>
-        <div className="lg:col-span-8">
+        {/* The headshot shows once it exists (flags.headshot); until then the text stands alone. */}
+        {flags.headshot ? (
+          <Reveal className="order-last lg:order-none lg:col-span-4">
+            <div className="relative aspect-[4/5] max-w-[360px] overflow-hidden rounded-[var(--r-2)]">
+              <Image src={headshotSrc} alt={about.photoAlt} fill sizes="(min-width: 1024px) 360px, 90vw" className="object-cover" />
+            </div>
+          </Reveal>
+        ) : null}
+        <div className={flags.headshot ? "lg:col-span-8" : "lg:col-span-12"}>
           <h2 id="about-title" className="t-section">
             {about.title}
           </h2>
@@ -42,7 +47,7 @@ export function About() {
         </div>
       </div>
 
-      <div id="contact" className="mt-[clamp(96px,12vw,160px)] border-t border-line pt-[clamp(56px,8vw,96px)]">
+      <div id="contact" className="mt-[clamp(64px,8vw,112px)] border-t border-line pt-[clamp(56px,8vw,96px)]">
         <h2 className="t-section">Say hello</h2>
         <p className="t-lead mt-4 max-w-[34rem] text-ink-muted">
           The quickest way to reach me is email.
@@ -63,9 +68,7 @@ export function About() {
             <a href={resumeHref} className="text-link press">
               Resume (PDF)
             </a>
-          ) : (
-            <InlinePlaceholder label={about.resume} />
-          )}
+          ) : null}
         </div>
       </div>
     </section>

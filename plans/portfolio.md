@@ -25,9 +25,9 @@ blog, analytics.
 | D2 | **The hero phone is the story phone.** One sticky phone carries the hero and the four Bitewise steps: it starts tilted, straightens as the hero block scrolls away, and its screen changes per step. | One hero object, one authored motion, and the hero flows straight into the proof. |
 | D3 | **Pinned story when the window is ≥ 1024 px wide and ≥ 540 px tall** (common laptops at 1280 × 600 included). Otherwise the steps stack, each with its own still. One DOM, switched by a CSS media query; JS reads the same `matchMedia` to decide which phone gets a video source, so the hidden layout's video never downloads. | A pinned phone plus captions doesn't fit a 390 × 667 phone; a 540 px cut-off keeps short laptops pinned (logic-checker #10). |
 | D4 | **Flat CSS-perspective phone.** No 3D this round. | The brief says flat first; it is the Reduce Motion and phone fallback anyway. |
-| D5 | **Screens are real frames from Bitewise's demo recordings** (`design/videos/bitewise-*`, recorded on production 2026-11-23). Today, the swap and cost per serving come in both themes; the scan is the real iPhone camera recording (dark camera UI), used in both themes. | Real product, current name, same demo account. No dark "Check the numbers" frame exists (logic-checker #8); the camera frame is dark in either theme. |
+| D5 | **Screens are real frames from Bitewise's demo recordings** (`design/videos/bitewise-*`, recorded on production 2026-11-23). Today, the swap and cost per serving come in both themes; the scan is the real iPhone camera recording, a theme pair since round 2 (`bitewise-scan-dark.png` from the dark real-scan recording). | Real product, current name, same demo account. |
 | D6 | **No live iframe of Bitewise.** "Try Bitewise" opens the live app in a new tab. | The demo login cookie is SameSite=Lax (Supabase default), so "Try the demo" inside a cross-site iframe would likely bounce back to login. |
-| D7 | **The resume link is a visible placeholder** until Dani supplies a PDF without the phone number. | Every resume PDF found lists a phone number; the site must not. |
+| D7 | **No resume link until Dani supplies a PDF without the phone number** (`flags.resumePdf`). | Every resume PDF found lists a phone number; the site must not. Round 2: nothing bracketed ships. |
 | D8 | **Network CRM appears as "Orbit"** with https://orbit-dk.vercel.app. | It answers live (307 to /login, checked 2026-11-25) and the rename is committed (2f11512, 201c840). |
 | D9 | **Numbers show as conservative floors** ("900+ unit tests", "500+ review findings"). `content/site.ts` keeps the exact value, the date and the source (file + section heading) behind each one. | The repos are being committed to today; three counts of the same logs already disagree by a few rows (logic-checker #2). A floor stays true as the logs grow. |
 | D10 | **No motion library.** The screen crossfade is a CSS opacity transition on stacked layers; the tilt is a CSS scroll-driven animation; reveals are a tiny IntersectionObserver. `motion` is uninstalled. | Nothing visible is lost, the video stays mounted, and the client bundle stays small (logic-checker #13). |
@@ -71,19 +71,18 @@ Floors are what the site shows; exact values are what the logs said on 2026-11-2
 - **Not claimed:** that every feature had all three reviewers (design-critic runs only when a screen changed; renames skipped the logic-checker), that the phone check was done (no result is logged), Lighthouse scores, any user or usage numbers.
 
 ### Other work and about (from Dani's resume and career notes)
-- Spotify Player Display: ESP32, C/C++, Python, Sep 2026 to present. Firmware that shows the current Spotify track and progress in real time, with physical play/pause, previous and next controls.
-- 2-Player Unity Racing Game: C#, Unity, Jan to May 2025.
-- TMU Computer Engineering, first year, expected 2030. Toronto Humanoid Robotics Club, team member. Niagara Parks Commission, seasonal, May 2023 to Aug 2026, "Served ~250 visitors daily at the Welcome Centre". RCM Guitar Level 5, 8 years.
+- TMU Computer Engineering, first year, expected 2030. Toronto Humanoid Robotics Club, team member. RCM Guitar Level 5, 8 years.
 - Contact: danikainikkara@gmail.com, github.com/danikcompeng, linkedin.com/in/dani-kainikkara-42824b395.
-- **Not on the site:** phone number, high school, GPA, the EE transfer, revenue figures.
+- **Not on the site:** phone number, high school, GPA, the EE transfer, non-engineering jobs (round 2: the site covers engineering work and school only).
 
-## 4. Placeholders Dani supplies
+## 4. Material Dani supplies
 
-Rendered visibly as `[BRACKETED]` text in a dashed frame so they can't ship unnoticed:
-1. `[PHOTO: headshot]` (About).
-2. `[PHOTO: the Spotify display]` and `[LINK: ESP32 repo]` if there is one.
-3. `[SCREENSHOT or CLIP: Unity racing game]` and `[ONE-LINER: what the game is and what you built]`.
-4. `[RESUME: PDF without the phone number]` (nav and About). Check its text and metadata by hand for a phone number before adding it.
+Hidden until it exists (round 2): each item has a flag in `content/site.ts`; turning one on
+without its file fails a unit test, and `scripts/check-built-html.mjs` fails the build if a
+"[" reaches the page.
+1. Headshot, `public/media/headshot.jpg` (4:5) → `flags.headshot`.
+2. Resume PDF without the phone number, `public/Dani-Kainikkara-Resume.pdf` →
+   `flags.resumePdf`. Check its text and metadata by hand for a phone number first.
 
 ## 5. Design direction
 
@@ -123,7 +122,7 @@ This section is the bar for the design-critic and the finish review.
 
 ### Nav
 - Left: "Dani Kainikkara" (link to top). Right: Work, How I build, About (anchors), Resume
-  (placeholder, D7), theme toggle.
+  (once it exists, D7), theme toggle.
 - Theme toggle: label "Dark theme", `aria-pressed` set after mount from the real theme
   (`useSyncExternalStore` with a server snapshot, so no hydration mismatch); the sun/moon
   icon is switched by CSS from `data-theme`.
@@ -184,7 +183,7 @@ This section is the bar for the design-critic and the finish review.
 
 ### Work (`#work`), a bento grid
 - Desktop (12 columns, 20 px gaps): row 1 Bitewise, full width; row 2 Ascend (6) + Orbit (6);
-  row 3 Spotify display (7) + Unity game (5). Below 1024 px: one column.
+  that's all (round 2: Bitewise, Ascend and Orbit only). Below 1024 px: one column.
 - **Bitewise** (matcha field): name, one-liner, facts (900+ unit tests · 7 end-to-end · 40+
   code reviews), two decisions with one line of reasoning each ("Missing stays missing", "No
   Undo timer"), actions "Try the live demo ↗", "Code on GitHub ↗" (case study once it
@@ -196,10 +195,6 @@ This section is the bar for the design-critic and the finish review.
 - **Orbit** (blue field): name, "A personal CRM for an internship search, with a map of who
   introduced you to whom.", the map screen, the decision (paraphrased), facts (500+ unit
   tests · 230+ review findings), "Open Orbit ↗".
-- **Spotify display** (neutral): name, one-liner, "ESP32 · C/C++ · Python", "Sep 2026 – now",
-  `[PHOTO]` placeholder.
-- **Unity racing game** (neutral): "2-player racing game", "C# · Unity", "Jan – May 2025",
-  `[ONE-LINER]` and `[SCREENSHOT or CLIP]` placeholders.
 - Each action is its own link (no whole-tile link). Hover lifts the media 2 px.
 
 ### How I build (`#how`)
@@ -221,15 +216,13 @@ This section is the bar for the design-critic and the finish review.
 - Footnote: "Counts from each repo's review logs and test runs on Nov 25, 2026, rounded down."
 
 ### About (`#about`) and contact
-- Two columns at ≥ 1024 px: `[PHOTO: headshot]` (4:5) left; text right.
+- One column until the headshot exists; then two columns at ≥ 1024 px, photo (4:5) left.
 - Text: "I'm a first-year Computer Engineering student at Toronto Metropolitan University.
-  Lately I've built a meal tracker, a habit tracker, a CRM for my internship search and a
-  Spotify display with real buttons."
+  Lately I've built a meal tracker, a habit tracker and a CRM for my internship search."
 - Facts: TMU Computer Engineering (expected 2030); Toronto Humanoid Robotics Club, team
-  member; Niagara Parks, seasonal guest services 2023–2026 (~250 visitors a day at the
-  Welcome Centre); guitar, RCM Level 5 after 8 years.
+  member; guitar, RCM Level 5 after 8 years.
 - Contact, the page's close: "Say hello" + the email as a large mailto link with a "Copy"
-  button (announces "Email copied" in a live region), GitHub, LinkedIn, Resume placeholder.
+  button (announces "Email copied" in a live region), GitHub, LinkedIn, Resume once it exists.
 - Footer: "© 2026 Dani Kainikkara · Built with Next.js and Claude Code".
 
 ### 404
@@ -266,7 +259,7 @@ components/
   phone.tsx           the frame (server), concentric radii
   story-screen.tsx    (client) active step, stacked layers
   loop-video.tsx      (client) themed source, play rules, pause button
-  work.tsx, how-i-build.tsx, about.tsx, placeholder.tsx, themed-image.tsx
+  work.tsx, how-i-build.tsx, about.tsx, themed-image.tsx
   copy-email.tsx (client), reveal.tsx (client), icons.tsx
 content/site.ts       every string, link and number (exact value, date, source), flags
 lib/                  contrast.ts, css-tokens.ts, active-step.ts (+ tests)
@@ -298,16 +291,33 @@ e2e/                  screens.e2e.ts (390 + 1440, light + dark), smoke.e2e.ts
 
 ## Open questions for Dani
 
-1. Is there a phone check on Ascend and Orbit you want described? The page currently says
-   "a written checklist for a real phone" and claims no results.
-2. Niagara Parks: the page uses ~250 visitors a day (your LinkedIn bullet). The research file
-   says ~450 (250 + the gift shop's ~200). Which do you want?
-3. Theme: follow the system (current), or dark for everyone with light on request?
-4. Resume: keep the visible placeholder in the nav until the phone-free PDF exists, or hide
-   the link?
-5. Older iPhones: the colour tokens use `light-dark()` (Safari 17.5+). Add a fallback for
-   iOS 16 (a second copy of the tokens), or accept that those phones get unstyled colours?
-6. The hero loop is 786 px wide; a sharper export would help on 3x phones. Re-record?
+Answered in round 2 (2026-11-25): keep "a written checklist" for the phone check; hide
+unsupplied material (no brackets); skip the iOS 16 fallback; keep the hero video for now;
+remove Niagara Parks, the Unity racing game and the Spotify display. Still open:
+1. Theme: follow the system (current), or dark for everyone with light on request?
+2. About keeps "Guitar, RCM Level 5": does that fit "engineering work and school only"?
+
+## Round 2: Dani's decisions (2026-11-25)
+
+1. **No company names in the repo.** Every mention of the company and of the person who
+   asked to see the work is gone; the rule is now "never claim a project was built for a
+   specific company" (CLAUDE.md, PRODUCT.md, the agents, the test). Local history was
+   replaced by one clean commit before anything was pushed.
+2. **Dark scan.** `bitewise-scan-dark.png` is the camera frame at 62.4 s of
+   `bitewise-demo-dark-real-scan.mp4`; the scan step is now a theme pair like the others.
+   CLAUDE.md's video path now reads `bitewise-loop-dark.mp4`.
+3. **No [BRACKETS] in production.** The headshot and the resume link are
+   hidden behind flags in `content/site.ts` (section 4); the placeholder component is gone.
+   `postbuild` runs `scripts/check-built-html.mjs`, which fails the build if a "[" reaches
+   visible text, and the smoke test checks the served page the same way.
+4. **Niagara Parks removed** from About, content and tests: the site covers engineering work
+   and school only.
+5. **Unity racing game removed** from the Work grid, content, copy, tests and this plan (no
+   evidence of it left). Unity isn't listed as a skill anywhere on the site.
+6. **Spotify display removed** the same way (no proof of it left): the Work tile, its flag,
+   content, the About sentence, tests, docs. Work is Bitewise, Ascend and Orbit.
+7. Reviewers (code-reviewer and design-critic) check the two fixes the finish review never
+   saw plus everything above, before shipping.
 
 ## Reviews
 
@@ -389,13 +399,38 @@ Run as a fresh agent from `.claude/agents/impeccable-finish-reviewer.md` (this s
 | 7 | The fork's branch line crosses the code-reviewer text. | Fixed (not re-reviewed) | Fork text indented 32 px past the node; the line runs down the node's centre. |
 | 8 | The Bitewise tile line describes the tile, not the product. | Fixed (not re-reviewed) | "A meal tracker for the cheap meals I actually repeat: macros first, cost second." (Dani's notes: "Macro tracking comes first, cost second.") |
 
+### Round 2 review, code-reviewer (2026-11-25)
+Verdict: **Ship after fixes**. Checked and fine: one-commit history with no matching objects, placeholder removal, flags, the Unity/Niagara/Spotify removals, the dark scan pairing, the tile line's source.
+
+| # | Severity | Finding | Outcome | What changed |
+|---|---|---|---|---|
+| 1 | Medium | The fork's 32 px indent wraps "code-reviewer"/"design-critic" between 1024 and ~1150 px. | Fixed | The pipeline goes horizontal at 1200 px; a smoke test checks agent names stay on one line at 1024, 1200 and 1440. |
+| 2 | Medium | The bracket checks ignore attributes (alt, aria-label, title, meta content) and don't require the home page. | Fixed | `check-built-html.mjs` also scans those attributes and fails without `index.html`; its functions are unit tested (noscript, entities, attributes, scripts ignored). |
+| 3 | Low | Dani's grep matches 22 of Next's own build files in `.next/`. | Fixed | `.next` is build output: removed after the last local build; use `git grep -i` or `--exclude-dir=.next`. |
+| 4 | Low | The company test is case-sensitive and narrow; Markdown docs unscanned. | Fixed | Capitalised and more verbs ("created", "developed"), "for the …"; scans the root `.md` files and `plans/` too; fixtures test the pattern. |
+| 5 | Low | The flag test ignores filename case (Windows), so a `Headshot.JPG` would 404 on Vercel. | Fixed | Compares against the exact names in the folder. |
+| 6 | Low | Stale docs (D5, DESIGN.md placeholders, round-2 answers). | Fixed | Updated. |
+| 7 | Low | The dark scan frame is letterboxed with the lookup sheet up. | Kept | Dani asked for this frame; every frame of the dark scan has the sheet up (see design-critic #1). |
+
+### Round 2 review, design-critic (2026-11-25)
+Verdict: **Ship after fixes**. Removals are clean; Work and About hold without them; both unseen fixes work.
+
+| # | Severity | Finding | Outcome | What changed |
+|---|---|---|---|---|
+| 1 | High | The dark scan still looks broken: pillarboxed camera, a band behind the hint, the "Looking up…" sheet flush left. | Kept, flagged | Dani asked for the dark recording's frame, and the sheet is up in every camera frame of it. The flush-left sheet may be a layout bug in Bitewise itself; noted for Dani. |
+| 2 | Medium | The dark tour opens on a loading skeleton. | Fixed (root cause) | Native `loop` restarted the videos at 0, the demo's login and loading skeleton. Both now restart past it on `ended` (hero 4.6 s, tour 5 s); e2e checks the wrap. |
+| 3 | Low | Ascend and Orbit text blocks don't line up. | Fixed | The two tiles share row tracks through a subgrid at ≥ 1024. |
+| 4 | Low | The fork's second branch dead-ends. | Not changed | The fork label already reads as parallel; optional. |
+| 5 | Low | The Bitewise tile line orphans "cost second." at 390. | Fixed | `text-wrap: balance` on the tile lines. The story subline stays the product's own tagline ("your macros"). |
+| 6 | Low | About and Say hello read as two sections. | Fixed | Contact margin cut to `clamp(64px, 8vw, 112px)`. |
+| 7 | Low | Plan section 6 out of date. | Fixed | Already updated with the Spotify removal (the critic read it mid-edit). |
+
 ## Decided while Dani was away
 
 - Theme follows the system with a remembered toggle, over dark-for-everyone: it respects the visitor's setting and is a one-line change (open question 3).
 - Showed floors ("900+") over exact counts: the logs changed during this session.
-- Used the iPhone camera frame for the scan step in both themes, over a light-only "Check the numbers" screen: no dark recording of it exists.
+- Used the iPhone camera frame for the scan step (round 2: a dark frame from the new dark recording, at Dani's request).
 - Dropped the `motion` package: CSS covers every animation on this page.
-- Niagara Parks figure: ~250 a day, the more specific source (open question 2).
 - Named the network CRM "Orbit", its current committed name.
 - Pinned story steps at 72svh (last 60svh), over 82svh: shorter gaps beside the pinned phone, still a comfortable scroll per step.
 - Kept Geist despite Impeccable's "overused font" warning: the brief pins Geist + Geist Mono.

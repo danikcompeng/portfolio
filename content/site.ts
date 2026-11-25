@@ -3,7 +3,9 @@
 // Rule: never invent numbers or claims. Each number below is a `Stat`: the page shows
 // `floor` ("900+"), and `exact`, `asOf` and `source` say where it came from, so anyone
 // can check it. The logs only grow, so a floor stays true (plans/portfolio.md, D9).
-// Anything Dani still has to supply is a `[BRACKETED]` placeholder, rendered visibly.
+// Nothing unsupplied ships: anything Dani still has to supply (a photo, the resume) stays
+// hidden behind a flag below until it exists. `scripts/check-built-html.mjs` fails the
+// build if a "[" placeholder ever reaches the page.
 
 export type Stat = {
   /** What the page shows, e.g. 900 → "900+". */
@@ -27,15 +29,21 @@ export const links = {
   orbit: "https://orbit-dk.vercel.app",
 } as const;
 
-/** Things that don't exist yet. Flip when they do; until then nothing links to them. */
+/**
+ * Things that don't exist yet. Flip one to true once its file is in place; until then
+ * nothing shows or links to it (content/site.test.ts checks the file exists when on).
+ */
 export const flags = {
-  /** /work/bitewise, planned for Thursday 2026-11-26. */
+  /** /work/bitewise, planned for Thursday 2026-11-26 (app/work/bitewise/page.tsx). */
   caseStudy: false,
-  /** A resume PDF without the phone number, at /Dani-Kainikkara-Resume.pdf. */
+  /** A resume PDF without the phone number, at public/Dani-Kainikkara-Resume.pdf. */
   resumePdf: false,
+  /** A headshot for About, at public/media/headshot.jpg (4:5). */
+  headshot: false,
 } as const;
 
 export const resumeHref = "/Dani-Kainikkara-Resume.pdf";
+export const headshotSrc = "/media/headshot.jpg";
 
 export const hero = {
   title: "I design and ship real products.",
@@ -73,7 +81,7 @@ export const story = {
       // components/scan-flow.tsx: "From Open Food Facts · compare with the label".
       body: "Scan a barcode and Open Food Facts fills in what it knows. I check it against the label and add what I paid.",
       screen: "scan",
-      alt: "The camera scanner framing the barcode on a bag of bagels, with Type the number and Enter manually below.",
+      alt: "The camera scanner framing the barcode on a bag of bagels.",
     },
     {
       id: "cost",
@@ -183,25 +191,6 @@ export const orbit = {
   } satisfies Record<string, Stat>,
 };
 
-export const spotify = {
-  name: "Spotify display",
-  // Resume, Projects
-  oneLiner:
-    "Firmware that shows the current Spotify track and its progress in real time, with physical play, pause, previous and next buttons.",
-  stack: ["ESP32", "C/C++", "Python"],
-  when: "Sep 2026 – now",
-  photo: "PHOTO: the display on your desk",
-  repo: "LINK: ESP32 repo, if public",
-};
-
-export const racing = {
-  name: "2-player racing game",
-  oneLiner: "ONE-LINER: what the game is and what you built",
-  stack: ["C#", "Unity"],
-  when: "Jan – May 2025",
-  media: "SCREENSHOT or CLIP: the game running",
-};
-
 export const build = {
   title: "How I build",
   intro:
@@ -272,14 +261,11 @@ export const build = {
 
 export const about = {
   title: "About",
-  body: "I'm a first-year Computer Engineering student at Toronto Metropolitan University. Lately I've built a meal tracker, a habit tracker, a CRM for my internship search and a Spotify display with real buttons.",
+  body: "I'm a first-year Computer Engineering student at Toronto Metropolitan University. Lately I've built a meal tracker, a habit tracker and a CRM for my internship search.",
   facts: [
     { label: "Studying", value: "Computer Engineering, Toronto Metropolitan University (expected 2030)" },
     { label: "Club", value: "Toronto Humanoid Robotics Club, team member" },
-    // Resume / LinkedIn: "Served ~250 visitors daily at the Welcome Centre"
-    { label: "Work", value: "Niagara Parks, seasonal guest services, 2023–2026: about 250 visitors a day at the Welcome Centre" },
     { label: "Music", value: "Guitar, RCM Level 5, after 8 years" },
   ],
-  photo: "PHOTO: headshot",
-  resume: "RESUME: PDF without the phone number",
+  photoAlt: "Dani Kainikkara",
 };

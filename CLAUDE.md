@@ -18,15 +18,16 @@ canvas; the sections below follow it.
    problem, the swap, the scan, cost per serving).
 4. Work grid: Bitewise (big tile, case study + live demo), Ascend
    (habit tracker, https://ascend-dk.vercel.app), Network CRM (when
-   live), Spotify ESP32 display, Unity racing game. No budget tracker.
-   Real screenshots from each repo's docs/screenshots; [BRACKETS] for
-   anything I still have to supply (photos, one-liners).
+   live). No budget tracker. Real screenshots
+   from each repo's docs/screenshots. Anything I still have to supply
+   (photos, resume) stays hidden behind a flag in content/site.ts; no
+   [BRACKETS] in production.
 5. How I build: plan → logic-checker → build → code-reviewer +
    design-critic → phone test → ship, with real numbers from the repos
    (tests, review findings).
 6. About: TMU Computer Engineering, Toronto Humanoid Robotics Club,
-   Niagara Parks, guitar. Resume PDF, GitHub (danikcompeng), LinkedIn,
-   email. No phone number.
+   guitar. Engineering work and school only. Resume PDF, GitHub
+   (danikcompeng), LinkedIn, email. No phone number.
 7. Case study page /work/bitewise (Thursday).
 
 ## Stack and rules

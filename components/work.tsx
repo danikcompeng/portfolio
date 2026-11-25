@@ -1,10 +1,8 @@
-import type { ReactNode } from "react";
-import { ascend, bitewise, fmt, flags, links, orbit, racing, spotify, type Stat } from "@/content/site";
+import { ascend, bitewise, fmt, flags, links, orbit, type Stat } from "@/content/site";
 import { ArrowUpRight } from "./icons";
 import { ascendScreen, orbitScreen, tour } from "./media";
 import { Phone, ScreenLayer } from "./phone";
 import { PauseButton, VideoLayer, VideoProvider } from "./loop-video";
-import { InlinePlaceholder, Placeholder } from "./placeholder";
 import { Reveal } from "./reveal";
 
 function OutLink({ href, children }: { href: string; children: string }) {
@@ -45,9 +43,6 @@ function Decision({ title, body }: { title: string; body: string }) {
   );
 }
 
-function Meta({ children }: { children: ReactNode }) {
-  return <p className="t-data mt-2 text-ink-muted">{children}</p>;
-}
 
 export function Work() {
   return (
@@ -56,7 +51,7 @@ export function Work() {
         Work
       </h2>
       <p className="t-lead mt-4 max-w-[36rem] text-ink-muted">
-        Three apps you can open right now, and two things I built away from the browser.
+        Three apps you can open right now.
       </p>
 
       <div className="mt-14 grid grid-cols-1 gap-5 lg:grid-cols-12">
@@ -67,7 +62,7 @@ export function Work() {
               <h3 id="bw-title" className="t-title">
                 {bitewise.name}
               </h3>
-              <p className="t-lead mt-3 max-w-[34rem]">{bitewise.tileLine}</p>
+              <p className="t-lead mt-3 max-w-[34rem] text-balance">{bitewise.tileLine}</p>
               <Facts
                 items={[
                   { stat: bitewise.stats.unitTests, label: "unit tests" },
@@ -90,7 +85,7 @@ export function Work() {
                 ) : null}
               </div>
             </div>
-            <VideoProvider sources={tour.sources} start={tour.start} lazy>
+            <VideoProvider sources={tour.sources} start={tour.start} loopFrom={tour.loopFrom} lazy>
               <figure className="tile-media flex flex-col items-center gap-3 justify-self-center">
                 <Phone style={{ "--phone-w": "min(68vw, 290px)" } as React.CSSProperties}>
                   <VideoLayer posters={tour.posters} sizes="290px" />
@@ -105,12 +100,14 @@ export function Work() {
         </Reveal>
 
         {/* Ascend */}
-        <Reveal as="article" className="tile tile-as flex flex-col lg:col-span-6" aria-labelledby="as-title">
+        <Reveal as="article" className="tile tile-as flex flex-col lg:col-span-6 lg:row-span-6 lg:grid lg:grid-rows-subgrid lg:gap-y-0" aria-labelledby="as-title">
           <h3 id="as-title" className="t-title">
             {ascend.name}
           </h3>
-          <p className="t-lead mt-3">{ascend.oneLiner}</p>
-          <p className="mt-2 text-[0.9375rem] text-ink-muted">{ascend.detail}</p>
+          <div>
+            <p className="t-lead mt-3 text-balance">{ascend.oneLiner}</p>
+            <p className="mt-2 text-[0.9375rem] text-ink-muted">{ascend.detail}</p>
+          </div>
           <Facts
             items={[
               { stat: ascend.stats.unitTests, label: "unit and database tests" },
@@ -136,11 +133,13 @@ export function Work() {
         </Reveal>
 
         {/* Orbit */}
-        <Reveal as="article" delay={80} className="tile tile-or flex flex-col lg:col-span-6" aria-labelledby="or-title">
+        <Reveal as="article" delay={80} className="tile tile-or flex flex-col lg:col-span-6 lg:row-span-6 lg:grid lg:grid-rows-subgrid lg:gap-y-0" aria-labelledby="or-title">
           <h3 id="or-title" className="t-title">
             {orbit.name}
           </h3>
-          <p className="t-lead mt-3">{orbit.oneLiner}</p>
+          <div>
+            <p className="t-lead mt-3 text-balance">{orbit.oneLiner}</p>
+          </div>
           <Facts
             items={[
               { stat: orbit.stats.unitTests, label: "unit tests" },
@@ -164,38 +163,6 @@ export function Work() {
           </div>
         </Reveal>
 
-        {/* Spotify display: photo still to come. */}
-        <Reveal as="article" className="tile flex flex-col gap-8 lg:col-span-7" aria-labelledby="sp-title">
-          <div>
-            <h3 id="sp-title" className="t-title">
-              {spotify.name}
-            </h3>
-            <p className="mt-3 max-w-[40ch] text-ink-muted">{spotify.oneLiner}</p>
-            <Meta>
-              {spotify.stack.join(" · ")} · <span className="whitespace-nowrap">{spotify.when}</span>
-            </Meta>
-            <p className="mt-3">
-              <InlinePlaceholder label={spotify.repo} />
-            </p>
-          </div>
-          <Placeholder label={spotify.photo} ratio="16 / 10" className="tile-fill mt-auto" />
-        </Reveal>
-
-        {/* Unity racing game: one-liner and media still to come. */}
-        <Reveal as="article" delay={80} className="tile flex flex-col gap-8 lg:col-span-5" aria-labelledby="rc-title">
-          <div>
-            <h3 id="rc-title" className="t-title">
-              {racing.name}
-            </h3>
-            <p className="mt-3">
-              <InlinePlaceholder label={racing.oneLiner} />
-            </p>
-            <Meta>
-              {racing.stack.join(" · ")} · {racing.when}
-            </Meta>
-          </div>
-          <Placeholder label={racing.media} ratio="16 / 10" className="tile-fill mt-auto" />
-        </Reveal>
       </div>
     </section>
   );

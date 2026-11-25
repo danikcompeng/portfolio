@@ -38,6 +38,7 @@ type VideoState = {
   onLoadedMetadata: (e: React.SyntheticEvent<HTMLVideoElement>) => void;
   onSeeked: () => void;
   onTimeUpdate: (e: React.SyntheticEvent<HTMLVideoElement>) => void;
+  onEnded: (e: React.SyntheticEvent<HTMLVideoElement>) => void;
 };
 
 const VideoContext = createContext<VideoState | null>(null);
@@ -52,6 +53,7 @@ export function VideoProvider({
   children,
   sources,
   start = 0,
+  loopFrom,
   active = true,
   layout = "any",
   lazy = false,
@@ -60,6 +62,8 @@ export function VideoProvider({
   sources: { dark: string; light: string };
   /** Seconds to start from (the poster frame), past the login screen. */
   start?: number;
+  /** Where each loop restarts (default: `start`), so it never replays the demo's login. */
+  loopFrom?: number;
   /** False while a still covers the video. */
   active?: boolean;
   layout?: "any" | "pinned" | "stacked";
@@ -168,6 +172,12 @@ export function VideoProvider({
       el.currentTime = Math.min(from, Math.max(0, el.duration - 0.5));
     },
     onSeeked: () => setShownSrc(src),
+    // No native `loop`: it would restart at 0, the demo's login screen and loading skeleton.
+    onEnded: (e) => {
+      const el = e.currentTarget;
+      el.currentTime = loopFrom ?? start;
+      el.play().catch(() => {});
+    },
     onTimeUpdate: (e) => {
       // A new source resets the position to 0 and fires timeupdate before it has any data;
       // ignore that one, or the swap would restart the video (code-reviewer, review 1).
@@ -192,7 +202,7 @@ export function VideoLayer({
   priority?: boolean;
 }) {
   // Destructured: a context object with a callback ref inside reads as a ref to the linter.
-  const { setFrame, setVideo, src, ready, onPlaying, onPause, onLoadedMetadata, onSeeked, onTimeUpdate } =
+  const { setFrame, setVideo, src, ready, onPlaying, onPause, onLoadedMetadata, onSeeked, onTimeUpdate, onEnded } =
     useVideo();
   return (
     <div className="layer" data-active={dataActive} ref={setFrame} aria-hidden="true">
@@ -204,7 +214,6 @@ export function VideoLayer({
         ref={setVideo}
         src={src}
         muted
-        loop
         playsInline
         preload={src ? "auto" : "none"}
         disablePictureInPicture
@@ -215,6 +224,7 @@ export function VideoLayer({
         onLoadedMetadata={onLoadedMetadata}
         onSeeked={onSeeked}
         onTimeUpdate={onTimeUpdate}
+        onEnded={onEnded}
       />
     </div>
   );

@@ -574,14 +574,6 @@ blockquote {
     translate: 0 -2px;
   }
 }
-/* Row 3 at desktop: the media fills the tile, so real photos keep the tops aligned. */
-@media (min-width: 1024px) {
-  .tile-fill {
-    flex: 1 1 auto;
-    min-height: 220px;
-    aspect-ratio: auto !important;
-  }
-}
 /* A phone screenshot cropped by the tile's bottom edge. */
 .screen-crop {
   --phone-w: min(calc(100vw - 100px), 300px);
@@ -589,20 +581,10 @@ blockquote {
   margin-bottom: calc(var(--pad) * -1 - 120px);
 }
 
-.placeholder {
-  display: grid;
-  place-items: center;
-  border: 1.5px dashed var(--line-strong);
-  border-radius: var(--r-2);
-  background: color-mix(in oklch, var(--line) 40%, transparent);
-  color: var(--ink-muted);
-  padding: 20px;
-  text-align: center;
-}
 
 /* ------------------------------------------------------------------------------------------
    How I build: a drawn pipeline. Circles are Dani, filled squares are read-only agents.
-   Vertical below 1024 px, one horizontal track above.
+   Vertical below 1200 px, one horizontal track above.
    ------------------------------------------------------------------------------------------ */
 .pipeline {
   display: grid;
@@ -667,7 +649,8 @@ blockquote {
   width: 1px;
   background: var(--line-strong);
 }
-@media (min-width: 1024px) {
+/* Horizontal from 1200 px: below that the fork's indented agent names would wrap. */
+@media (min-width: 1200px) {
   .pipeline {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }

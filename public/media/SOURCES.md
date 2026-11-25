@@ -10,7 +10,8 @@ an embedded text chunk (`impeccable embed-prompt --read <file>`).
 | `bitewise-loop-poster-{dark,light}.png` | Frame at 4.6 s of the loop videos (playback starts there) |
 | `bitewise-today-{dark,light}.png` | Frames at 5.0 s (dark tour) and 5.7 s (light tour with the real scan) |
 | `bitewise-swap-{dark,light}.png` | Frames at 25.3 s (dark tour) and 24.8 s (light tour) |
-| `bitewise-scan.png` | Frame at 60.8 s of `bitewise-demo-light-real-scan.mp4`: a real iPhone barcode scan |
+| `bitewise-scan-light.png` | Frame at 60.8 s of `bitewise-demo-light-real-scan.mp4`: a real iPhone barcode scan |
+| `bitewise-scan-dark.png` | Frame at 62.4 s of `bitewise-demo-dark-real-scan.mp4` (recorded 2026-11-25): the same scan in the dark theme, looking up the barcode |
 | `bitewise-cost-{dark,light}.png` | Frames at 53.6 s (dark tour) and 53.7 s (light tour) |
 | `ascend-today-{dark,light}.png` | `habit-tracker/docs/screenshots/feature-3/today-mid-hold-*.png` (Playwright, 390 × 844 @3) |
 | `orbit-map-{dark,light}.png` | `network-crm/docs/screenshots/feature-5/map-*.png` (Playwright, 390 × 844 @3) |

@@ -153,16 +153,6 @@ components:
     backgroundColor: "{colors.as-field}"
   tile-orbit:
     backgroundColor: "{colors.or-field}"
-  placeholder:
-    textColor: "{colors.ink-muted}"
-    typography: "{typography.data}"
-    rounded: "{rounded.r-2}"
-    padding: "20px"
-  placeholder-inline:
-    textColor: "{colors.ink-muted}"
-    typography: "{typography.data}"
-    rounded: "{rounded.tag}"
-    padding: "2px 6px"
   phone:
     backgroundColor: "{colors.phone-body}"
 ---
@@ -186,7 +176,7 @@ The system refuses the template portfolio (name, skills list, grid of same-size 
 - Flat, tonal layering with alpha hairlines; one lifted object, the phone.
 - Concentric corners: an outer radius is the inner radius plus the padding between them.
 - In-house 1.5-stroke line icons on a 24-unit grid.
-- Every unsupplied asset shows as a dashed, bracketed placeholder.
+- Nothing unsupplied ships: a missing photo or file hides its slot until it exists.
 
 ## Colors
 
@@ -200,7 +190,7 @@ A cool, almost colourless neutral stage, with three borrowed product palettes th
 - **Raised Step** (`bg-raised`): one step lighter (pure white in light mode). Neutral tiles and media buttons.
 - **Sunk Step** (`bg-sunk`): one step deeper. The How I build band, pipeline node fills, media-button hover.
 - **Muted Ink** (`ink-muted`): sublines, leads, labels, captions, nav links at rest. Holds 4.5:1 on every surface, product fields included.
-- **Hairline** (`line`) and **Strong Hairline** (`line-strong`): alpha borders that tint whatever they sit on. `line` divides sections and backs hover fills; `line-strong` outlines secondary buttons, placeholders and the pipeline track.
+- **Hairline** (`line`) and **Strong Hairline** (`line-strong`): alpha borders that tint whatever they sit on. `line` divides sections and backs hover fills; `line-strong` outlines secondary buttons and the pipeline track.
 - **Shadow Tint** (`shadow-color`): used only in the phone's cast shadow.
 - **Phone Body** (`phone-body`) and **Phone Edge** (`phone-edge`): fixed dark values, the same in both themes, because the device is a dark object like the real thing.
 
@@ -234,10 +224,10 @@ A cool, almost colourless neutral stage, with three borrowed product palettes th
 - **Body Small** (400, 15 px): nav links, decision bodies, fact labels, pipeline bodies, figure captions. Small headings at this size (decision titles, station names) take 600 and -0.01em.
 - **Caption** (400, 14 px): footer and footnotes.
 - **Button** (550, 16 px, 1): buttons and text links.
-- **Data** (Geist Mono 400, 13 px, 1.5, tabular figures): counts, the phone caption, tile metadata, catch attributions, placeholders. A count beside its label is set at 15 px, weight 500, in full ink, with the label in muted body-small.
+- **Data** (Geist Mono 400, 13 px, 1.5, tabular figures): counts, the phone caption, tile metadata, catch attributions. A count beside its label is set at 15 px, weight 500, in full ink, with the label in muted body-small.
 
 ### Named Rules
-**The Mono Means Data Rule.** Geist Mono appears only where the content is data: numbers, metadata, recorded-on captions, agent names, bracketed placeholders. Always tabular. Never for prose or the four heading levels; an agent's name is the one heading set in mono, because it is an identifier.
+**The Mono Means Data Rule.** Geist Mono appears only where the content is data: numbers, metadata, recorded-on captions, agent names. Always tabular. Never for prose or the four heading levels; an agent's name is the one heading set in mono, because it is an identifier.
 
 **The Tightening Scale Rule.** All four heading steps are weight 600, and tracking tightens as size grows (-0.024em at title to -0.038em at display), with line height falling toward 1.
 
@@ -247,7 +237,7 @@ One centred column, `content-max` wide with a fluid `gutter` on each side. Secti
 
 The hero and the Bitewise story share one DOM with two layouts. At 1024 x 540 and up it is **pinned**: a two-column grid with the text left and a sticky stage right holding the phone (height `min(76svh, 780px)`, width derived from the 393 x 852 screen), a vertical progress rail and a mono caption; the hero takes a full viewport and each step at least 72svh so a step's heading meets the centre line as its screen fades in. Below that it is **stacked**: the hero phone sits under the buttons with its top edge above the fold, and each step carries its own phone. The Bitewise field is painted full-bleed with `border-image`, reaching both viewport edges without widening the layout.
 
-Work is a 12-column bento at 1024 px and up (Bitewise 12, Ascend 6, Orbit 6, Spotify 7, racing 5) with a 20 px gap; one column below. Phone screenshots in the half tiles are cropped by the tile's bottom edge. How I build is a vertical track below 1024 px and one six-station horizontal track above, with a fork where two reviewers read the same build. About is 4 + 8 columns with the photo slot last on narrow screens; it closes on a hairline and a large email link.
+Work is a 12-column bento at 1024 px and up (Bitewise 12, then Ascend 6 and Orbit 6) with a 20 px gap; one column below. Phone screenshots in the half tiles are cropped by the tile's bottom edge. How I build is a vertical track below 1200 px and one six-station horizontal track above, with a fork where two reviewers read the same build. About is 4 + 8 columns when the headshot exists (photo last on narrow screens), one column until then; it closes on a hairline and a large email link.
 
 Breakpoints in use: 640 px (two-up decisions), 768 px (wide nav links), 1024 px (bento, horizontal pipeline), 1024 x 540 (pinned story). Everything works at 390 px wide; the body clips horizontal overflow.
 
@@ -263,7 +253,7 @@ Flat by default. Depth comes from tonal steps (`bg-sunk` below the page, `bg-rai
 
 ## Shapes
 
-Soft, concentric corners. The working radius is 14 px (`r-2`): buttons, placeholders, the skip link, and the inner media radius that tiles are built around. Small marks take 6 px (`tag`: the focus ring, inline placeholders, agent nodes); round controls and the person's pipeline node are full pills. The phone's corners derive from its width (screen radius 12.8% of width, bezel 3.2%). Placeholders use a 1.5 px dashed `line-strong` border; everything else uses 1 px solid hairlines. Icons are drawn in-house on a 24-unit grid, 1.5 stroke, round caps and joins.
+Soft, concentric corners. The working radius is 14 px (`r-2`): buttons, photos, the skip link, and the inner media radius that tiles are built around. Small marks take 6 px (`tag`: the focus ring, agent nodes); round controls and the person's pipeline node are full pills. The phone's corners derive from its width (screen radius 12.8% of width, bezel 3.2%). Borders are 1 px solid hairlines. Icons are drawn in-house on a 24-unit grid, 1.5 stroke, round caps and joins.
 
 The token scale also declares 8, 22 and 30 px (`--r-1`, `--r-3`, `--r-4`); no built surface uses them yet.
 
@@ -304,8 +294,8 @@ Four 3 px ticks beside the pinned phone, muted at rest; the active step's tick g
 ### Review Pipeline
 A drawn track of stations: circles (1.5 px ink ring on `bg-sunk`) are Dani, filled ink squares with 6 px corners are read-only AI agents, whose names are set in mono. Hairline connectors in `line-strong`; a fork carries two reviewers on the same build. Each station lists its real counts as mono data.
 
-### Placeholders
-Anything still to be supplied shows as a bracketed label in mono muted ink: a block with a 1.5 px dashed `line-strong` border and a faint `line` wash, or an inline chip with a dashed border and 6 px corners. Never filled with invented material.
+### Missing material
+Anything still to be supplied (a headshot, the resume) is switched off by a flag in `content/site.ts` and leaves no trace on the page; `scripts/check-built-html.mjs` fails the build if a "[" ever reaches visible text. Never filled with invented material.
 
 ### Reveal
 Content that starts below the fold fades in from 0.97 scale over 560 ms once, with up to a few 60 to 80 ms staggers. Nothing visible at load is hidden; under Reduce Motion nothing is hidden.
@@ -319,7 +309,7 @@ Content that starts below the fold fades in from 0.97 scale over 560 ms once, wi
 - **Do** build radii concentrically: outer = inner + padding.
 - **Do** keep every target at least 44 px and pair every autoplaying video with a pause button.
 - **Do** route all motion through `--ease-out` and the four durations (160, 240, 420, 560 ms), and drop transforms under Reduce Motion.
-- **Do** show missing material as a dashed, bracketed placeholder.
+- **Do** hide missing material behind its flag until the real file exists.
 
 ### Don't:
 - **Don't** introduce a site accent or tint the stage; the products are the only colour.

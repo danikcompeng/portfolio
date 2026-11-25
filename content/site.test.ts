@@ -2,7 +2,7 @@
 // built for a specific company,
 // every link https (plans/portfolio.md section 9).
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
-import { join, extname } from "node:path";
+import { basename, dirname, join, extname } from "node:path";
 import { describe, expect, it } from "vitest";
 import * as site from "./site";
 import type { Stat } from "./site";
@@ -61,9 +61,22 @@ describe("content rules", () => {
     }
   });
 
-  it("never claims a project was built for a specific company", () => {
-    for (const f of files) {
-      expect(readFileSync(f, "utf8"), f).not.toMatch(/\b(built|made|designed) for (?![a-z])/);
+  // "Built for Acme", "made for the Acme team", "created for Acme" — but not "built for a
+  // specific company", the wording of the rule itself.
+  const companyClaim = /\b(?:[Bb]uilt|[Mm]ade|[Dd]esigned|[Cc]reated|[Dd]eveloped) for (?:the )?(?![a-z])/;
+
+  it("recognises a claim of being built for a company", () => {
+    for (const s of ["built for Acme", "Built for Acme", "Made for Acme.", "created for Acme", "built for the Acme team"]) {
+      expect(s).toMatch(companyClaim);
+    }
+    expect("never claim a project was built for a specific company").not.toMatch(companyClaim);
+  });
+
+  it("never claims a project was built for a specific company (site and Markdown docs)", () => {
+    const docs = readdirSync(process.cwd()).filter((n) => n.endsWith(".md")).map((n) => join(process.cwd(), n));
+    const plans = readdirSync(join(process.cwd(), "plans")).map((n) => join(process.cwd(), "plans", n));
+    for (const f of [...files, ...docs, ...plans]) {
+      expect(readFileSync(f, "utf8"), f).not.toMatch(companyClaim);
     }
   });
 
@@ -88,8 +101,20 @@ describe("content rules", () => {
     expect(site.fmt({ floor: 900, exact: 917, asOf: "2026-11-24", source: "x".repeat(11) })).toBe("900+");
   });
 
-  it("links nothing that doesn't exist yet", () => {
-    if (site.flags.resumePdf) expect(existsSync(join(process.cwd(), "public", site.resumeHref))).toBe(true);
+  it("shows nothing that doesn't exist yet: every flag that's on has its file", () => {
+    // Exact case: Windows ignores it, Vercel's Linux filesystem doesn't.
+    const pub = (p: string) => {
+      const full = join(process.cwd(), "public", p);
+      return existsSync(full) && readdirSync(dirname(full)).includes(basename(full));
+    };
+    if (site.flags.resumePdf) expect(pub(site.resumeHref)).toBe(true);
+    if (site.flags.headshot) expect(pub(site.headshotSrc)).toBe(true);
     if (site.flags.caseStudy) expect(existsSync(join(process.cwd(), "app/work/bitewise/page.tsx"))).toBe(true);
+  });
+
+  // A quick guard for content/site.ts; scripts/check-built-html.mjs is the real check, on
+  // the built pages (text and readable attributes).
+  it("has no bracketed placeholder text in the content", () => {
+    expect(readFileSync(join(process.cwd(), "content/site.ts"), "utf8")).not.toMatch(/"\[[A-Z]/);
   });
 });

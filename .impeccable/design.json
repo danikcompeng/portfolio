@@ -329,7 +329,7 @@
       },
       "data": {
         "displayName": "Data",
-        "purpose": "Geist Mono, tabular: counts, metadata, the phone caption, placeholders."
+        "purpose": "Geist Mono, tabular: counts, metadata, the phone caption."
       }
     },
     "shadows": [
@@ -459,14 +459,6 @@
       "description": "Review-pipeline station: ring node for Dani, filled square for a read-only agent, counts as mono data.",
       "html": "<ol class=\"ds-pipeline\"><li class=\"ds-station\"><span class=\"ds-node\"></span><div><h3>Plan</h3><p>Written up in plans/*.md before any code.</p></div></li><li class=\"ds-station\"><span class=\"ds-node ds-node-agent\"></span><div><h3 class=\"ds-agent\">logic-checker</h3><p>Walks the plan step by step, hunting edge cases.</p></div></li></ol>",
       "css": ".ds-pipeline { display: grid; margin: 0; padding: 0; list-style: none; font-family: var(--font-sans, Geist, ui-sans-serif, system-ui, sans-serif); color: var(--ink); } .ds-station { position: relative; display: grid; grid-template-columns: 20px minmax(0, 1fr); column-gap: 18px; padding-bottom: 32px; } .ds-station::before { content: \"\"; position: absolute; left: 9.5px; top: 26px; bottom: 2px; width: 1px; background: var(--line-strong); } .ds-station:last-child::before { display: none; } .ds-node { width: 20px; height: 20px; margin-top: 3px; border-radius: 999px; border: 1.5px solid var(--ink); background: var(--bg-sunk); box-sizing: border-box; } .ds-node-agent { border-radius: 6px; background: var(--ink); } .ds-station h3 { margin: 0; font-size: 1.0625rem; font-weight: 600; letter-spacing: -0.01em; } .ds-station h3.ds-agent { font-family: var(--font-mono, 'Geist Mono', ui-monospace, monospace); font-size: 0.9375rem; } .ds-station p { margin: 6px 0 0; font-size: 0.9375rem; line-height: 1.625; color: var(--ink-muted); }"
-    },
-    {
-      "name": "Placeholder",
-      "kind": "chip",
-      "refersTo": "placeholder-inline",
-      "description": "Bracketed, dashed marker for anything still to be supplied; never filled with invented material.",
-      "html": "<span class=\"ds-placeholder\">[PHOTO: the display on your desk]</span>",
-      "css": ".ds-placeholder { display: inline-block; padding: 2px 6px; border: 1px dashed var(--line-strong); border-radius: 6px; font-family: var(--font-mono, 'Geist Mono', ui-monospace, monospace); font-size: 0.8125rem; line-height: 1.5; font-variant-numeric: tabular-nums; color: var(--ink-muted); }"
     }
   ],
   "narrative": {
@@ -479,7 +471,7 @@
       "Flat, tonal layering with alpha hairlines; one lifted object, the phone.",
       "Concentric corners: an outer radius is the inner radius plus the padding between them.",
       "In-house 1.5-stroke line icons on a 24-unit grid.",
-      "Every unsupplied asset shows as a dashed, bracketed placeholder."
+      "Nothing unsupplied ships: a missing photo or file hides its slot until it exists."
     ],
     "rules": [
       {
@@ -499,7 +491,7 @@
       },
       {
         "name": "The Mono Means Data Rule",
-        "body": "Geist Mono appears only where the content is data: numbers, metadata, recorded-on captions, agent names, bracketed placeholders. Always tabular. Never for prose or the four heading levels; an agent's name is the one heading set in mono, because it is an identifier.",
+        "body": "Geist Mono appears only where the content is data: numbers, metadata, recorded-on captions, agent names. Always tabular. Never for prose or the four heading levels; an agent's name is the one heading set in mono, because it is an identifier.",
         "section": "typography"
       },
       {
@@ -525,7 +517,7 @@
       "**Do** build radii concentrically: outer = inner + padding.",
       "**Do** keep every target at least 44 px and pair every autoplaying video with a pause button.",
       "**Do** route all motion through `--ease-out` and the four durations (160, 240, 420, 560 ms), and drop transforms under Reduce Motion.",
-      "**Do** show missing material as a dashed, bracketed placeholder."
+      "**Do** hide missing material behind its flag until the real file exists."
     ],
     "donts": [
       "**Don't** introduce a site accent or tint the stage; the products are the only colour.",

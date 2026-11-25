@@ -11,7 +11,7 @@ Mode: **Persuade**. The visitor (a product or design-engineering lead, or a recr
 
 - Action: "Try Bitewise" (live demo, no sign-up) and "See the work"; the close is the email.
 - Proof: live products, real recordings and screenshots, dated test and review counts with sources (plans/portfolio.md section 3).
-- Constraints: never invent numbers or claims; placeholders stay visibly bracketed; no phone number; never claim a project was built for a specific company; 390 px to 1440 px; Reduce Motion respected.
+- Constraints: never invent numbers or claims; nothing unsupplied ships (flags hide it until it exists); no phone number; never claim a project was built for a specific company; 390 px to 1440 px; Reduce Motion respected.
 - Memorable moment: the tilted phone in the hero straightens as you scroll and stays pinned while the four Bitewise steps pass and its screen changes.
 - Unresolved: case study page (Thursday), resume PDF without a phone number, headshot and project photos.
 
