@@ -8,7 +8,7 @@ canvas; the sections below follow it.
 ## Sections (top to bottom)
 
 1. Nav: name; Work, How I build, About, Resume.
-2. Hero: "I design and ship real products." Tilted phone playing the
+2. Hero: "From idea to live app, end to end." Tilted phone playing the
    Bitewise loop video (`~/Documents/meal-cost-tracker/design/videos/bitewise-loop-dark.mp4`).
    Buttons: See the work, Try Bitewise (https://trybitewise.vercel.app).
    Flat CSS-perspective phone first; a 3D (React Three Fiber) version only

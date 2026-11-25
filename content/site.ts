@@ -46,9 +46,9 @@ export const resumeHref = "/Dani-Kainikkara-Resume.pdf";
 export const headshotSrc = "/media/headshot.jpg";
 
 export const hero = {
-  title: "I design and ship real products.",
+  title: "From idea to live app, end to end.",
   subline:
-    "I'm Dani Kainikkara, a Computer Engineering student at TMU. I design, build and test apps end to end, with AI as a daily tool.",
+    "I'm Dani Kainikkara, a Computer Engineering student at Toronto Metropolitan University. I\u00a0design, build and test every part myself, with AI as a daily tool.",
   primary: { label: "See the work", href: "#work" },
   secondary: { label: "Try Bitewise", href: links.bitewise },
   phoneCaption: "Bitewise · recorded on the live demo",

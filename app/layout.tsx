@@ -11,10 +11,10 @@ const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL;
 
 export const metadata: Metadata = {
   metadataBase: productionHost ? new URL(`https://${productionHost}`) : undefined,
-  title: "Dani Kainikkara · I design and ship real products",
+  title: "Dani Kainikkara · From idea to live app, end to end",
   description: hero.subline,
   openGraph: {
-    title: "Dani Kainikkara · I design and ship real products",
+    title: "Dani Kainikkara · From idea to live app, end to end",
     description: hero.subline,
     type: "website",
   },

@@ -28,7 +28,7 @@ seconds, tries Bitewise or reads the case study, and has an obvious way to reach
 
 ## Positioning
 
-"I design and ship real products." Every project on the page is live or physically built,
+"From idea to live app, end to end." Every project on the page is live or physically built,
 and the numbers come from the repos (tests, reviewer findings). The claim a template
 portfolio can't copy: a first-year engineering student whose apps are live, built with
 a written, reviewed AI workflow that is shown, not described.

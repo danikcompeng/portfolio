@@ -104,7 +104,7 @@ This section is the bar for the design-critic and the finish review.
   17–18 px, 65–75ch.
 - **Shape:** concentric radii (outer = inner + padding), one radius scale (8 / 14 / 22 /
   30 px), one icon set drawn in-house at 1.5 px stroke.
-- **First viewport (1440 × 900):** nav row; h1 "I design and ship real products." at ~88 px
+- **First viewport (1440 × 900):** nav row; h1 "From idea to live app, end to end." at ~88 px
   over two lines, left; subline; two buttons; the phone on the right at ~75% of the viewport
   height, tilted back in perspective, playing the Bitewise loop, a small label under it. At
   390 px: h1, subline, buttons, then the phone's top edge above the fold.
@@ -155,7 +155,7 @@ This section is the bar for the design-critic and the finish review.
 - **Stacked layout:** hero block, the phone with the video, the h2, then each step as text +
   its still in a smaller flat phone. The section clips horizontal overflow.
 - **Copy:**
-  - h1: "I design and ship real products."
+  - h1: "From idea to live app, end to end."
   - Subline: "I'm Dani Kainikkara, a Computer Engineering student at TMU. I design, build and
     test apps end to end, with AI as a daily tool."
   - Buttons: "See the work" (to `#work`), "Try Bitewise" (new tab, ↗ icon; accessible name
@@ -229,7 +229,7 @@ This section is the bar for the design-critic and the finish review.
 - "That page doesn't exist." + link home, in the same world.
 
 ### Metadata
-- Title "Dani Kainikkara · I design and ship real products"; description from the subline;
+- Title "Dani Kainikkara · From idea to live app, end to end"; description from the subline;
   `themeColor` for both schemes in the `viewport` export (it follows the OS, not the toggle);
   `app/icon.svg` monogram (the starter `favicon.ico` is deleted); Open Graph image (1200 ×
   630) from `ImageResponse` with a Geist font file read at module scope.
@@ -328,6 +328,10 @@ remove Niagara Parks, the Unity racing game and the Spotify display. Round 3: ke
    `bitewise-scan-dark.png` is removed; the light frame is `bitewise-scan.png` again.
 3. **A cleaner scan frame** (Dani): `bitewise-scan.png` is now the frame at 62.1 s of the Nov 25
    re-recording of `bitewise-demo-light-real-scan.mp4`; its source note is re-embedded.
+4. **New hero copy** (Dani): headline "From idea to live app, end to end." (page, titles, OG
+   image and its alt, smoke test); subline spells out "Toronto Metropolitan University" and
+   says "I design, build and test every part myself". A no-break space keeps "I" with
+   "design" at 390 px. Checked at 390 and 1440, light and dark: two-line headline at both.
 
 ## Reviews
 

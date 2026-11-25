@@ -4,7 +4,7 @@ import { ImageResponse } from "next/og";
 import { hero } from "@/content/site";
 
 // The link preview: the headline on the dark stage, with the three products' own colours.
-export const alt = "Dani Kainikkara: I design and ship real products.";
+export const alt = "Dani Kainikkara: From idea to live app, end to end.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

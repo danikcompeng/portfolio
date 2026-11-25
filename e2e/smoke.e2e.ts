@@ -12,7 +12,7 @@ test("loads with one h1 and no console errors", async ({ page }) => {
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
   await expect(page.locator("h1")).toHaveCount(1);
-  await expect(page.locator("h1")).toHaveText("I design and ship real products.");
+  await expect(page.locator("h1")).toHaveText("From idea to live app, end to end.");
   await page.waitForTimeout(500);
   expect(errors).toEqual([]);
 });

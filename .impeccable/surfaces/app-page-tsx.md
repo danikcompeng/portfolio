@@ -23,7 +23,7 @@ OWN-WORLD: Near-black stage oklch(0.16 0.004 260) with one step-lighter raised s
 
 STORY: The visitor sees a live product before a résumé, watches Bitewise solve a real problem in four steps, then meets three more things Dani built, a reviewed AI workflow with real counts and quoted catches, and a short about that ends on the email.
 
-FIRST VIEWPORT: Desktop 1440 x 900: slim nav; left column h1 "I design and ship real products." at ~88 px over two lines, a two-line subline, then "See the work" (solid ink, primary) and "Try Bitewise" (outlined, opens the live app); right column the phone at ~75% of viewport height, tilted back in perspective, playing the Bitewise loop, a small mono label under it. Mobile 390: h1, subline, both buttons, then the phone's top edge above the fold.
+FIRST VIEWPORT: Desktop 1440 x 900: slim nav; left column h1 "From idea to live app, end to end." at ~88 px over two lines, a two-line subline, then "See the work" (solid ink, primary) and "Try Bitewise" (outlined, opens the live app); right column the phone at ~75% of viewport height, tilted back in perspective, playing the Bitewise loop, a small mono label under it. Mobile 390: h1, subline, both buttons, then the phone's top edge above the fold.
 
 FORM: Pinned launch page: hero and product story share one sticky phone that straightens on scroll; then a bento of product-tinted tiles, a drawn review pipeline, and an about that closes on contact. seed: none (pinned): "Dark-first, near-black base, Geist + Geist Mono" and "Hero: \"I design and ship real products.\" Tilted phone playing the Bitewise loop video" (CLAUDE.md); "A neutral, near-black/off-white base so each project brings its own colour" (portfolio-research.md).
 

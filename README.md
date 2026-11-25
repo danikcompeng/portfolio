@@ -4,7 +4,7 @@ A landing page that works like a product launch page, with me as the maker: the 
 
 **Live:** https://danikainikkara.vercel.app
 
-![The first screen in dark mode: the headline "I design and ship real products." next to a tilted phone playing Bitewise](docs/screenshots/round-2/1440-dark-01-first-viewport.png)
+![The first screen in dark mode: the headline "From idea to live app, end to end." next to a tilted phone playing Bitewise](docs/screenshots/round-3/1440-dark-01-first-viewport.png)
 
 ## What it does
 
