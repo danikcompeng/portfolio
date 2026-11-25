@@ -25,7 +25,7 @@ blog, analytics.
 | D2 | **The hero phone is the story phone.** One sticky phone carries the hero and the four Bitewise steps: it starts tilted, straightens as the hero block scrolls away, and its screen changes per step. | One hero object, one authored motion, and the hero flows straight into the proof. |
 | D3 | **Pinned story when the window is ≥ 1024 px wide and ≥ 540 px tall** (common laptops at 1280 × 600 included). Otherwise the steps stack, each with its own still. One DOM, switched by a CSS media query; JS reads the same `matchMedia` to decide which phone gets a video source, so the hidden layout's video never downloads. | A pinned phone plus captions doesn't fit a 390 × 667 phone; a 540 px cut-off keeps short laptops pinned (logic-checker #10). |
 | D4 | **Flat CSS-perspective phone.** No 3D this round. | The brief says flat first; it is the Reduce Motion and phone fallback anyway. |
-| D5 | **Screens are real frames from Bitewise's demo recordings** (`design/videos/bitewise-*`, recorded on production 2026-11-23). Today, the swap and cost per serving come in both themes; the scan is the real iPhone camera recording, a theme pair since round 2 (`bitewise-scan-dark.png` from the dark real-scan recording). | Real product, current name, same demo account. |
+| D5 | **Screens are real frames from Bitewise's demo recordings** (`design/videos/bitewise-*`, recorded on production 2026-11-23). Today, the swap and cost per serving come in both themes; the scan is the real iPhone camera frame from the light recording, used in both themes (round 3). | Real product, current name, same demo account. |
 | D6 | **No live iframe of Bitewise.** "Try Bitewise" opens the live app in a new tab. | The demo login cookie is SameSite=Lax (Supabase default), so "Try the demo" inside a cross-site iframe would likely bounce back to login. |
 | D7 | **No resume link until Dani supplies a PDF without the phone number** (`flags.resumePdf`). | Every resume PDF found lists a phone number; the site must not. Round 2: nothing bracketed ships. |
 | D8 | **Network CRM appears as "Orbit"** with https://orbit-dk.vercel.app. | It answers live (307 to /login, checked 2026-11-25) and the rename is committed (2f11512, 201c840). |
@@ -293,9 +293,9 @@ e2e/                  screens.e2e.ts (390 + 1440, light + dark), smoke.e2e.ts
 
 Answered in round 2 (2026-11-25): keep "a written checklist" for the phone check; hide
 unsupplied material (no brackets); skip the iOS 16 fallback; keep the hero video for now;
-remove Niagara Parks, the Unity racing game and the Spotify display. Still open:
+remove Niagara Parks, the Unity racing game and the Spotify display. Round 3: keep
+"Guitar, RCM Level 5" in About; one scan frame for both themes. Still open:
 1. Theme: follow the system (current), or dark for everyone with light on request?
-2. About keeps "Guitar, RCM Level 5": does that fit "engineering work and school only"?
 
 ## Round 2: Dani's decisions (2026-11-25)
 
@@ -318,6 +318,14 @@ remove Niagara Parks, the Unity racing game and the Spotify display. Still open:
    content, the About sentence, tests, docs. Work is Bitewise, Ascend and Orbit.
 7. Reviewers (code-reviewer and design-critic) check the two fixes the finish review never
    saw plus everything above, before shipping.
+
+## Round 3: Dani's decisions (2026-11-25)
+
+1. **Keep "Guitar, RCM Level 5"** in About.
+2. **One scan frame for both themes.** The dark recording's frame (round 2) was letterboxed
+   with the lookup sheet already open, which the design-critic rated its top issue; the scan
+   step now uses the light recording's full-bleed camera frame in both themes, as in round 1.
+   `bitewise-scan-dark.png` is removed; the light frame is `bitewise-scan.png` again.
 
 ## Reviews
 
@@ -429,7 +437,7 @@ Verdict: **Ship after fixes**. Removals are clean; Work and About hold without t
 
 - Theme follows the system with a remembered toggle, over dark-for-everyone: it respects the visitor's setting and is a one-line change (open question 3).
 - Showed floors ("900+") over exact counts: the logs changed during this session.
-- Used the iPhone camera frame for the scan step (round 2: a dark frame from the new dark recording, at Dani's request).
+- Used the iPhone camera frame for the scan step (round 2 tried a dark frame; round 3 went back to the light frame in both themes).
 - Dropped the `motion` package: CSS covers every animation on this page.
 - Named the network CRM "Orbit", its current committed name.
 - Pinned story steps at 72svh (last 60svh), over 82svh: shorter gaps beside the pinned phone, still a comfortable scroll per step.

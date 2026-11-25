@@ -8,8 +8,7 @@ import loopPosterDark from "@/public/media/bitewise-loop-poster-dark.png";
 import loopPosterLight from "@/public/media/bitewise-loop-poster-light.png";
 import tourPosterDark from "@/public/media/bitewise-tour-poster-dark.png";
 import tourPosterLight from "@/public/media/bitewise-tour-poster-light.png";
-import scanDark from "@/public/media/bitewise-scan-dark.png";
-import scanLight from "@/public/media/bitewise-scan-light.png";
+import scan from "@/public/media/bitewise-scan.png";
 import swapDark from "@/public/media/bitewise-swap-dark.png";
 import swapLight from "@/public/media/bitewise-swap-light.png";
 import todayDark from "@/public/media/bitewise-today-dark.png";
@@ -20,7 +19,8 @@ import orbitLight from "@/public/media/orbit-map-light.png";
 export const screens = {
   today: { dark: todayDark, light: todayLight },
   swap: { dark: swapDark, light: swapLight },
-  scan: { dark: scanDark, light: scanLight },
+  // One frame in both themes: the light recording's full-bleed camera view (round 3).
+  scan,
   cost: { dark: costDark, light: costLight },
 } as const;
 
