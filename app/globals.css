@@ -603,6 +603,20 @@ blockquote {
 .cs-prose + .cs-prose {
   margin-top: 1em;
 }
+.cs-list {
+  margin-top: 12px;
+  padding-left: 1.25em;
+  list-style: disc;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--ink);
+}
+.cs-list > li + li {
+  margin-top: 6px;
+}
+.cs-list > li::marker {
+  color: var(--ink-muted);
+}
 .cs-link {
   font-weight: 500;
   text-decoration: underline;

@@ -126,6 +126,13 @@ function SectionWithFigure({ section }: { section: (typeof caseStudy.sections)[n
         {section.body.map((parts, i) => (
           <Paragraph key={i} parts={parts} />
         ))}
+        {"list" in section && section.list ? (
+          <ul className="cs-list">
+            {section.list.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        ) : null}
       </section>
       {section.id === "ranking" ? (
         <figure className="cs-figure">

@@ -117,6 +117,12 @@ export const bitewise = {
       asOf: "2026-11-24",
       source: "meal-cost-tracker plans/impeccable.md, same run (7 passed)",
     },
+    plans: {
+      floor: 14,
+      exact: 14,
+      asOf: "2026-11-25",
+      source: "meal-cost-tracker plans/*.md, committed and pushed at 8756f90 (the README's \"13 plans\" predates one); shown exactly in the case study",
+    },
     codeReviews: {
       floor: 40,
       exact: 45,
@@ -310,12 +316,14 @@ export const caseStudy = {
     {
       id: "built",
       title: "What I built",
-      // README.md:5-6 (home screen), 23-32 (What it does)
-      body: [
-        [
-          "A mobile-first web app you can install on your home screen: Today's meals as rings for calories, protein, carbs, fat and water, plus what the day cost; recipes with cost and protein per dollar per serving; barcode scanning with Open Food Facts; and the “I'm tired of this” swap.",
-        ],
-      ] as Part[][],
+      // README.md:5-6 (home screen), 23-32 (What it does). A list at Dani's request (round 6).
+      body: [["A mobile-first web app you can install on your home screen:"]] as Part[][],
+      list: [
+        "Today's meals as rings for calories, protein, carbs, fat and water, plus what the day cost.",
+        "Recipes with cost and protein per dollar per serving.",
+        "Barcode scanning with Open Food Facts.",
+        "The “I'm tired of this” swap.",
+      ],
     },
     {
       id: "ranking",
@@ -343,12 +351,14 @@ export const caseStudy = {
     {
       id: "how",
       title: "How I built it",
-      // README.md:60-74; catches: notes.md:96-102, commits 599293a and 8ca92ae. Cut, can't be
+      // The plan sentence is Dani's (round 6); CLAUDE.md: "propose a short plan and wait for
+      // my approval"; the count is bitewise.stats.plans. README.md:60-74; catches:
+      // notes.md:96-102, commits 599293a and 8ca92ae. Cut, can't be
       // backed: "checked every change before it was committed" (45 reviews over ~200 commits;
       // notes.md:95 says every feature since the agent existed). The count is the tile's.
       body: [
         [
-          "With Claude Code, plan first: every feature started as a written plan I pushed back on before any code existed, with CLAUDE.md as the spec. A read-only code-reviewer agent caught real bugs before I committed them, like ",
+          `Features started as a plan Claude Code wrote and I pushed back on before any code existed; ${bitewise.stats.plans.floor} of those plans are in the repo. A read-only code-reviewer agent caught real bugs before I committed them, like `,
           { text: "a package size of 0 making a food look free", href: links.bitewiseFixFree },
           ", and ",
           { text: "an app left open overnight logging breakfast to yesterday", href: links.bitewiseFixOvernight },

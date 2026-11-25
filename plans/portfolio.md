@@ -294,8 +294,8 @@ e2e/                  screens.e2e.ts (390 + 1440, light + dark), smoke.e2e.ts
 Answered in round 2 (2026-11-25): keep "a written checklist" for the phone check; hide
 unsupplied material (no brackets); skip the iOS 16 fallback; keep the hero video for now;
 remove Niagara Parks, the Unity racing game and the Spotify display. Round 3: keep
-"Guitar, RCM Level 5" in About; one scan frame for both themes. Still open:
-1. Theme: follow the system (current), or dark for everyone with light on request?
+"Guitar, RCM Level 5" in About; one scan frame for both themes. Round 6: the theme stays on
+the system setting (with the remembered toggle). Nothing open.
 
 ## Round 2: Dani's decisions (2026-11-25)
 
@@ -404,6 +404,20 @@ read-only code-reviewer agent caught real bugs before I committed them"; the swa
 new live-demo capture with the page unscrolled (`bitewise-swap-sheet-*`), captioned; links
 between the two pages are plain `<a>` (full loads), so no hidden page stays mounted; the case
 study has its own link preview.
+
+## Round 6: Dani's case study edits (2026-11-25)
+
+Dani approved the case study with two copy edits and two decisions:
+1. **The plan sentence** is now Dani's: "Features started as a plan Claude Code wrote and I
+   pushed back on before any code existed; 14 of those plans are in the repo." Dani wrote 13
+   and asked for a count: `meal-cost-tracker/plans/` has **14** files, all committed and
+   pushed (HEAD 8756f90; the README's "13 plans" predates one), so the page says 14, from
+   `bitewise.stats.plans`. The old sentence's "with CLAUDE.md as the spec" went with it.
+2. **"What I built"** is a lead-in and a four-item list (`.cs-list`: 17 px / 1.65 in ink,
+   muted disc markers).
+3. **Theme** stays on the system setting. **The View Transition** is skipped for now.
+Everything else on the page is kept as approved ("no price yet", "The hardest decision",
+"What I'd do next").
 
 ## Reviews
 
