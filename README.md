@@ -2,7 +2,7 @@
 
 A landing page that works like a product launch page, with me as the maker: the apps I've shipped, how I build them, and how to reach me.
 
-**Live:** [LIVE LINK: not deployed yet]
+**Live:** https://danikainikkara.vercel.app
 
 ![The first screen in dark mode: the headline "I design and ship real products." next to a tilted phone playing Bitewise](docs/screenshots/round-2/1440-dark-01-first-viewport.png)
 
