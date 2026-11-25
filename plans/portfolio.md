@@ -326,6 +326,8 @@ remove Niagara Parks, the Unity racing game and the Spotify display. Round 3: ke
    with the lookup sheet already open, which the design-critic rated its top issue; the scan
    step now uses the light recording's full-bleed camera frame in both themes, as in round 1.
    `bitewise-scan-dark.png` is removed; the light frame is `bitewise-scan.png` again.
+3. **A cleaner scan frame** (Dani): `bitewise-scan.png` is now the frame at 62.1 s of the Nov 25
+   re-recording of `bitewise-demo-light-real-scan.mp4`; its source note is re-embedded.
 
 ## Reviews
 
