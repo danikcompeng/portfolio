@@ -1,0 +1,750 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------------------------------
+   Tokens. One definition per token: light-dark(<light>, <dark>), resolved by color-scheme.
+   With JS, the head script sets data-theme (stored choice, else the system setting); without
+   JS, color-scheme follows the system. lib/palette.test.ts reads this block and checks
+   contrast, so keep each token on one line in this exact shape.
+   The page is neutral; colour comes only from the products (--bw, --as, --or).
+   ------------------------------------------------------------------------------------------ */
+:root {
+  color-scheme: light dark;
+
+  --bg: light-dark(oklch(0.985 0.002 260), oklch(0.16 0.004 260));
+  --bg-raised: light-dark(oklch(1 0 0), oklch(0.2 0.005 260));
+  --bg-sunk: light-dark(oklch(0.955 0.003 260), oklch(0.135 0.004 260));
+  --ink: light-dark(oklch(0.2 0.006 260), oklch(0.96 0.003 260));
+  --ink-muted: light-dark(oklch(0.44 0.008 260), oklch(0.76 0.008 260));
+  --line: light-dark(oklch(0.2 0.01 260 / 0.11), oklch(1 0 0 / 0.09));
+  --line-strong: light-dark(oklch(0.2 0.01 260 / 0.22), oklch(1 0 0 / 0.18));
+  --shadow-color: light-dark(oklch(0.25 0.02 260 / 0.2), oklch(0 0 0 / 0.55));
+
+  /* Bitewise: matcha, from meal-cost-tracker DESIGN.md (matcha / night-matcha). */
+  --bw-field: light-dark(oklch(0.948 0.03 128), oklch(0.215 0.028 135));
+  --bw-accent: light-dark(oklch(0.44 0.09 130), oklch(0.7593 0.1016 136.4));
+  --bw-line: light-dark(oklch(0.44 0.09 130 / 0.24), oklch(0.76 0.1 136 / 0.2));
+  /* Ascend: persimmon, from habit-tracker DESIGN.md (#B8420E / #FF8F57). */
+  --as-field: light-dark(oklch(0.952 0.026 55), oklch(0.215 0.03 45));
+  --as-accent: light-dark(oklch(0.5 0.15 42), oklch(0.75 0.15 48));
+  --as-line: light-dark(oklch(0.5 0.15 42 / 0.24), oklch(0.75 0.15 48 / 0.2));
+  /* Orbit: blue, from network-crm app/globals.css (#1D4ED8 / #8AA8FF). */
+  --or-field: light-dark(oklch(0.952 0.02 265), oklch(0.205 0.032 268));
+  --or-accent: light-dark(oklch(0.49 0.2 264), oklch(0.75 0.13 268));
+  --or-line: light-dark(oklch(0.49 0.2 264 / 0.22), oklch(0.75 0.13 268 / 0.2));
+
+  /* The phone is a dark object in both themes, like the real thing. */
+  --phone-body: oklch(0.14 0.004 260);
+  --phone-edge: oklch(0.32 0.006 260);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-press: 160ms;
+  --dur-ui: 240ms;
+  --dur-reveal: 560ms;
+  --dur-screen: 420ms;
+
+  --r-1: 8px;
+  --r-2: 14px;
+  --r-3: 22px;
+  --r-4: 30px;
+
+  --nav-h: 56px;
+  --gutter: clamp(20px, 5vw, 80px);
+  --max: 1280px;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-raised: var(--bg-raised);
+  --color-bg-sunk: var(--bg-sunk);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --radius-1: var(--r-1);
+  --radius-2: var(--r-2);
+  --radius-3: var(--r-3);
+  --radius-4: var(--r-4);
+}
+
+/* ------------------------------------------------------------------------------------------
+   Base and browser surfaces
+   ------------------------------------------------------------------------------------------ */
+html {
+  background: var(--bg);
+  color: var(--ink);
+  scroll-padding-top: calc(var(--nav-h) + 16px);
+  -webkit-text-size-adjust: 100%;
+  scrollbar-color: var(--line-strong) var(--bg);
+  accent-color: var(--ink);
+}
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+body {
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  font-feature-settings: "ss01" 0;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  caret-color: var(--ink);
+  overflow-x: clip;
+}
+::selection {
+  background: light-dark(oklch(0.2 0.006 260), oklch(0.96 0.003 260));
+  color: light-dark(oklch(0.985 0.002 260), oklch(0.16 0.004 260));
+}
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+a {
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+p,
+dd,
+li,
+blockquote {
+  text-wrap: pretty;
+}
+
+/* Theme-matched media: the other theme's copy is display:none, so a lazy image never loads. */
+:root[data-theme="light"] .only-dark,
+:root[data-theme="dark"] .only-light {
+  display: none !important;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .only-light {
+    display: none !important;
+  }
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) .only-dark {
+    display: none !important;
+  }
+}
+/* The toggle's icon follows the theme without JS state. */
+:root[data-theme="light"] .icon-when-dark,
+:root[data-theme="dark"] .icon-when-light {
+  display: none;
+}
+
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -100px;
+  z-index: 100;
+  padding: 10px 16px;
+  border-radius: var(--r-2);
+  background: var(--ink);
+  color: var(--bg);
+  font-weight: 600;
+}
+.skip-link:focus-visible {
+  top: 10px;
+}
+
+/* ------------------------------------------------------------------------------------------
+   Type
+   ------------------------------------------------------------------------------------------ */
+.t-display {
+  font-size: clamp(2.75rem, 1.1rem + 5.2vw, 5.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.038em;
+  font-weight: 600;
+}
+.t-section {
+  font-size: clamp(2.25rem, 1.35rem + 2.8vw, 3.75rem);
+  line-height: 1.02;
+  letter-spacing: -0.032em;
+  font-weight: 600;
+}
+.t-step {
+  font-size: clamp(1.75rem, 1.2rem + 1.5vw, 2.625rem);
+  line-height: 1.06;
+  letter-spacing: -0.028em;
+  font-weight: 600;
+}
+.t-title {
+  font-size: clamp(1.5rem, 1.25rem + 0.7vw, 2rem);
+  line-height: 1.1;
+  letter-spacing: -0.024em;
+  font-weight: 600;
+}
+.t-lead {
+  font-size: clamp(1.0625rem, 0.98rem + 0.35vw, 1.25rem);
+  line-height: 1.55;
+}
+.t-data {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------------------------------------
+   Controls
+   ------------------------------------------------------------------------------------------ */
+.press {
+  transition:
+    transform var(--dur-press) var(--ease-out),
+    background-color var(--dur-ui) var(--ease-out),
+    color var(--dur-ui) var(--ease-out),
+    border-color var(--dur-ui) var(--ease-out);
+}
+.press:active {
+  transform: scale(0.97);
+}
+@media (prefers-reduced-motion: reduce) {
+  .press:active {
+    transform: none;
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 20px;
+  border-radius: var(--r-2);
+  font-weight: 550;
+  font-size: 1rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--ink);
+  color: var(--bg);
+}
+.btn-primary:hover {
+  background: light-dark(oklch(0.3 0.006 260), oklch(0.88 0.003 260));
+}
+.btn-secondary {
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+}
+.btn-secondary:hover {
+  background: var(--line);
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-weight: 550;
+  color: var(--accent, var(--ink));
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklch, currentColor 35%, transparent);
+}
+.text-link:hover {
+  text-decoration-color: currentColor;
+}
+
+.icon {
+  width: 1.125em;
+  height: 1.125em;
+  flex: none;
+}
+
+/* ------------------------------------------------------------------------------------------
+   Nav: a translucent ground appears once the page scrolls (scroll-driven where supported).
+   ------------------------------------------------------------------------------------------ */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--nav-h);
+}
+.nav::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in oklch, var(--bg) 78%, transparent);
+  backdrop-filter: blur(14px) saturate(1.4);
+  border-bottom: 1px solid var(--line);
+}
+@supports (animation-timeline: scroll()) {
+  .nav::before {
+    animation: nav-ground linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 32px;
+  }
+}
+@keyframes nav-ground {
+  from {
+    opacity: 0;
+    border-bottom-color: transparent;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ------------------------------------------------------------------------------------------
+   Phone: a flat CSS object with concentric corners (outer = screen radius + bezel).
+   Size it with --phone-w; everything else derives from it.
+   ------------------------------------------------------------------------------------------ */
+.phone {
+  --bezel: calc(var(--phone-w) * 0.032);
+  --screen-r: calc(var(--phone-w) * 0.128);
+  position: relative;
+  width: var(--phone-w);
+  padding: var(--bezel);
+  border-radius: calc(var(--screen-r) + var(--bezel));
+  background: var(--phone-body);
+  box-shadow:
+    inset 0 0 0 1px var(--phone-edge),
+    inset 0 1px 0 1px oklch(1 0 0 / 0.06),
+    0 0 0 1px light-dark(oklch(0 0 0 / 0), oklch(1 0 0 / 0.08)),
+    0 2px 4px -1px var(--shadow-color),
+    0 32px 64px -24px var(--shadow-color);
+}
+.phone-screen {
+  position: relative;
+  aspect-ratio: 393 / 852;
+  overflow: hidden;
+  border-radius: var(--screen-r);
+  background: oklch(0.19 0 0);
+  isolation: isolate;
+}
+/* Every layer is stacked; the active one fades in. */
+.phone-screen > .layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity var(--dur-screen) var(--ease-out);
+}
+.phone-screen > .layer[data-active="true"] {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .phone-screen > .layer {
+    transition: none;
+  }
+}
+.phone-screen .layer > img,
+.phone-screen .layer > video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ------------------------------------------------------------------------------------------
+   Hero + Bitewise story. One DOM, two layouts (plans/portfolio.md D3):
+   pinned when the window is at least 1024 x 540, stacked otherwise.
+   ------------------------------------------------------------------------------------------ */
+.story {
+  position: relative;
+  overflow-x: clip;
+  timeline-scope: --hero;
+}
+.story-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.story-hero {
+  padding-block: clamp(40px, 8vw, 72px) 0;
+}
+.story-inline-phone {
+  --phone-w: min(72vw, 300px);
+  display: flex;
+  justify-content: center;
+  margin-block: 56px 72px;
+}
+/* Bitewise's colour rises behind the story: a full-bleed field painted with border-image,
+   so it reaches both viewport edges without widening the layout. */
+.story-body {
+  border-image: linear-gradient(var(--bw-line) 0 1px, var(--bw-field) 1px) fill 0 / 0 / 0 100vw;
+  padding-block: 72px 96px;
+}
+.story-step {
+  padding-block: 40px;
+}
+.step-inline-phone {
+  --phone-w: min(64vw, 260px);
+  margin-top: 28px;
+}
+.story-stage {
+  display: none;
+}
+
+@media (min-width: 1024px) and (min-height: 540px) {
+  .story-grid {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: clamp(40px, 6vw, 112px);
+  }
+  .story-hero {
+    grid-row: 1;
+    grid-column: 1;
+    min-height: calc(100svh - var(--nav-h));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: 32px 64px;
+    view-timeline: --hero block;
+  }
+  .story-body {
+    grid-row: 2;
+    grid-column: 1;
+    padding-block: 18svh 0;
+  }
+  /* The h2 and its line hold the centre alone while the video plays; step 1 comes after. */
+  .story-steps {
+    margin-top: 24svh;
+  }
+  /* Top-aligned: a step's heading reaches the centre line as its screen fades in. */
+  .story-step {
+    min-height: 72svh;
+    padding-block: 0;
+  }
+  /* Long enough for step 4 to hold the centre before the phone unpins. */
+  .story-step:last-child {
+    min-height: 60svh;
+  }
+  .story-inline-phone,
+  .step-inline-phone {
+    display: none;
+  }
+  .story-stage {
+    display: block;
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+  .story-sticky {
+    --phone-h: min(76svh, 780px);
+    --phone-w: calc(var(--phone-h) / 2.0932);
+    --caption-h: 64px;
+    position: sticky;
+    top: calc(var(--nav-h) + (100svh - var(--nav-h) - var(--phone-h) - var(--caption-h)) / 2);
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto var(--caption-h);
+    justify-content: center;
+    align-items: center;
+    column-gap: 28px;
+    perspective: 1800px;
+  }
+}
+
+/* The hero tilt: flat by default; tilted only where the scroll timeline can straighten it. */
+.tilt {
+  transform-style: preserve-3d;
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) and (min-width: 1024px) and (min-height: 540px) {
+    .tilt {
+      animation: untilt linear both;
+      animation-timeline: --hero;
+      animation-range: exit 0% exit 70%;
+    }
+  }
+}
+@keyframes untilt {
+  from {
+    transform: rotateY(-18deg) rotateX(8deg) rotateZ(1deg);
+  }
+  to {
+    transform: none;
+  }
+}
+/* On narrow screens, a fixed, gentler tilt for the hero phone only. */
+@media (prefers-reduced-motion: no-preference) {
+  .story-inline-phone .tilt-static {
+    transform: perspective(1400px) rotateY(-10deg) rotateX(6deg);
+  }
+}
+
+.rail {
+  display: grid;
+  gap: 10px;
+  opacity: 0;
+  transition: opacity var(--dur-ui) var(--ease-out);
+}
+.rail[data-started="true"] {
+  opacity: 1;
+}
+.rail > span {
+  width: 3px;
+  height: 28px;
+  border-radius: 2px;
+  background: color-mix(in oklch, var(--ink-muted) 45%, transparent);
+  transition:
+    background-color var(--dur-ui) var(--ease-out),
+    height var(--dur-ui) var(--ease-out);
+}
+.rail > span[data-active="true"] {
+  background: var(--bw-accent);
+  height: 44px;
+}
+
+.stage-caption {
+  grid-column: 1;
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 16px;
+}
+
+/* ------------------------------------------------------------------------------------------
+   Video controls
+   ------------------------------------------------------------------------------------------ */
+.media-button {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--bg-raised);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+}
+.media-button:hover {
+  background: var(--bg-sunk);
+}
+
+/* ------------------------------------------------------------------------------------------
+   Work: product-tinted tiles. Concentric: tile radius = media radius + tile padding.
+   ------------------------------------------------------------------------------------------ */
+.tile {
+  --pad: clamp(22px, 3vw, 40px);
+  position: relative;
+  border-radius: calc(var(--r-2) + var(--pad));
+  padding: var(--pad);
+  background: var(--field, var(--bg-raised));
+  border: 1px solid var(--tile-line, var(--line));
+  overflow: hidden;
+}
+.tile-bw {
+  --field: var(--bw-field);
+  --tile-line: var(--bw-line);
+  --accent: var(--bw-accent);
+}
+.tile-as {
+  --field: var(--as-field);
+  --tile-line: var(--as-line);
+  --accent: var(--as-accent);
+}
+.tile-or {
+  --field: var(--or-field);
+  --tile-line: var(--or-line);
+  --accent: var(--or-accent);
+}
+.tile-media {
+  transition:
+    translate var(--dur-ui) var(--ease-out),
+    box-shadow var(--dur-ui) var(--ease-out);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tile:has(a:hover, a:focus-visible) .tile-media {
+    translate: 0 -2px;
+  }
+}
+/* Row 3 at desktop: the media fills the tile, so real photos keep the tops aligned. */
+@media (min-width: 1024px) {
+  .tile-fill {
+    flex: 1 1 auto;
+    min-height: 220px;
+    aspect-ratio: auto !important;
+  }
+}
+/* A phone screenshot cropped by the tile's bottom edge. */
+.screen-crop {
+  --phone-w: min(calc(100vw - 100px), 300px);
+  margin-inline: auto;
+  margin-bottom: calc(var(--pad) * -1 - 120px);
+}
+
+.placeholder {
+  display: grid;
+  place-items: center;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: var(--r-2);
+  background: color-mix(in oklch, var(--line) 40%, transparent);
+  color: var(--ink-muted);
+  padding: 20px;
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------------------------------
+   How I build: a drawn pipeline. Circles are Dani, filled squares are read-only agents.
+   Vertical below 1024 px, one horizontal track above.
+   ------------------------------------------------------------------------------------------ */
+.pipeline {
+  display: grid;
+}
+.station {
+  position: relative;
+  display: grid;
+  align-content: start;
+  grid-template-columns: 20px minmax(0, 1fr);
+  column-gap: 18px;
+  padding-bottom: 32px;
+}
+.station::before {
+  content: "";
+  position: absolute;
+  left: 9.5px;
+  top: 26px;
+  bottom: 2px;
+  width: 1px;
+  background: var(--line-strong);
+}
+.station:last-child::before {
+  display: none;
+}
+.node {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-top: 3px;
+  border-radius: 999px;
+  border: 1.5px solid var(--ink);
+  background: var(--bg-sunk);
+}
+.node-agent {
+  border-radius: 6px;
+  background: var(--ink);
+}
+/* The fork: two reviewers on the same build. Below 1024 px they read as two stations. */
+.fork-station {
+  display: block;
+  padding-bottom: 0;
+}
+.fork-station::before {
+  display: none;
+}
+.fork {
+  display: grid;
+}
+.fork-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  column-gap: 18px;
+  padding-bottom: 32px;
+}
+.fork-item::before {
+  content: "";
+  position: absolute;
+  left: 9.5px;
+  top: 26px;
+  bottom: 2px;
+  width: 1px;
+  background: var(--line-strong);
+}
+@media (min-width: 1024px) {
+  .pipeline {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .station {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 20px;
+    padding: 0 24px 0 0;
+  }
+  .station::before {
+    left: 28px;
+    right: 8px;
+    top: 13px;
+    bottom: auto;
+    width: auto;
+    height: 1px;
+  }
+  .fork-station {
+    padding-right: 24px;
+  }
+  .fork {
+    row-gap: 28px;
+  }
+  .fork-item {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 20px;
+    padding-bottom: 0;
+  }
+  /* First reviewer carries the track on; a branch drops from its node to the second's. */
+  .fork-item:first-child::before {
+    left: 28px;
+    right: -24px;
+    top: 13px;
+    bottom: auto;
+    width: auto;
+    height: 1px;
+  }
+  .fork-item:first-child::after {
+    content: "";
+    position: absolute;
+    left: 9.5px;
+    top: 26px;
+    bottom: -31px;
+    width: 1px;
+    background: var(--line-strong);
+  }
+  .fork-item:last-child::before {
+    display: none;
+  }
+  /* Text sits right of the branch line, which runs down the node's centre. */
+  .fork-item > div {
+    padding-left: 32px;
+  }
+}
+
+blockquote.catch {
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+
+/* ------------------------------------------------------------------------------------------
+   Reveal: added by JS only to content below the fold at load, so nothing visible blinks.
+   ------------------------------------------------------------------------------------------ */
+[data-reveal="hidden"] {
+  opacity: 0;
+  transform: scale(0.97);
+}
+[data-reveal="shown"] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--dur-reveal) var(--ease-out),
+    transform var(--dur-reveal) var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

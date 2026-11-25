@@ -1,0 +1,539 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-25T18:57:48.881Z",
+  "title": "Design System: Dani Kainikkara",
+  "extensions": {
+    "colorMeta": {
+      "bg": {
+        "role": "neutral",
+        "displayName": "Night Stage / Paper Stage",
+        "canonical": "light-dark(oklch(0.985 0.002 260), oklch(0.16 0.004 260))",
+        "tonalRamp": [
+          "oklch(0.15 0.002 260)",
+          "oklch(0.26 0.002 260)",
+          "oklch(0.37 0.003 260)",
+          "oklch(0.48 0.004 260)",
+          "oklch(0.59 0.004 260)",
+          "oklch(0.7 0.003 260)",
+          "oklch(0.82 0.002 260)",
+          "oklch(0.95 0.002 260)"
+        ]
+      },
+      "bg-raised": {
+        "role": "neutral",
+        "displayName": "Raised Step",
+        "canonical": "light-dark(oklch(1 0 0), oklch(0.2 0.005 260))",
+        "tonalRamp": [
+          "oklch(0.15 0.002 260)",
+          "oklch(0.26 0.003 260)",
+          "oklch(0.37 0.004 260)",
+          "oklch(0.48 0.004 260)",
+          "oklch(0.59 0.005 260)",
+          "oklch(0.7 0.004 260)",
+          "oklch(0.82 0.003 260)",
+          "oklch(0.95 0.002 260)"
+        ]
+      },
+      "bg-sunk": {
+        "role": "neutral",
+        "displayName": "Sunk Step",
+        "canonical": "light-dark(oklch(0.955 0.003 260), oklch(0.135 0.004 260))",
+        "tonalRamp": [
+          "oklch(0.15 0.002 260)",
+          "oklch(0.26 0.002 260)",
+          "oklch(0.37 0.003 260)",
+          "oklch(0.48 0.004 260)",
+          "oklch(0.59 0.004 260)",
+          "oklch(0.7 0.003 260)",
+          "oklch(0.82 0.002 260)",
+          "oklch(0.95 0.002 260)"
+        ]
+      },
+      "ink": {
+        "role": "primary",
+        "displayName": "Stage Ink",
+        "canonical": "light-dark(oklch(0.2 0.006 260), oklch(0.96 0.003 260))",
+        "tonalRamp": [
+          "oklch(0.15 0.002 260)",
+          "oklch(0.26 0.003 260)",
+          "oklch(0.37 0.004 260)",
+          "oklch(0.48 0.005 260)",
+          "oklch(0.59 0.006 260)",
+          "oklch(0.7 0.005 260)",
+          "oklch(0.82 0.004 260)",
+          "oklch(0.95 0.002 260)"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "canonical": "light-dark(oklch(0.44 0.008 260), oklch(0.76 0.008 260))",
+        "tonalRamp": [
+          "oklch(0.15 0.003 260)",
+          "oklch(0.26 0.005 260)",
+          "oklch(0.37 0.006 260)",
+          "oklch(0.48 0.007 260)",
+          "oklch(0.59 0.008 260)",
+          "oklch(0.7 0.006 260)",
+          "oklch(0.82 0.005 260)",
+          "oklch(0.95 0.003 260)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "light-dark(oklch(0.2 0.01 260 / 0.11), oklch(1 0 0 / 0.09))",
+        "tonalRamp": [
+          "oklch(0.15 0.004 260)",
+          "oklch(0.26 0.006 260)",
+          "oklch(0.37 0.007 260)",
+          "oklch(0.48 0.009 260)",
+          "oklch(0.59 0.009 260)",
+          "oklch(0.7 0.008 260)",
+          "oklch(0.82 0.006 260)",
+          "oklch(0.95 0.004 260)"
+        ]
+      },
+      "line-strong": {
+        "role": "neutral",
+        "displayName": "Strong Hairline",
+        "canonical": "light-dark(oklch(0.2 0.01 260 / 0.22), oklch(1 0 0 / 0.18))",
+        "tonalRamp": [
+          "oklch(0.15 0.004 260)",
+          "oklch(0.26 0.006 260)",
+          "oklch(0.37 0.007 260)",
+          "oklch(0.48 0.009 260)",
+          "oklch(0.59 0.009 260)",
+          "oklch(0.7 0.008 260)",
+          "oklch(0.82 0.006 260)",
+          "oklch(0.95 0.004 260)"
+        ]
+      },
+      "shadow-color": {
+        "role": "neutral",
+        "displayName": "Shadow Tint",
+        "canonical": "light-dark(oklch(0.25 0.02 260 / 0.2), oklch(0 0 0 / 0.55))",
+        "tonalRamp": [
+          "oklch(0.15 0.008 260)",
+          "oklch(0.26 0.011 260)",
+          "oklch(0.37 0.015 260)",
+          "oklch(0.48 0.018 260)",
+          "oklch(0.59 0.019 260)",
+          "oklch(0.7 0.016 260)",
+          "oklch(0.82 0.012 260)",
+          "oklch(0.95 0.008 260)"
+        ]
+      },
+      "bw-field": {
+        "role": "product",
+        "displayName": "Matcha Field (Bitewise)",
+        "canonical": "light-dark(oklch(0.948 0.03 128), oklch(0.215 0.028 135))",
+        "tonalRamp": [
+          "oklch(0.15 0.036 130)",
+          "oklch(0.26 0.051 130)",
+          "oklch(0.37 0.066 130)",
+          "oklch(0.48 0.081 130)",
+          "oklch(0.59 0.085 130)",
+          "oklch(0.7 0.07 130)",
+          "oklch(0.82 0.054 130)",
+          "oklch(0.95 0.036 130)"
+        ]
+      },
+      "bw-accent": {
+        "role": "product",
+        "displayName": "Matcha (Bitewise)",
+        "canonical": "light-dark(oklch(0.44 0.09 130), oklch(0.7593 0.1016 136.4))",
+        "tonalRamp": [
+          "oklch(0.15 0.04 133)",
+          "oklch(0.26 0.056 133)",
+          "oklch(0.37 0.073 133)",
+          "oklch(0.48 0.089 133)",
+          "oklch(0.59 0.094 133)",
+          "oklch(0.7 0.078 133)",
+          "oklch(0.82 0.06 133)",
+          "oklch(0.95 0.04 133)"
+        ]
+      },
+      "bw-line": {
+        "role": "product",
+        "displayName": "Matcha Hairline (Bitewise)",
+        "canonical": "light-dark(oklch(0.44 0.09 130 / 0.24), oklch(0.76 0.1 136 / 0.2))",
+        "tonalRamp": [
+          "oklch(0.15 0.036 130)",
+          "oklch(0.26 0.051 130)",
+          "oklch(0.37 0.066 130)",
+          "oklch(0.48 0.081 130)",
+          "oklch(0.59 0.085 130)",
+          "oklch(0.7 0.07 130)",
+          "oklch(0.82 0.054 130)",
+          "oklch(0.95 0.036 130)"
+        ]
+      },
+      "as-field": {
+        "role": "product",
+        "displayName": "Persimmon Field (Ascend)",
+        "canonical": "light-dark(oklch(0.952 0.026 55), oklch(0.215 0.03 45))",
+        "tonalRamp": [
+          "oklch(0.15 0.06 45)",
+          "oklch(0.26 0.085 45)",
+          "oklch(0.37 0.11 45)",
+          "oklch(0.48 0.134 45)",
+          "oklch(0.59 0.141 45)",
+          "oklch(0.7 0.116 45)",
+          "oklch(0.82 0.089 45)",
+          "oklch(0.95 0.06 45)"
+        ]
+      },
+      "as-accent": {
+        "role": "product",
+        "displayName": "Persimmon (Ascend)",
+        "canonical": "light-dark(oklch(0.5 0.15 42), oklch(0.75 0.15 48))",
+        "tonalRamp": [
+          "oklch(0.15 0.06 45)",
+          "oklch(0.26 0.085 45)",
+          "oklch(0.37 0.11 45)",
+          "oklch(0.48 0.134 45)",
+          "oklch(0.59 0.141 45)",
+          "oklch(0.7 0.116 45)",
+          "oklch(0.82 0.089 45)",
+          "oklch(0.95 0.06 45)"
+        ]
+      },
+      "as-line": {
+        "role": "product",
+        "displayName": "Persimmon Hairline (Ascend)",
+        "canonical": "light-dark(oklch(0.5 0.15 42 / 0.24), oklch(0.75 0.15 48 / 0.2))",
+        "tonalRamp": [
+          "oklch(0.15 0.06 45)",
+          "oklch(0.26 0.085 45)",
+          "oklch(0.37 0.11 45)",
+          "oklch(0.48 0.134 45)",
+          "oklch(0.59 0.141 45)",
+          "oklch(0.7 0.116 45)",
+          "oklch(0.82 0.089 45)",
+          "oklch(0.95 0.06 45)"
+        ]
+      },
+      "or-field": {
+        "role": "product",
+        "displayName": "Orbit Field (Orbit)",
+        "canonical": "light-dark(oklch(0.952 0.02 265), oklch(0.205 0.032 268))",
+        "tonalRamp": [
+          "oklch(0.15 0.08 265)",
+          "oklch(0.26 0.113 265)",
+          "oklch(0.37 0.146 265)",
+          "oklch(0.48 0.179 265)",
+          "oklch(0.59 0.188 265)",
+          "oklch(0.7 0.155 265)",
+          "oklch(0.82 0.119 265)",
+          "oklch(0.95 0.08 265)"
+        ]
+      },
+      "or-accent": {
+        "role": "product",
+        "displayName": "Orbit Blue (Orbit)",
+        "canonical": "light-dark(oklch(0.49 0.2 264), oklch(0.75 0.13 268))",
+        "tonalRamp": [
+          "oklch(0.15 0.08 265)",
+          "oklch(0.26 0.113 265)",
+          "oklch(0.37 0.146 265)",
+          "oklch(0.48 0.179 265)",
+          "oklch(0.59 0.188 265)",
+          "oklch(0.7 0.155 265)",
+          "oklch(0.82 0.119 265)",
+          "oklch(0.95 0.08 265)"
+        ]
+      },
+      "or-line": {
+        "role": "product",
+        "displayName": "Orbit Hairline (Orbit)",
+        "canonical": "light-dark(oklch(0.49 0.2 264 / 0.22), oklch(0.75 0.13 268 / 0.2))",
+        "tonalRamp": [
+          "oklch(0.15 0.08 265)",
+          "oklch(0.26 0.113 265)",
+          "oklch(0.37 0.146 265)",
+          "oklch(0.48 0.179 265)",
+          "oklch(0.59 0.188 265)",
+          "oklch(0.7 0.155 265)",
+          "oklch(0.82 0.119 265)",
+          "oklch(0.95 0.08 265)"
+        ]
+      },
+      "phone-body": {
+        "role": "neutral",
+        "displayName": "Phone Body",
+        "canonical": "oklch(0.14 0.004 260)",
+        "tonalRamp": [
+          "oklch(0.15 0.002 260)",
+          "oklch(0.26 0.002 260)",
+          "oklch(0.37 0.003 260)",
+          "oklch(0.48 0.004 260)",
+          "oklch(0.59 0.004 260)",
+          "oklch(0.7 0.003 260)",
+          "oklch(0.82 0.002 260)",
+          "oklch(0.95 0.002 260)"
+        ]
+      },
+      "phone-edge": {
+        "role": "neutral",
+        "displayName": "Phone Edge",
+        "canonical": "oklch(0.32 0.006 260)",
+        "tonalRamp": [
+          "oklch(0.15 0.002 260)",
+          "oklch(0.26 0.003 260)",
+          "oklch(0.37 0.004 260)",
+          "oklch(0.48 0.005 260)",
+          "oklch(0.59 0.006 260)",
+          "oklch(0.7 0.005 260)",
+          "oklch(0.82 0.004 260)",
+          "oklch(0.95 0.002 260)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The hero h1 only."
+      },
+      "section": {
+        "displayName": "Section",
+        "purpose": "Every section h2."
+      },
+      "step": {
+        "displayName": "Step",
+        "purpose": "The four Bitewise story steps."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Tile names and sub-heads."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "Sublines, story bodies, tile one-liners, quoted catches; measure-capped."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running text and about facts."
+      },
+      "body-small": {
+        "displayName": "Body Small",
+        "purpose": "Nav links, decision bodies, fact labels, pipeline bodies, captions."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Footer and footnotes."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "Buttons and text links."
+      },
+      "data": {
+        "displayName": "Data",
+        "purpose": "Geist Mono, tabular: counts, metadata, the phone caption, placeholders."
+      }
+    },
+    "shadows": [
+      {
+        "name": "phone-body",
+        "value": "inset 0 0 0 1px var(--phone-edge), inset 0 1px 0 1px oklch(1 0 0 / 0.06), 0 0 0 1px light-dark(oklch(0 0 0 / 0), oklch(1 0 0 / 0.08)), 0 2px 4px -1px var(--shadow-color), 0 32px 64px -24px var(--shadow-color)",
+        "purpose": "The phone only: edge ring, top highlight, dark-mode outer ring, contact shadow, long soft cast shadow."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The one curve for every transition and reveal."
+      },
+      {
+        "name": "dur-press",
+        "value": "160ms",
+        "purpose": "Press scale to 0.97."
+      },
+      {
+        "name": "dur-ui",
+        "value": "240ms",
+        "purpose": "Colour, border, rail and tile-media transitions."
+      },
+      {
+        "name": "dur-screen",
+        "value": "420ms",
+        "purpose": "Phone screen layers cross-fading."
+      },
+      {
+        "name": "dur-reveal",
+        "value": "560ms",
+        "purpose": "Below-the-fold content fading in from 0.97 scale, once; 60 to 80 ms staggers."
+      },
+      {
+        "name": "untilt",
+        "value": "rotateY(-18deg) rotateX(8deg) rotateZ(1deg) to none, on the hero view timeline (exit 0% to 70%)",
+        "purpose": "The pinned hero phone straightening on scroll; static perspective(1400px) rotateY(-10deg) rotateX(6deg) on narrow screens; flat under Reduce Motion."
+      },
+      {
+        "name": "nav-ground",
+        "value": "opacity 0 to 1 over the first 32px of root scroll",
+        "purpose": "The nav's translucent blurred ground."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "pinned",
+        "value": "(min-width: 1024px) and (min-height: 540px)"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Solid ink on the page colour; the one primary action per view (See the work).",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">See the work</a>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: var(--r-2, 14px); font-family: var(--font-sans, Geist, ui-sans-serif, system-ui, sans-serif); font-weight: 550; font-size: 1rem; line-height: 1; white-space: nowrap; text-decoration: none; cursor: pointer; transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), background-color 240ms cubic-bezier(0.16, 1, 0.3, 1), color 240ms cubic-bezier(0.16, 1, 0.3, 1), border-color 240ms cubic-bezier(0.16, 1, 0.3, 1); border: none; background: var(--ink); color: var(--bg); } .ds-btn-primary:hover { background: light-dark(oklch(0.3 0.006 260), oklch(0.88 0.003 260)); } .ds-btn-primary:active { transform: scale(0.97); } .ds-btn-primary:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 6px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Hairline-outlined ink button; Try Bitewise (opens the live app) and Copy email.",
+      "html": "<a class=\"ds-btn-secondary\" href=\"#\">Try Bitewise <svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M7 17 17 7M9 7h8v8\"/></svg></a>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: var(--r-2, 14px); font-family: var(--font-sans, Geist, ui-sans-serif, system-ui, sans-serif); font-weight: 550; font-size: 1rem; line-height: 1; white-space: nowrap; text-decoration: none; cursor: pointer; transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), background-color 240ms cubic-bezier(0.16, 1, 0.3, 1), color 240ms cubic-bezier(0.16, 1, 0.3, 1), border-color 240ms cubic-bezier(0.16, 1, 0.3, 1); background: transparent; color: var(--ink); border: 1px solid var(--line-strong); } .ds-btn-secondary:hover { background: var(--line); } .ds-btn-secondary:active { transform: scale(0.97); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 6px; }"
+    },
+    {
+      "name": "Product Text Link",
+      "kind": "custom",
+      "refersTo": "text-link-bitewise",
+      "description": "Underlined link that takes its product's accent inside a tile, ink elsewhere.",
+      "html": "<a class=\"ds-text-link\" href=\"#\">Try the live demo <svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M7 17 17 7M9 7h8v8\"/></svg></a>",
+      "css": ".ds-text-link { --accent: var(--bw-accent); display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-family: var(--font-sans, Geist, ui-sans-serif, system-ui, sans-serif); font-weight: 550; color: var(--accent, var(--ink)); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; text-decoration-color: color-mix(in oklch, currentColor 35%, transparent); transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), background-color 240ms cubic-bezier(0.16, 1, 0.3, 1), color 240ms cubic-bezier(0.16, 1, 0.3, 1), border-color 240ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-text-link:hover { text-decoration-color: currentColor; } .ds-text-link:active { transform: scale(0.97); } .ds-text-link:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 6px; }"
+    },
+    {
+      "name": "Media Button",
+      "kind": "button",
+      "refersTo": "media-button",
+      "description": "44 px round pause/play control beside every autoplaying video.",
+      "html": "<button class=\"ds-media-button\" type=\"button\" aria-label=\"Pause the Bitewise video\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9 6v12M15 6v12\"/></svg></button>",
+      "css": ".ds-media-button { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 999px; background: var(--bg-raised); color: var(--ink); border: 1px solid var(--line-strong); cursor: pointer; transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), background-color 240ms cubic-bezier(0.16, 1, 0.3, 1), color 240ms cubic-bezier(0.16, 1, 0.3, 1), border-color 240ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-media-button:hover { background: var(--bg-sunk); } .ds-media-button:active { transform: scale(0.97); } .ds-media-button:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "refersTo": "nav",
+      "description": "56 px sticky bar: name left, muted links right that turn ink on hover.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Main\"><a class=\"ds-nav-name\" href=\"#\">Dani Kainikkara</a><div class=\"ds-nav-links\"><a href=\"#\">Work</a><a href=\"#\">How I build</a><a href=\"#\">About</a></div></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 56px; padding: 0 20px; background: color-mix(in oklch, var(--bg) 78%, transparent); backdrop-filter: blur(14px) saturate(1.4); border-bottom: 1px solid var(--line); font-family: var(--font-sans, Geist, ui-sans-serif, system-ui, sans-serif); } .ds-nav-name { display: inline-flex; align-items: center; min-height: 44px; font-size: 0.9375rem; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); text-decoration: none; } .ds-nav-links { display: flex; gap: 4px; } .ds-nav-links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 10px; font-size: 0.9375rem; color: var(--ink-muted); text-decoration: none; transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), background-color 240ms cubic-bezier(0.16, 1, 0.3, 1), color 240ms cubic-bezier(0.16, 1, 0.3, 1), border-color 240ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-nav-links a:hover { color: var(--ink); } .ds-nav a:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 6px; }"
+    },
+    {
+      "name": "Product Tile",
+      "kind": "card",
+      "refersTo": "tile-bitewise",
+      "description": "Bento tile painted in its product's field and hairline; concentric radius = 14 px + padding.",
+      "html": "<article class=\"ds-tile\"><h3 class=\"ds-tile-title\">Bitewise</h3><p class=\"ds-tile-lead\">A meal tracker for the cheap meals I actually repeat: macros first, cost second.</p><ul class=\"ds-facts\"><li><span>900+</span> unit tests</li><li><span>40+</span> code reviews</li></ul></article>",
+      "css": ".ds-tile { --pad: clamp(22px, 3vw, 40px); padding: var(--pad); border-radius: calc(14px + var(--pad)); background: var(--bw-field); border: 1px solid var(--bw-line); color: var(--ink); font-family: var(--font-sans, Geist, ui-sans-serif, system-ui, sans-serif); } .ds-tile-title { margin: 0; font-size: clamp(1.5rem, 1.25rem + 0.7vw, 2rem); line-height: 1.1; letter-spacing: -0.024em; font-weight: 600; } .ds-tile-lead { margin: 12px 0 0; font-size: clamp(1.0625rem, 0.98rem + 0.35vw, 1.25rem); line-height: 1.55; } .ds-facts { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 24px 0 0; padding: 0; list-style: none; font-size: 0.9375rem; color: var(--ink-muted); } .ds-facts span { font-family: var(--font-mono, 'Geist Mono', ui-monospace, monospace); font-variant-numeric: tabular-nums; font-weight: 500; color: var(--ink); }"
+    },
+    {
+      "name": "Phone",
+      "kind": "custom",
+      "refersTo": "phone",
+      "description": "The signature object: a flat dark device with a real bezel, concentric corners and the only cast shadow.",
+      "html": "<div class=\"ds-phone\"><div class=\"ds-phone-screen\"></div></div>",
+      "css": ".ds-phone { --phone-w: 180px; --bezel: calc(var(--phone-w) * 0.032); --screen-r: calc(var(--phone-w) * 0.128); width: var(--phone-w); padding: var(--bezel); border-radius: calc(var(--screen-r) + var(--bezel)); background: var(--phone-body, oklch(0.14 0.004 260)); box-shadow: inset 0 0 0 1px var(--phone-edge, oklch(0.32 0.006 260)), inset 0 1px 0 1px oklch(1 0 0 / 0.06), 0 0 0 1px light-dark(oklch(0 0 0 / 0), oklch(1 0 0 / 0.08)), 0 2px 4px -1px var(--shadow-color), 0 32px 64px -24px var(--shadow-color); transform: perspective(1400px) rotateY(-10deg) rotateX(6deg); } .ds-phone-screen { aspect-ratio: 393 / 852; border-radius: var(--screen-r); background: linear-gradient(var(--bw-field), oklch(0.19 0 0)); } @media (prefers-reduced-motion: reduce) { .ds-phone { transform: none; } }"
+    },
+    {
+      "name": "Pipeline Station",
+      "kind": "custom",
+      "refersTo": "pipeline",
+      "description": "Review-pipeline station: ring node for Dani, filled square for a read-only agent, counts as mono data.",
+      "html": "<ol class=\"ds-pipeline\"><li class=\"ds-station\"><span class=\"ds-node\"></span><div><h3>Plan</h3><p>Written up in plans/*.md before any code.</p></div></li><li class=\"ds-station\"><span class=\"ds-node ds-node-agent\"></span><div><h3 class=\"ds-agent\">logic-checker</h3><p>Walks the plan step by step, hunting edge cases.</p></div></li></ol>",
+      "css": ".ds-pipeline { display: grid; margin: 0; padding: 0; list-style: none; font-family: var(--font-sans, Geist, ui-sans-serif, system-ui, sans-serif); color: var(--ink); } .ds-station { position: relative; display: grid; grid-template-columns: 20px minmax(0, 1fr); column-gap: 18px; padding-bottom: 32px; } .ds-station::before { content: \"\"; position: absolute; left: 9.5px; top: 26px; bottom: 2px; width: 1px; background: var(--line-strong); } .ds-station:last-child::before { display: none; } .ds-node { width: 20px; height: 20px; margin-top: 3px; border-radius: 999px; border: 1.5px solid var(--ink); background: var(--bg-sunk); box-sizing: border-box; } .ds-node-agent { border-radius: 6px; background: var(--ink); } .ds-station h3 { margin: 0; font-size: 1.0625rem; font-weight: 600; letter-spacing: -0.01em; } .ds-station h3.ds-agent { font-family: var(--font-mono, 'Geist Mono', ui-monospace, monospace); font-size: 0.9375rem; } .ds-station p { margin: 6px 0 0; font-size: 0.9375rem; line-height: 1.625; color: var(--ink-muted); }"
+    },
+    {
+      "name": "Placeholder",
+      "kind": "chip",
+      "refersTo": "placeholder-inline",
+      "description": "Bracketed, dashed marker for anything still to be supplied; never filled with invented material.",
+      "html": "<span class=\"ds-placeholder\">[PHOTO: the display on your desk]</span>",
+      "css": ".ds-placeholder { display: inline-block; padding: 2px 6px; border: 1px dashed var(--line-strong); border-radius: 6px; font-family: var(--font-mono, 'Geist Mono', ui-monospace, monospace); font-size: 0.8125rem; line-height: 1.5; font-variant-numeric: tabular-nums; color: var(--ink-muted); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Neutral Stage",
+    "overview": "The page is a launch stage with the house lights down. A near-black floor (light mode: an off-white one with near-black ink) carries no colour of its own. Colour walks on with each product, as that product's own field, hairline and link colour, lifted from its own design tokens. The hero object is a real phone playing the real app: a flat CSS device with a true bezel, tilted back in perspective, that straightens as you scroll and stays pinned while the Bitewise story passes it.\n\nDensity is generous and editorial: large tight Geist headings, long measure-capped leads in a muted ink, and numbers set in Geist Mono as data rather than decoration. Surfaces are flat and separated by tone and alpha hairlines; the phone is the only thing that casts a shadow. Motion is short and soft (one ease-out curve, 160 to 560 ms), comes from scroll and press, and disappears under Reduce Motion. Dark is the first theme; light is a full counterpart, and both resolve from one `light-dark()` token each.\n\nThe system refuses the template portfolio (name, skills list, grid of same-size project cards) and the SaaS split hero with a badge row.",
+    "keyCharacteristics": [
+      "Neutral stage, hue 260 at near-zero chroma; no site accent.",
+      "Product colour only as a field, line and accent scoped to that product (Bitewise matcha, Ascend persimmon, Orbit blue).",
+      "Geist set large and tight at weight 600; Geist Mono only for data, tabular.",
+      "Flat, tonal layering with alpha hairlines; one lifted object, the phone.",
+      "Concentric corners: an outer radius is the inner radius plus the padding between them.",
+      "In-house 1.5-stroke line icons on a 24-unit grid.",
+      "Every unsupplied asset shows as a dashed, bracketed placeholder."
+    ],
+    "rules": [
+      {
+        "name": "The Borrowed Colour Rule",
+        "body": "The site owns no accent. Colour enters only as a product's field, line and accent, taken from that product's own tokens and scoped to that product's tile or story. A project without its own palette gets a neutral `bg-raised` tile.",
+        "section": "colors"
+      },
+      {
+        "name": "The Ink Action Rule",
+        "body": "The primary action is solid ink on the page colour. Inside a product tile, links take that product's accent through `--accent`; everywhere else they are ink.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Line Per Token Rule",
+        "body": "Every theme-dependent colour is a single `light-dark(<light>, <dark>)` declaration resolved by `color-scheme`. No dark-mode override blocks. `lib/palette.test.ts` reads these lines and checks every text colour on every surface at 4.5:1, so keep each token on one line in that shape.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mono Means Data Rule",
+        "body": "Geist Mono appears only where the content is data: numbers, metadata, recorded-on captions, agent names, bracketed placeholders. Always tabular. Never for prose or the four heading levels; an agent's name is the one heading set in mono, because it is an identifier.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tightening Scale Rule",
+        "body": "All four heading steps are weight 600, and tracking tightens as size grows (-0.024em at title to -0.038em at display), with line height falling toward 1.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Lifted Object Rule",
+        "body": "Only the phone casts a shadow. Tiles, buttons, the nav and the pipeline stay flat and separate by tone and hairline.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Concentric Corner Rule",
+        "body": "An outer radius equals the inner radius plus the space between them: tile radius = 14 px + tile padding; phone radius = screen radius + bezel.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "**Do** give every new colour one `light-dark()` line in `:root` and add its text pairs to `lib/palette.test.ts` at 4.5:1 (3:1 for non-text marks).",
+      "**Do** bring a new project's colour from its own tokens as a `-field`, `-accent` and `-line` triple, and scope it to that project's tile or story.",
+      "**Do** set every count in Geist Mono with tabular figures, in full ink beside a muted label.",
+      "**Do** build radii concentrically: outer = inner + padding.",
+      "**Do** keep every target at least 44 px and pair every autoplaying video with a pause button.",
+      "**Do** route all motion through `--ease-out` and the four durations (160, 240, 420, 560 ms), and drop transforms under Reduce Motion.",
+      "**Do** show missing material as a dashed, bracketed placeholder."
+    ],
+    "donts": [
+      "**Don't** introduce a site accent or tint the stage; the products are the only colour.",
+      "**Don't** use a product's colour outside its own tile or story.",
+      "**Don't** cast a shadow from anything but the phone.",
+      "**Don't** set prose or the display, section, step or title levels in Geist Mono; the only mono headings are agent names, which are identifiers.",
+      "**Don't** use icon fonts or third-party icon sets; draw icons on the 24-unit, 1.5-stroke grid.",
+      "**Don't** fall back to a grid of same-size project cards or a split hero with a badge row."
+    ]
+  }
+}
