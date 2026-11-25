@@ -221,6 +221,7 @@ A cool, almost colourless neutral stage, with three borrowed product palettes th
 - **Title** (600, 24 to 32 px fluid, 1.1): tile names and sub-heads such as "Caught before it shipped".
 - **Lead** (400, 17 to 20 px fluid, 1.55): sublines, story bodies, tile one-liners, quoted catches. Measure-capped at 30 to 44rem.
 - **Body** (400, 17 px, 1.6): running text and about facts.
+- **Reading** (400, 17 px, 1.65, in full ink, 38rem measure): the case study's prose (`.cs-prose`); its inline links take 500 and a 35% underline, their arrow kept with the last word.
 - **Body Small** (400, 15 px): nav links, decision bodies, fact labels, pipeline bodies, figure captions. Small headings at this size (decision titles, station names) take 600 and -0.01em.
 - **Caption** (400, 14 px): footer and footnotes.
 - **Button** (550, 16 px, 1): buttons and text links.
@@ -238,6 +239,8 @@ One centred column, `content-max` wide with a fluid `gutter` on each side. Secti
 The hero and the Bitewise story share one DOM with two layouts. At 1024 x 540 and up it is **pinned**: a two-column grid with the text left and a sticky stage right holding the phone (height `min(76svh, 780px)`, width derived from the 393 x 852 screen), a vertical progress rail and a mono caption; the hero takes a full viewport and each step at least 72svh so a step's heading meets the centre line as its screen fades in. Below that it is **stacked**: the hero phone sits under the buttons with its top edge above the fold, and each step carries its own phone. The Bitewise field is painted full-bleed with `border-image`, reaching both viewport edges without widening the layout.
 
 Work is a 12-column bento at 1024 px and up (Bitewise 12, then Ascend 6 and Orbit 6) with a 20 px gap; one column below. Phone screenshots in the half tiles are cropped by the tile's bottom edge. How I build is a vertical track below 1200 px and one six-station horizontal track above, with a fork where two reviewers read the same build. About is 4 + 8 columns when the headshot exists (photo last on narrow screens), one column until then; it closes on a hairline and a large email link.
+
+The case study (`/work/bitewise`) opens on a full-width product tile (title, mono facts, links, the phone), then one 38rem reading column of h2-at-title sections. At 1024 px and up the column starts inside the tile's padding, in line with the h1, and a phone screen sits in the second column beside the section it illustrates (the swap, beside the ranking and the two sections after it), up to 340 px wide and never wider than that column, with a mono caption; below 1024 px it follows its section's text.
 
 Breakpoints in use: 640 px (two-up decisions), 768 px (wide nav links), 1024 px (bento, horizontal pipeline), 1024 x 540 (pinned story). Everything works at 390 px wide; the body clips horizontal overflow.
 

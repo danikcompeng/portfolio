@@ -1,3 +1,4 @@
+import { PageLink } from "./page-link";
 import { ascend, bitewise, fmt, flags, links, orbit, type Stat } from "@/content/site";
 import { ArrowUpRight } from "./icons";
 import { ascendScreen, orbitScreen, tour } from "./media";
@@ -5,7 +6,7 @@ import { Phone, ScreenLayer } from "./phone";
 import { PauseButton, VideoLayer, VideoProvider } from "./loop-video";
 import { Reveal } from "./reveal";
 
-function OutLink({ href, children }: { href: string; children: string }) {
+export function OutLink({ href, children }: { href: string; children: string }) {
   return (
     <a
       href={href}
@@ -21,7 +22,7 @@ function OutLink({ href, children }: { href: string; children: string }) {
 }
 
 /** Numbers as data: the floor in mono, the label in text. Sources live in content/site.ts. */
-function Facts({ items }: { items: { stat: Stat; label: string }[] }) {
+export function Facts({ items }: { items: { stat: Stat; label: string }[] }) {
   return (
     <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
       {items.map(({ stat, label }) => (
@@ -79,9 +80,9 @@ export function Work() {
                 <OutLink href={links.bitewise}>Try the live demo</OutLink>
                 <OutLink href={links.bitewiseCode}>Code on GitHub</OutLink>
                 {flags.caseStudy ? (
-                  <a href="/work/bitewise" className="text-link press">
+                  <PageLink href="/work/bitewise" className="text-link press">
                     Read the case study
-                  </a>
+                  </PageLink>
                 ) : null}
               </div>
             </div>

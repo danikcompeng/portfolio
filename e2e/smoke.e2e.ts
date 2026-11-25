@@ -30,12 +30,90 @@ test("external links open in a new tab safely, and none point anywhere unplanned
   }
 });
 
-test("nothing unsupplied shows: no resume or case study link, no [placeholder] text", async ({ page }) => {
+test("nothing unsupplied shows: no resume link, no [placeholder] text", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator('a[href$=".pdf"]')).toHaveCount(0);
-  await expect(page.locator('a[href^="/work/"]')).toHaveCount(0);
   const text = await page.locator("body").innerText();
   expect(text).not.toContain("[");
+});
+
+// The Bitewise case study (/work/bitewise).
+const CASE = "/work/bitewise";
+
+test("case study: the Bitewise tile opens it, and Back to the work returns to the tile", async ({ browser }) => {
+  const ctx = await browser.newContext({ ...DESKTOP, reducedMotion: "reduce" });
+  const page = await ctx.newPage();
+  await page.goto("/");
+  await page.getByRole("link", { name: "Read the case study" }).click();
+  await expect(page).toHaveURL(new RegExp(`${CASE}$`));
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Bitewise: cheap meals that hit your macros");
+  await page.getByRole("link", { name: "Back to the work" }).click();
+  await expect(page).toHaveURL(/\/#work$/);
+  await expect(page.getByRole("heading", { level: 2, name: "Work", exact: true })).toBeInViewport();
+  // The keyboard carries on from the Work section, not from the top of the page.
+  await page.keyboard.press("Tab");
+  expect(await page.evaluate(() => !!document.activeElement?.closest("#work"))).toBe(true);
+  await ctx.close();
+});
+
+test("home footer: Work moves the keyboard's starting point to the Work section", async ({ browser }) => {
+  const ctx = await browser.newContext({ ...DESKTOP, reducedMotion: "reduce" });
+  const page = await ctx.newPage();
+  await page.goto("/");
+  await page.getByRole("contentinfo").getByRole("link", { name: "Work", exact: true }).click();
+  await expect(page.getByRole("heading", { level: 2, name: "Work", exact: true })).toBeInViewport();
+  await page.keyboard.press("Tab");
+  expect(await page.evaluate(() => !!document.activeElement?.closest("#work"))).toBe(true);
+  await ctx.close();
+});
+
+test("case study: loads clean, with its own title, a link preview and no placeholders", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
+  page.on("pageerror", (e) => errors.push(e.message));
+  const res = await page.goto(CASE);
+  expect(res?.status()).toBe(200);
+  await expect(page.locator("h1")).toHaveCount(1);
+  await expect(page).toHaveTitle("Bitewise case study · Dani Kainikkara");
+  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", "Bitewise case study · Dani Kainikkara");
+  const og = page.locator('meta[property="og:image"]');
+  await expect(og).toHaveAttribute("content", /\/work\/bitewise\/opengraph-image/);
+  const image = await page.request.get(new URL((await og.getAttribute("content"))!, page.url()).pathname);
+  expect(image.status()).toBe(200);
+  expect(image.headers()["content-type"]).toBe("image/png");
+  await expect(page.getByRole("heading", { level: 2 })).toHaveCount(6);
+  expect(await page.locator("body").innerText()).not.toContain("[");
+  await page.waitForTimeout(500);
+  expect(errors).toEqual([]);
+});
+
+test("case study: outside links open in a new tab safely, including the two commit links", async ({ page }) => {
+  await page.goto(CASE);
+  const links = await page.$$eval("a[target=_blank]", (as) =>
+    as.map((a) => ({ href: a.getAttribute("href"), rel: a.getAttribute("rel"), label: a.getAttribute("aria-label") })),
+  );
+  for (const l of links) {
+    expect(l.href, JSON.stringify(l)).toMatch(/^https:\/\//);
+    expect(l.rel).toBe("noopener noreferrer");
+    expect(l.label ?? "").toMatch(/opens in a new tab/);
+  }
+  // Exactly the planned destinations, nothing missing and nothing else.
+  expect([...new Set(links.map((l) => l.href))].sort()).toEqual(
+    [
+      "https://trybitewise.vercel.app",
+      "https://github.com/danikcompeng/meal-cost-tracker",
+      "https://github.com/danikcompeng/meal-cost-tracker/blob/main/design/videos/bitewise-demo-light-real-scan.mp4",
+      "https://github.com/danikcompeng/meal-cost-tracker/commit/599293a",
+      "https://github.com/danikcompeng/meal-cost-tracker/commit/8ca92ae",
+    ].sort(),
+  );
+});
+
+test("case study: Back to top stays on the page", async ({ page }) => {
+  await page.goto(CASE);
+  await page.getByRole("contentinfo").getByRole("link", { name: "Back to top" }).click();
+  await expect(page).toHaveURL(new RegExp(`${CASE}#top$`));
+  await expect(page.locator("h1")).toBeInViewport();
 });
 
 for (const [name, opts] of [
@@ -56,12 +134,17 @@ for (const [name, opts] of [
     await ctx.close();
   });
 
-  for (const theme of ["dark", "light"] as const) {
-    test(`axe: no serious or critical issues (${name}, ${theme})`, async ({ browser }) => {
+  for (const [theme, path] of [
+    ["dark", "/"],
+    ["light", "/"],
+    ["dark", "/work/bitewise"],
+    ["light", "/work/bitewise"],
+  ] as const) {
+    test(`axe: no serious or critical issues (${path}, ${name}, ${theme})`, async ({ browser }) => {
       const ctx = await browser.newContext({ ...opts, colorScheme: theme, reducedMotion: "reduce" });
       await ctx.addInitScript((t) => localStorage.setItem("theme", t), theme);
       const page = await ctx.newPage();
-      await page.goto("/", { waitUntil: "networkidle" });
+      await page.goto(path, { waitUntil: "networkidle" });
       const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
       const serious = results.violations.filter((v) => v.impact === "serious" || v.impact === "critical");
       expect(

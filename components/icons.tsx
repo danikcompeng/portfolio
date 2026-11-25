@@ -71,3 +71,9 @@ export const Check = (p: IconProps) => (
     <path d="m5 12.5 4.5 4.5L19 7.5" />
   </Icon>
 );
+
+export const ArrowLeft = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M19 12H5m6-6-6 6 6 6" />
+  </Icon>
+);

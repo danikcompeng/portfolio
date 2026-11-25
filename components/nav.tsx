@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { PageLink } from "./page-link";
 import { flags, resumeHref } from "@/content/site";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -14,19 +14,19 @@ export function Nav() {
         aria-label="Main"
         className="mx-auto flex h-full max-w-[var(--max)] items-center justify-between gap-2 px-[var(--gutter)]"
       >
-        <Link href="/#top" className="press -ml-1 inline-flex min-h-11 items-center px-1 text-[0.9375rem] font-semibold tracking-[-0.01em] whitespace-nowrap">
+        <PageLink href="/#top" className="press -ml-1 inline-flex min-h-11 items-center px-1 text-[0.9375rem] font-semibold tracking-[-0.01em] whitespace-nowrap">
           Dani Kainikkara
-        </Link>
+        </PageLink>
         <div className="flex items-center gap-0.5 sm:gap-1">
-          <Link href="/#work" className={linkClass}>
+          <PageLink href="/#work" className={linkClass}>
             Work
-          </Link>
-          <Link href="/#how" className={wideLinkClass}>
+          </PageLink>
+          <PageLink href="/#how" className={wideLinkClass}>
             How I build
-          </Link>
-          <Link href="/#about" className={linkClass}>
+          </PageLink>
+          <PageLink href="/#about" className={linkClass}>
             About
-          </Link>
+          </PageLink>
           {flags.resumePdf ? (
             <a href={resumeHref} className={wideLinkClass}>
               Resume

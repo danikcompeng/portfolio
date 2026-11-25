@@ -20,7 +20,8 @@ export function Phone({
 
 /**
  * The same picture in both themes, each copy shown only in its theme. Lazy, so the hidden
- * copy (display: none) never downloads.
+ * copy (display: none) never downloads; `priority` raises the fetch priority of the visible
+ * one (the first viewport's picture) without preloading both, as VideoLayer's posters do.
  */
 export function ThemedImage({
   dark,
@@ -28,17 +29,20 @@ export function ThemedImage({
   alt,
   sizes,
   className = "",
+  priority = false,
 }: {
   dark: StaticImageData;
   light: StaticImageData;
   alt: string;
   sizes: string;
   className?: string;
+  priority?: boolean;
 }) {
+  const fetchPriority = priority ? "high" : "auto";
   return (
     <>
-      <Image src={dark} alt={alt} sizes={sizes} className={`only-dark ${className}`} />
-      <Image src={light} alt={alt} sizes={sizes} className={`only-light ${className}`} />
+      <Image src={dark} alt={alt} sizes={sizes} fetchPriority={fetchPriority} className={`only-dark ${className}`} />
+      <Image src={light} alt={alt} sizes={sizes} fetchPriority={fetchPriority} className={`only-light ${className}`} />
     </>
   );
 }
@@ -49,18 +53,20 @@ export function ScreenLayer({
   alt,
   sizes,
   active = true,
+  priority = false,
 }: {
   image: StaticImageData | { dark: StaticImageData; light: StaticImageData };
   alt: string;
   sizes: string;
   active?: boolean;
+  priority?: boolean;
 }) {
   return (
     <div className="layer" data-active={active}>
       {"src" in image ? (
-        <Image src={image} alt={alt} sizes={sizes} />
+        <Image src={image} alt={alt} sizes={sizes} fetchPriority={priority ? "high" : "auto"} />
       ) : (
-        <ThemedImage dark={image.dark} light={image.light} alt={alt} sizes={sizes} />
+        <ThemedImage dark={image.dark} light={image.light} alt={alt} sizes={sizes} priority={priority} />
       )}
     </div>
   );

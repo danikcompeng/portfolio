@@ -11,6 +11,8 @@ import tourPosterLight from "@/public/media/bitewise-tour-poster-light.png";
 import scan from "@/public/media/bitewise-scan.png";
 import swapDark from "@/public/media/bitewise-swap-dark.png";
 import swapLight from "@/public/media/bitewise-swap-light.png";
+import swapSheetDark from "@/public/media/bitewise-swap-sheet-dark.png";
+import swapSheetLight from "@/public/media/bitewise-swap-sheet-light.png";
 import todayDark from "@/public/media/bitewise-today-dark.png";
 import todayLight from "@/public/media/bitewise-today-light.png";
 import orbitDark from "@/public/media/orbit-map-dark.png";
@@ -39,6 +41,9 @@ export const tour = {
   /** After the first pass, loop from Today (past the login). */
   loopFrom: 5,
 };
+
+/** The case study's swap: the sheet opened with the page unscrolled, so the screen's top is intact. */
+export const swapSheet = { dark: swapSheetDark, light: swapSheetLight };
 
 export const ascendScreen = { dark: ascendDark, light: ascendLight };
 export const orbitScreen = { dark: orbitDark, light: orbitLight };

@@ -14,5 +14,6 @@ an embedded text chunk (`impeccable embed-prompt --read <file>`).
 | `bitewise-cost-{dark,light}.png` | Frames at 53.6 s (dark tour) and 53.7 s (light tour) |
 | `ascend-today-{dark,light}.png` | `habit-tracker/docs/screenshots/feature-10/today-*.png`: Today with The Climb strip (Playwright, 390 × 844 @3) |
 | `orbit-map-{dark,light}.png` | `network-crm/docs/screenshots/feature-7/map-*.png`: the 3D map (Playwright, 390 × 844 @3) |
+| `bitewise-swap-sheet-{dark,light}.png` | The case study's swap figure: https://trybitewise.vercel.app via Try the demo, Today unscrolled, the swap sheet opened from Breakfast (Overnight oats) (Playwright, 393 × 852 @2, 2026-11-25; nothing swapped or reset) |
 
 All numbers and names visible in the screenshots are the apps' demo data.

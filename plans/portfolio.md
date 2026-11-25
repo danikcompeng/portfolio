@@ -346,6 +346,65 @@ Dani's brief: `~/Documents/claude-inbox/portfolio/01-new-ascend-orbit-images.md`
    totals, so its 500+ stays. Review-finding totals weren't recounted: the floors are still
    true lower bounds.
 
+## Round 5: the Bitewise case study (2026-11-25)
+
+Dani's brief: `~/Documents/claude-inbox/portfolio/02-bitewise-case-study.md` (approved draft,
+Dani's words). Layout chosen by Dani: text plus two real screens.
+
+**Route** `app/work/bitewise/page.tsx`, static (prerendered), Read mode. `flags.caseStudy`
+turns on; the Bitewise tile's "Read the case study" link (already behind the flag) becomes a
+`next/link`. The View Transition named in section 1 is not in this round (not in Dani's
+brief; logged as open).
+
+**Content** in `content/site.ts` as `caseStudy`, every claim with its source comment. Light
+edits only, Dani's voice:
+- Title "Bitewise: cheap meals that hit your macros" (README tagline). Facts row: the tile's
+  own `bitewise.stats` (900+ unit tests, 7+ end-to-end tests, 40+ code reviews).
+- Links: Try the live demo, Code on GitHub, Full tour video (GitHub file view of
+  `design/videos/bitewise-demo-light-real-scan.mp4`, the README's "full tour with a real
+  iPhone scan"; checked 200).
+- The problem; What I built; The hardest decision: the swap ranking; A rule I kept
+  everywhere: missing stays missing; How I built it; What I'd do next. Sources:
+  README.md (Why, What it does, Interesting decisions, How I built it with AI),
+  `plans/swap.md` §2 ("pure, tested"), CLAUDE.md feature 4 (purchases, "What's in my
+  kitchen") for What I'd do next.
+- **Cut** (can't be traced): "so I could change the rules without breaking the screen".
+  The sentence ends at "It's a pure function with its own tests."
+- The two catches link to their commits, as the README does: 599293a (a package size of 0
+  made a food look free: `pricePerUnit` returned 0) and 8ca92ae (the day rolls over when
+  the app comes back to the screen). "900+ unit tests" is `fmt(bitewise.stats.unitTests)`,
+  the tile's source.
+
+**Layout** (the site's world, no new tokens):
+- Nav as everywhere. A header tile on the Bitewise field (`.tile tile-bw`, its own story, so
+  its colour is allowed): h1 (t-section; no label above it, the craft floor bans one),
+  facts, the three links; the
+  Today screen in a phone on the right at ≥ 1024 px, under the text below that (the
+  `story.steps` alt). Priority image (it's the first viewport).
+- Then the six sections in a reading column (max 38rem, prose 1.0625rem / 1.65 in ink),
+  h2 at t-title. The swap screen in a phone beside "The hardest decision" at ≥ 1024 px,
+  after its text below that (its existing alt).
+- Close: "Try the live demo", "Code on GitHub", and "Back to the work" (`/#work`, with a
+  drawn left arrow from `icons.tsx`, not a "←" glyph). Footer
+  shared with the home page (a `Footer` component; links `/#…` off the home page).
+- No reveals or video on this page: it's for reading.
+
+**Metadata**: title "Bitewise case study · Dani Kainikkara", description from the problem
+line; the root Open Graph image still applies (check it's in the built HTML).
+
+**Tests**: smoke: the page loads with one h1 and no console errors; axe at 390 and 1440 in
+light and dark; every outside link opens in a new tab with its label; no "[" in its text;
+"Back to the work" lands on `#work`; the home tile links to it. The postbuild bracket check
+covers the new HTML. site.test: the flag's file check already exists. Screenshots at 390 and
+1440, light and dark.
+
+**Changed after the reviews** (see Reviews, Round 5): the price sentence is Dani's own again;
+"checked every change before it was committed" is cut (it can't be backed), leaving "A
+read-only code-reviewer agent caught real bugs before I committed them"; the swap figure is a
+new live-demo capture with the page unscrolled (`bitewise-swap-sheet-*`), captioned; links
+between the two pages are plain `<a>` (full loads), so no hidden page stays mounted; the case
+study has its own link preview.
+
 ## Reviews
 
 ### Plan review, logic-checker (2026-11-25)
@@ -452,6 +511,74 @@ Verdict: **Ship after fixes**. Removals are clean; Work and About hold without t
 | 6 | Low | About and Say hello read as two sections. | Fixed | Contact margin cut to `clamp(64px, 8vw, 112px)`. |
 | 7 | Low | Plan section 6 out of date. | Fixed | Already updated with the Spotify removal (the critic read it mid-edit). |
 
+### Round 5 plan review, logic-checker (2026-11-25)
+Verdict: **Ready after fixes**. All copy checked against meal-cost-tracker's README, notes, plans, CLAUDE.md and the two commits.
+
+| # | Severity | Finding | Outcome | What changed |
+|---|---|---|---|---|
+| 1 | High | The smoke test asserted no `/work/` link on the home page, so turning the flag on would fail it. | Fixed | Replaced by a test that the tile opens the case study and "Back to the work" returns to `#work`. |
+| 2 | Medium | "A food with no price shows 'no price yet'" can't happen today: every food has a price. | Fixed (light edit) | "A cost that can't be worked out shows 'no price yet', never $0", which is what `lib/cost.ts` and the row do. |
+| 3 | Medium | "Checked every change before it was committed" overstates: the agent came on day two, and small commits had no review. | Fixed (light edit) | "Once I'd set it up, a read-only code-reviewer agent checked every feature before I committed it" (`notes.md`: "every feature since gets reviewed before its commit"). |
+| 4 | Medium | A page `openGraph` replaces the layout's; the root image might not survive. | Fixed | It didn't (the test caught it). The case study now has its own link preview (its title, Bitewise's colour), from a template shared with the home page's (`lib/og-image.tsx`); a smoke test checks `og:image`. |
+| 5 | Medium | A shared footer's "Back to top" would leave the page; the page needs `#main`. | Fixed | The page header is `#top`, `<main id="main" tabIndex={-1}>`; footer section links go to `/#…` off the home page; a smoke test clicks Back to top. |
+| 6 | Medium | `priority` would preload the hidden theme's copy too. | Fixed | `ScreenLayer`/`ThemedImage` take `priority` as `fetchPriority="high"` on lazy images, as the video posters do. |
+| 7 | Low | "The hardest decision" isn't in any source. | Kept | Dani's own judgement in his approved text, not a fact; flagged in the summary. |
+| 8 | Low | "What I'd do next: track purchases"; notes name another next feature. | Kept | Dani's stated intent (CLAUDE.md feature 4); flagged. |
+| 9 | Low | "Every feature started as a written plan": early features have no file in `plans/`. | Kept | README.md:63 says it, the source Dani named; flagged. |
+| 10 | Low | Check the commits really hold the fixes. | Checked | 599293a changes `return 0` to `null` in `pricePerUnit`; 8ca92ae adds `day-rollover.tsx`. |
+| 11 | Low | The bracket check only required `index.html`. | Fixed | It also requires `bitewise.html` while the page's source exists. |
+| 12 | Low | New URLs should be in `links` for the https test. | Fixed | `bitewiseTour`, `bitewiseFixFree`, `bitewiseFixOvernight`. |
+| 13 | Low | The tour link is the light video only. | Kept | The README's "full tour with a real iPhone scan" link; one link keeps the row short. |
+| 14 | Low | "Foods you'd have to buy" means foods not logged this week. | Kept | README wording; "What I'd do next" explains it. |
+| 15 | Low | Resume would vanish on phones once its flag is on (the footer had none). | Fixed | The shared footer shows Resume when its flag is on. |
+
+### Round 5 build review, code-reviewer (2026-11-25)
+Verdict: **Ship after fixes**. No privacy problems or invented claims; every source comment checked.
+
+| # | Severity | Finding | Outcome | What changed |
+|---|---|---|---|---|
+| 1 | Medium | After a client-side visit the hidden home stays mounted: duplicate `#main`, `#top`, `#how-title`. | Fixed | Links between the pages are plain `<a>` (`PageLink`): full loads, no hidden route. Section ids are `cs-…` anyway. |
+| 2 | Medium | Home footer links became `next/link`, whose scroll doesn't move the keyboard's starting point. | Fixed | Plain `<a>` (as before); a test checks the next Tab lands in Work. |
+| 3 | Medium | Focus stranded in the hidden route after Read the case study / Back to the work. | Fixed | Same as #1; a test checks the next Tab after Back to the work lands in Work. |
+| 4 | Medium | The price sentence was reworded, not cut, against Dani's rule; the new wording is only partly true (the Foods list shows "—"). | Fixed | Dani's own sentence restored (README.md:36; CLAUDE.md feature 4 is the same rule). Flagged for Dani: today every food has a price, so it describes the rule, not a case you can hit. |
+| 5 | Low | "Once I'd set it up … every feature" changes Dani's sentence too. | Fixed (cut) | The overclaiming clause is cut instead: "A read-only code-reviewer agent caught real bugs before I committed them, like …" (45 reviews over ~200 commits, so "every change" can't stand). Flagged for Dani. |
+| 6 | Low | "today's meals" lost the Today screen's name. | Fixed | "Today's". |
+| 7 | Low | `altFor` fell back to an empty alt. | Fixed | It throws if a story id is missing. |
+| 8 | Low | `grid-row: 3 / span 3` hard-coded the ranking's position. | Fixed | `span 3`, auto-placed on the row of the section it follows. |
+| 9 | Low | The header phone is lazy with high fetch priority (likely the LCP). | Accepted | Same trade-off as the hero poster: lazy keeps the other theme's copy from downloading. |
+| 10 | Low | The link test only required the two commit URLs. | Fixed | It compares the exact set of five destinations. |
+| 11 | Low | `#work` in viewport passes on a 1 px sliver. | Fixed | Checks the Work h2. |
+| – | – | Missing tests: the case study's OG image; focus after navigation; the home footer. | Added | `og:image` fetched (200, image/png); the two Tab tests. The video and skip-link tests after client navigation no longer apply (full loads). |
+
+### Round 5 build review, design-critic (2026-11-25)
+Verdict: **Ship after fixes**. Nothing fails contrast or breaks at either width or theme.
+
+| # | Severity | Finding | Outcome | What changed |
+|---|---|---|---|---|
+| 1 | Medium | The swap phone runs past the ranking section with no caption. | Fixed | A mono caption, "The swap · captured on the live demo". |
+| 2 | Medium | The swap card's text is too small at 270 px. | Fixed | Up to 340 px, never wider than its column; 300 px below 1024. |
+| 3 | Medium | The commit link's arrow wraps alone at 390 ("↗ , and"). | Fixed | Last word and arrow in one nowrap run. |
+| 4 | Low | The swap frame starts mid-scroll (rings cut at the top). | Fixed | A new capture from the live demo, page unscrolled (see the finish review). |
+| 5 | Low | At 1440 x 900 the first h2 sits just below the fold. | Fixed | `.cs-body` top padding `clamp(48px, 5vw, 72px)`. |
+| 6 | Low | At 1024 to 1100 px the phone could overflow its column. | Fixed | Its width is capped by the column; measured at 1024, 1100 and 1440: no overflow. |
+| 7 | Low | The h1 and the h2s don't share a left edge. | Fixed | At ≥ 1024 the column starts inside the tile's padding (h1 and h2 within 1 px). |
+| 8 | Low | Footer link padding pushes text off the gutter. | Fixed | `-mx-2` on the footer nav. |
+| 9 | Low | "40+ code reviews" wraps alone at 390. | Kept | Same as the home tile. |
+| 10 | Low | Two long links at weight 550 make that paragraph heavy. | Fixed | 500. |
+| 11 | Low | Copy: the "What I built" list is one long sentence; "a written plan I pushed back on" doesn't say whose. | For Dani | His approved words; not rewritten. |
+
+### Round 5 build review, Impeccable finish review (2026-11-25)
+Disposition: **fix**. Fidelity matched the contract and Dani's layout; three material fixes.
+
+| # | Finding | Outcome |
+|---|---|---|
+| 1 | The commit links' arrow breaks badly (alone at 390; a gap before "," and "." at 1440). | Fixed: nowrap run; the icon's right side bearing trimmed. |
+| 2 | The swap screenshot is cut at the top. | Fixed: `bitewise-swap-sheet-{light,dark}.png`, captured on the live demo (Try the demo, Today unscrolled, the sheet opened from Breakfast and closed; nothing swapped or reset), provenance embedded, SOURCES.md row. The home story keeps its frame. |
+| 3 | DESIGN.md doesn't describe the reading level or the case-study layout. | Fixed: a Reading level in Typography and a paragraph in Layout. |
+| – | Ceiling: no motion moment (the View Transition); no caption. | Caption added; the View Transition stays open (not in Dani's brief). |
+
+Verdict pass over the recaptures: all three fixes **resolved**, no regressions seen; disposition **ship** (scoped to these fixes).
+
 ## Decided while Dani was away
 
 - Theme follows the system with a remembered toggle, over dark-for-everyone: it respects the visitor's setting and is a one-line change (open question 3).
@@ -468,3 +595,7 @@ Verdict: **Ship after fixes**. Removals are clean; Work and About hold without t
 - Round 4: replaced Ascend's decision ("Streaks are derived, never stored") with the Climb line over keeping both, because a tile shows one decision and the new screenshot shows the Climb; the line still says altitude is derived "like streaks".
 - Round 4: raised Ascend's test floors to 500+ and 90+ from the Feature 10 log (516 and 90), over leaving 370+ and 70+, since both counts are logged exactly; review-finding totals stay as true lower bounds (not recounted).
 - Round 4: embedded each new screenshot's origin (the source file in habit-tracker or network-crm) and checked they're pixel-identical to those files.
+- Round 5: made the links between the home page and the case study plain `<a>` (full page loads) over next/link plus focus management, because both pages are static and it removes the hidden-mounted-page problems at the root.
+- Round 5: gave the case study its own link-preview image (its title, Bitewise's colour only) over the home page's, since a page-level `openGraph` drops the root image anyway.
+- Round 5: captured a new swap frame from the live demo for the case study only (Try the demo, nothing swapped or reset) over cropping the old one, and left the home story's frame as it is.
+- Round 5: made the hero-loop video test poll for the wrap instead of a fixed 1.2 s wait; it failed once on a busy machine and passed 18 of 18 on repeat.

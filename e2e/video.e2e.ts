@@ -94,9 +94,8 @@ test("at the end, the hero loops back past the login screen, not to 0", async ({
     const v = document.querySelector<HTMLVideoElement>(s)!;
     v.currentTime = v.duration - 0.3;
   }, stage);
-  await page.waitForTimeout(1200);
-  const t = await page.evaluate((s) => document.querySelector<HTMLVideoElement>(s)!.currentTime, stage);
-  expect(t).toBeGreaterThan(4.5);
-  expect(t).toBeLessThan(8);
+  // Poll rather than sleep: on a busy machine the wrap can take longer than a fixed wait.
+  const time = () => page.evaluate((s) => document.querySelector<HTMLVideoElement>(s)!.currentTime, stage);
+  await expect.poll(async () => { const t = await time(); return t > 4.5 && t < 8; }, { timeout: 10_000 }).toBe(true);
   expect(await playing(page, stage)).toBe(true);
 });

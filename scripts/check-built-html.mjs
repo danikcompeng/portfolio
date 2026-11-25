@@ -1,8 +1,8 @@
 // Runs after `next build` (npm "postbuild"): fails the build if a "[" placeholder reaches
 // anything a visitor or a screen reader gets: the visible text of a prerendered page, or the
 // alt, aria-label, title, placeholder and meta content attributes. Scripts and styles are
-// ignored, since the framework's own payloads are full of brackets. The home page must be
-// among the pages checked.
+// ignored, since the framework's own payloads are full of brackets. The home page and the
+// case study must be among the pages checked (REQUIRED).
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, basename } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -53,12 +53,20 @@ function htmlFiles(dir) {
 // Output API folder when it exists.
 const ROOTS = [".next/server", ".vercel/output"];
 
+// Pages that must be among those checked, so a page that stops prerendering can't slip by
+// unchecked. Matched by file name: the build hook may move the folders.
+const REQUIRED = [
+  { source: "app/page.tsx", html: "index.html" },
+  { source: "app/work/bitewise/page.tsx", html: "bitewise.html" },
+];
+
 function main() {
   const files = ROOTS.map((r) => join(process.cwd(), r))
     .filter((r) => existsSync(r))
     .flatMap(htmlFiles);
-  if (!files.some((f) => basename(f) === "index.html")) {
-    console.error(`check-built-html: no prerendered home page (index.html) under ${ROOTS.join(" or ")}`);
+  const missing = REQUIRED.filter((p) => existsSync(join(process.cwd(), p.source)) && !files.some((f) => basename(f) === p.html));
+  if (missing.length) {
+    console.error(`check-built-html: no prerendered ${missing.map((p) => p.html).join(", ")} under ${ROOTS.join(" or ")}`);
     // Say what is there, so a changed build layout is easy to diagnose.
     const all = [".next", ".vercel"].map((r) => join(process.cwd(), r)).filter((r) => existsSync(r)).flatMap(htmlFiles);
     console.error(`check-built-html: HTML files found: ${all.length ? all.join(", ") : "none"}`);

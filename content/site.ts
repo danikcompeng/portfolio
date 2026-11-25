@@ -25,6 +25,11 @@ export const links = {
   linkedin: "https://www.linkedin.com/in/dani-kainikkara-42824b395/",
   bitewise: "https://trybitewise.vercel.app",
   bitewiseCode: "https://github.com/danikcompeng/meal-cost-tracker",
+  // meal-cost-tracker README.md:10-12, "Full tour with a real iPhone scan" (the light one).
+  bitewiseTour: "https://github.com/danikcompeng/meal-cost-tracker/blob/main/design/videos/bitewise-demo-light-real-scan.mp4",
+  // The two code-reviewer catches, linked to their fixes as README.md:71-74 does.
+  bitewiseFixFree: "https://github.com/danikcompeng/meal-cost-tracker/commit/599293a",
+  bitewiseFixOvernight: "https://github.com/danikcompeng/meal-cost-tracker/commit/8ca92ae",
   ascend: "https://ascend-dk.vercel.app",
   orbit: "https://orbit-dk.vercel.app",
 } as const;
@@ -34,8 +39,8 @@ export const links = {
  * nothing shows or links to it (content/site.test.ts checks the file exists when on).
  */
 export const flags = {
-  /** /work/bitewise, planned for Thursday 2026-11-26 (app/work/bitewise/page.tsx). */
-  caseStudy: false,
+  /** /work/bitewise (app/work/bitewise/page.tsx), approved by Dani 2026-11-25. */
+  caseStudy: true,
   /** A resume PDF without the phone number, at public/Dani-Kainikkara-Resume.pdf. */
   resumePdf: false,
   /** A headshot for About, at public/media/headshot.jpg (4:5). */
@@ -268,4 +273,99 @@ export const about = {
     { label: "Music", value: "Guitar, RCM Level 5, after 8 years" },
   ],
   photoAlt: "Dani Kainikkara",
+};
+
+/**
+ * The Bitewise case study (/work/bitewise): Dani's approved draft
+ * (claude-inbox/portfolio/02-bitewise-case-study.md), light edits only. Sources are in
+ * ~/Documents/meal-cost-tracker. A paragraph is a list of parts: text, *emphasis*, or a
+ * link. Anything that couldn't be traced was cut (plans/portfolio.md, Round 5).
+ */
+export type Part = string | { em: string } | { text: string; href: string };
+
+export const caseStudy = {
+  // README.md:3, "Cheap meals that hit your macros, on repeat"
+  title: "Bitewise: cheap meals that hit your macros",
+  metaTitle: "Bitewise case study · Dani Kainikkara",
+  // public/media/SOURCES.md, bitewise-swap-sheet-*: what the frame shows.
+  swapFigure: {
+    alt: "The swap sheet instead of Overnight oats: Egg fried rice first, $1.36 per serving, 21 g protein, uses 3 foods you've had this week.",
+    caption: "The swap · captured on the live demo",
+  },
+  metaDescription:
+    "How I built Bitewise, a meal tracker for cheap meals that hit your macros: the problem, the swap ranking, and building it with Claude Code and a code-reviewer agent.",
+  sections: [
+    {
+      id: "problem",
+      title: "The problem",
+      // README.md:16-19 (Why)
+      body: [
+        [
+          "I live on my own and repeat a few cheap meals that hit my protein. Calorie trackers don't know what food costs, and meal planners suggest recipes with ingredients I don't have. I wanted one screen with macros and money, and a way to swap a meal I'm sick of for another of ",
+          { em: "mine" },
+          " with the same protein, at the price I actually paid.",
+        ],
+      ] as Part[][],
+    },
+    {
+      id: "built",
+      title: "What I built",
+      // README.md:5-6 (home screen), 23-32 (What it does)
+      body: [
+        [
+          "A mobile-first web app you can install on your home screen: Today's meals as rings for calories, protein, carbs, fat and water, plus what the day cost; recipes with cost and protein per dollar per serving; barcode scanning with Open Food Facts; and the “I'm tired of this” swap.",
+        ],
+      ] as Part[][],
+    },
+    {
+      id: "ranking",
+      title: "The hardest decision: the swap ranking",
+      // README.md:40-43; plans/swap.md section 2 ("pure, tested"). Cut, untraceable: "so I
+      // could change the rules without breaking the screen". "Hardest" is Dani's own call.
+      body: [
+        [
+          "It works like a spreadsheet sort: protein first, then how many foods you'd have to buy, then cost, then what you've eaten lately. Each column is a coarse group (protein “within 15%”, not exact grams), so later columns still get a say. It's a pure function with its own tests.",
+        ],
+      ] as Part[][],
+    },
+    {
+      id: "missing",
+      title: "A rule I kept everywhere: missing stays missing",
+      // README.md:36-39; CLAUDE.md ("one rule, everywhere"; feature 4: "a food you haven't
+      // bought shows 'no price yet', never a guess and never $0"). Dani's wording, kept: it's
+      // the app's rule (components/amount-preview.tsx), though today every food has a price.
+      body: [
+        [
+          "A food with no price shows “no price yet”, never $0. A recipe with one unknown sodium value shows a dash and names the food. A number that looks right but quietly leaves something out is worse than no number.",
+        ],
+      ] as Part[][],
+    },
+    {
+      id: "how",
+      title: "How I built it",
+      // README.md:60-74; catches: notes.md:96-102, commits 599293a and 8ca92ae. Cut, can't be
+      // backed: "checked every change before it was committed" (45 reviews over ~200 commits;
+      // notes.md:95 says every feature since the agent existed). The count is the tile's.
+      body: [
+        [
+          "With Claude Code, plan first: every feature started as a written plan I pushed back on before any code existed, with CLAUDE.md as the spec. A read-only code-reviewer agent caught real bugs before I committed them, like ",
+          { text: "a package size of 0 making a food look free", href: links.bitewiseFixFree },
+          ", and ",
+          { text: "an app left open overnight logging breakfast to yesterday", href: links.bitewiseFixOvernight },
+          ".",
+        ],
+        [`${fmt(bitewise.stats.unitTests)} unit tests cover the maths, validation, ranking and colour contrast.`],
+      ] as Part[][],
+    },
+    {
+      id: "next",
+      title: "What I'd do next",
+      // README.md:44-46 ("Until I track purchases"); CLAUDE.md feature 4 (What's in my kitchen).
+      body: [
+        [
+          "Track purchases, so “foods you have” can mean what's actually in your kitchen, not what you logged this week.",
+        ],
+      ] as Part[][],
+    },
+  ],
 };

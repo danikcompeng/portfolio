@@ -82,3 +82,25 @@ for (const size of sizes) {
     });
   }
 }
+
+// The case study: the first viewport and the whole page, per size and theme.
+for (const size of sizes) {
+  for (const theme of themes) {
+    test(`screens case study ${size.name} ${theme}`, async ({ browser }) => {
+      const context = await browser.newContext({
+        viewport: { width: size.width, height: size.height },
+        deviceScaleFactor: size.scale,
+        colorScheme: theme,
+        reducedMotion: "reduce",
+      });
+      await context.addInitScript((t) => localStorage.setItem("theme", t), theme);
+      const page = await context.newPage();
+      await page.goto("/work/bitewise", { waitUntil: "networkidle" });
+      await settle(page);
+      const file = (name: string) => `${OUT}/${size.name}-${theme}-case-${name}.png`;
+      await page.screenshot({ path: file("01-first-viewport") });
+      await page.screenshot({ path: file("00-full-page"), fullPage: true });
+      await context.close();
+    });
+  }
+}
