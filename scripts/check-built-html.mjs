@@ -3,7 +3,7 @@
 // alt, aria-label, title, placeholder and meta content attributes. Scripts and styles are
 // ignored, since the framework's own payloads are full of brackets. The home page must be
 // among the pages checked.
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, basename } from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -48,11 +48,20 @@ function htmlFiles(dir) {
   });
 }
 
+// Where prerendered pages can be: .next/server/app locally; on Vercel the build hook moves
+// them (e.g. into .next/server/route-cache), so search all of .next/server, plus the Build
+// Output API folder when it exists.
+const ROOTS = [".next/server", ".vercel/output"];
+
 function main() {
-  const root = join(process.cwd(), ".next/server/app");
-  const files = htmlFiles(root);
+  const files = ROOTS.map((r) => join(process.cwd(), r))
+    .filter((r) => existsSync(r))
+    .flatMap(htmlFiles);
   if (!files.some((f) => basename(f) === "index.html")) {
-    console.error("check-built-html: the home page (.next/server/app/index.html) wasn't prerendered");
+    console.error(`check-built-html: no prerendered home page (index.html) under ${ROOTS.join(" or ")}`);
+    // Say what is there, so a changed build layout is easy to diagnose.
+    const all = [".next", ".vercel"].map((r) => join(process.cwd(), r)).filter((r) => existsSync(r)).flatMap(htmlFiles);
+    console.error(`check-built-html: HTML files found: ${all.length ? all.join(", ") : "none"}`);
     process.exit(1);
   }
   let failed = false;
