@@ -51,7 +51,7 @@ Floors are what the site shows; exact values are what the logs said on 2026-11-2
 - **500+ unit and database tests, 90+ browser tests** (516 and 90 at Feature 10, `plans/habit-tracker.md` Reviews; 379 and 77 at Feature 8b before that).
 - **260+ review findings** (268 by the fact agent's count, 285 by Claude's parser, both of committed HEAD; Reviews log).
 - Decision (round 4): the Climb never slips: altitude is derived from check-ins like streaks, each day climbs by the share of habits done, up to 150 m, and a missed day never costs any (plan, Feature 10). Before: "Streaks are derived, never stored".
-- Screens: `docs/screenshots/feature-10/today-{dark,light}.png` (Today with The Climb strip; round 4).
+- Screens: `docs/screenshots/feature-10/today-{dark,light}.png` (Today with The Climb strip; round 4, refreshed in round 7 from Feature 10b, `e00cd03`).
 
 ### Orbit (`~/Documents/network-crm`)
 - "A personal CRM for an internship search: the people you meet, who introduced you to whom, what you talked about, when to follow up, and every application, with a map of your network at the centre." (`README.md:3-5`)
@@ -418,6 +418,19 @@ Dani approved the case study with two copy edits and two decisions:
 3. **Theme** stays on the system setting. **The View Transition** is skipped for now.
 Everything else on the page is kept as approved ("no price yet", "The hardest decision",
 "What I'd do next").
+
+## Round 7: Ascend's new mountain (2026-11-25)
+
+Dani's brief: `~/Documents/claude-inbox/portfolio/` (Feature 10b, habit-tracker `e00cd03`).
+1. **New screenshots**: `ascend-today-{light,dark}.png` copied from
+   `habit-tracker/docs/screenshots/feature-10/today-*.png` at `e00cd03`: the Fuji-shaped
+   mountain with its top in cloud, the demo at 8,763 m (85 m below High ridge). Origin
+   re-embedded; SOURCES.md names the commit.
+2. **Alt text**: "…Altitude 8,763 m · Above the clouds, broad mountain slopes with the top
+   hidden in cloud, above the habit keys."
+3. **No "Summit" or finish line** anywhere in the portfolio's copy (searched content,
+   components, app); the Ascend decision ("up to 150 m, and a missed day never costs any")
+   still matches Feature 10b, which keeps the daily climb rules.
 
 ## Reviews
 
