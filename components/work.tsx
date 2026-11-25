@@ -125,7 +125,7 @@ export function Work() {
             <Phone>
               <ScreenLayer
                 image={ascendScreen}
-                alt="Ascend's Today screen: two habits done in orange, Read 10 pages part-way through a hold."
+                alt="Ascend's Today screen: the pixel-art Climb strip, Altitude 7,113 m · Above the clouds, above the habit keys."
                 sizes="300px"
               />
             </Phone>
@@ -156,7 +156,7 @@ export function Work() {
             <Phone>
               <ScreenLayer
                 image={orbitScreen}
-                alt="Orbit's network map: you in the centre, 20 people in three introduction chains."
+                alt="Orbit's 3D map: me as a planet in the centre, with people on tilted rings by introduction depth."
                 sizes="300px"
               />
             </Phone>

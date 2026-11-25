@@ -140,22 +140,22 @@ export const ascend = {
   // habit-tracker README.md
   detail: "Hold a habit for 0.65 s to complete it; tap a done one to undo.",
   decision: {
-    title: "Streaks are derived, never stored",
-    // habit-tracker plans/habit-tracker.md, Data rules
-    body: "A stored streak drifts the first time an undo, a delete or a bug touches history.",
+    title: "A climb that never slips",
+    // habit-tracker plans/habit-tracker.md, Feature 10 rules 1-2 and "Consequences" (at most 150 m a day)
+    body: "Altitude is derived from check-ins, like streaks: each day climbs by the share of habits done, up to 150 m, and a missed day never costs any.",
   },
   stats: {
     unitTests: {
-      floor: 370,
-      exact: 379,
+      floor: 500,
+      exact: 516,
       asOf: "2026-11-25",
-      source: "habit-tracker plans/habit-tracker.md, Reviews, Feature 8b (379 unit and database tests)",
+      source: "habit-tracker plans/habit-tracker.md, Reviews, Feature 10 final checks (516 unit and database tests)",
     },
     browserTests: {
-      floor: 70,
-      exact: 77,
+      floor: 90,
+      exact: 90,
       asOf: "2026-11-25",
-      source: "habit-tracker plans/habit-tracker.md, Reviews, Feature 8b (77 browser tests)",
+      source: "habit-tracker plans/habit-tracker.md, Reviews, Feature 10 final checks (browser suite: 90 passed)",
     },
     findings: {
       floor: 260,
@@ -172,8 +172,8 @@ export const orbit = {
   oneLiner: "A personal CRM for an internship search, with a map of who introduced you to whom.",
   decision: {
     title: "A map that stays put",
-    // network-crm plans/crm.md, Feature 5 plan (paraphrased: the source says "on one device")
-    body: "The map is a radial tree settled by a short physics run, so adding someone mostly moves only their branch.",
+    // network-crm plans/crm.md, Feature 7 plan, Angles ("Pure and deterministic, no force run")
+    body: "Each ring is an introduction depth and each person sits at their branch's angle, with no physics run, so the same network always draws the same way.",
   },
   stats: {
     unitTests: {

@@ -48,18 +48,18 @@ Floors are what the site shows; exact values are what the logs said on 2026-11-2
 ### Ascend (`~/Documents/habit-tracker`)
 - "A habit tracker you press like a physical key." (`CLAUDE.md:5`, `DESIGN.md:3`). Hold a key for 0.65 s to complete a habit; tap a done key to undo (`README.md`).
 - Live: https://ascend-dk.vercel.app.
-- **370+ unit and database tests, 70+ browser tests** (379 and 77 at Feature 8b, `plans/habit-tracker.md` Reviews).
+- **500+ unit and database tests, 90+ browser tests** (516 and 90 at Feature 10, `plans/habit-tracker.md` Reviews; 379 and 77 at Feature 8b before that).
 - **260+ review findings** (268 by the fact agent's count, 285 by Claude's parser, both of committed HEAD; Reviews log).
-- Decision: streaks are derived, never stored: "A stored streak drifts the first time an undo, a delete or a bug touches history" (plan, Data rules).
-- Screens: `docs/screenshots/feature-3/today-mid-hold-{dark,light}.png`. Feature 9 (a font change) will retake them; swap the files when it lands.
+- Decision (round 4): the Climb never slips: altitude is derived from check-ins like streaks, each day climbs by the share of habits done, up to 150 m, and a missed day never costs any (plan, Feature 10). Before: "Streaks are derived, never stored".
+- Screens: `docs/screenshots/feature-10/today-{dark,light}.png` (Today with The Climb strip; round 4).
 
 ### Orbit (`~/Documents/network-crm`)
 - "A personal CRM for an internship search: the people you meet, who introduced you to whom, what you talked about, when to follow up, and every application, with a map of your network at the centre." (`README.md:3-5`)
 - Live: https://orbit-dk.vercel.app.
 - **500+ unit tests** (527 after Feature 5, `plans/crm.md` Feature 5 review; no later count recorded).
 - **230+ review findings** (233 at committed HEAD; the logic-checker counted 246 including an uncommitted second round).
-- Decision (paraphrased, no quote marks): the map is a radial tree settled by a short force run, so adding someone mostly moves only their branch (`plans/crm.md`, Feature 5 plan).
-- Screens: `docs/screenshots/feature-5/map-{dark,light}.png`.
+- Decision (paraphrased, no quote marks; round 4): each ring is an introduction depth and each person sits at their branch's angle, with no physics run, so the same network always draws the same way (`plans/crm.md`, Feature 7 plan, Angles). Before: the Feature 5 radial tree settled by a short force run.
+- Screens: `docs/screenshots/feature-7/map-{dark,light}.png` (the 3D map; round 4).
 - **Do not quote** the plan's "Why" section (it names a contact).
 
 ### Across Ascend and Orbit (the three-agent workflow)
@@ -189,11 +189,11 @@ This section is the bar for the design-critic and the finish review.
   Undo timer"), actions "Try the live demo ↗", "Code on GitHub ↗" (case study once it
   exists). Media: the full tour (`bitewise-tour-{dark,light}.mp4`, ~2.4 MB) in a phone,
   source set only when the tile is near the viewport, same play rules and pause button.
-- **Ascend** (persimmon field): name, one-liner, the mid-hold screen, the decision "Streaks are
-  derived, never stored", facts (370+ unit and database tests · 70+ browser tests · 260+
+- **Ascend** (persimmon field): name, one-liner, Today with The Climb strip, the decision "A
+  climb that never slips", facts (500+ unit and database tests · 90+ browser tests · 260+
   review findings), "Open Ascend ↗".
 - **Orbit** (blue field): name, "A personal CRM for an internship search, with a map of who
-  introduced you to whom.", the map screen, the decision (paraphrased), facts (500+ unit
+  introduced you to whom.", the 3D map screen, the decision (paraphrased), facts (500+ unit
   tests · 230+ review findings), "Open Orbit ↗".
 - Each action is its own link (no whole-tile link). Hover lifts the media 2 px.
 
@@ -206,7 +206,7 @@ This section is the bar for the design-critic and the finish review.
   - Plan: "Written up in `plans/*.md` before any code."
   - logic-checker: "Walks the plan step by step, hunting edge cases." 180+ findings in 15+
     plan reviews.
-  - Build: "Claude Code builds it, with tests." 370+ unit and 70+ browser tests on Ascend.
+  - Build: "Claude Code builds it, with tests." 500+ unit and 90+ browser tests on Ascend.
   - code-reviewer: "Reads the diff for bugs, security and accessibility." 140+ findings.
   - design-critic: "Judges screenshots at phone size, light and dark." 160+ findings.
   - Phone check: "A written checklist for a real phone." (no number, no claim it ran)
@@ -333,6 +333,19 @@ remove Niagara Parks, the Unity racing game and the Spotify display. Round 3: ke
    says "I design, build and test every part myself". A no-break space keeps "I" with
    "design" at 390 px. Checked at 390 and 1440, light and dark: two-line headline at both.
 
+## Round 4: new Ascend and Orbit screens (2026-11-25)
+
+Dani's brief: `~/Documents/claude-inbox/portfolio/01-new-ascend-orbit-images.md`.
+1. **New screenshots** (Dani): Ascend's Today with The Climb strip (habit-tracker Feature 10)
+   and Orbit's 3D map (network-crm Feature 7), light and dark; `SOURCES.md` updated.
+2. **Alt text** for both now describes what they show.
+3. **Decisions**: Ascend's becomes "A climb that never slips" (Feature 10 rules); Orbit's keeps
+   its title but now describes the 3D layout (no physics run), since the 3D map has no force run.
+4. **Ascend's test counts** from the Feature 10 log: 516 unit and database tests (500+), 90
+   browser tests (90+), on the tile and in How I build. Orbit's Feature 7 log records no new
+   totals, so its 500+ stays. Review-finding totals weren't recounted: the floors are still
+   true lower bounds.
+
 ## Reviews
 
 ### Plan review, logic-checker (2026-11-25)
@@ -452,3 +465,6 @@ Verdict: **Ship after fixes**. Removals are clean; Work and About hold without t
 - Copied Impeccable's shipped agents (finish reviewer, documenter and three more) from `network-crm` into `.claude/agents/`, same version (0.1.27), so later sessions can use them.
 - Left CLAUDE.md exactly as Dani wrote it, though its video path (`staple-loop-dark.mp4`) is now `bitewise-loop-dark.mp4` in the Bitewise repo, and it doesn't import the Next.js `AGENTS.md` the way the other repos do.
 - Deferred the `light-dark()` fallback for iOS 16 (open question 5).
+- Round 4: replaced Ascend's decision ("Streaks are derived, never stored") with the Climb line over keeping both, because a tile shows one decision and the new screenshot shows the Climb; the line still says altitude is derived "like streaks".
+- Round 4: raised Ascend's test floors to 500+ and 90+ from the Feature 10 log (516 and 90), over leaving 370+ and 70+, since both counts are logged exactly; review-finding totals stay as true lower bounds (not recounted).
+- Round 4: embedded each new screenshot's origin (the source file in habit-tracker or network-crm) and checked they're pixel-identical to those files.
