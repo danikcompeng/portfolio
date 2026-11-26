@@ -157,16 +157,16 @@ export const ascend = {
   },
   stats: {
     unitTests: {
-      floor: 500,
-      exact: 516,
-      asOf: "2026-11-25",
-      source: "habit-tracker plans/habit-tracker.md, Reviews, Feature 10 final checks (516 unit and database tests)",
+      floor: 600,
+      exact: 608,
+      asOf: "2026-11-26",
+      source: "habit-tracker plans/habit-tracker.md, Reviews, Feature 10g final checks (608 unit and database tests), commit 5d9acb6",
     },
     browserTests: {
       floor: 90,
-      exact: 90,
-      asOf: "2026-11-25",
-      source: "habit-tracker plans/habit-tracker.md, Reviews, Feature 10 final checks (browser suite: 90 passed)",
+      exact: 95,
+      asOf: "2026-11-26",
+      source: "habit-tracker plans/habit-tracker.md, Reviews, Feature 10g final checks (browser suite on the production build: 95 passed), commit 5d9acb6",
     },
     findings: {
       floor: 260,

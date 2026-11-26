@@ -126,7 +126,7 @@ export function Work() {
             <Phone>
               <ScreenLayer
                 image={ascendScreen}
-                alt="Ascend's Today screen: the pixel-art Climb strip, Altitude 8,763 m · Above the clouds, broad mountain slopes with the top hidden in cloud, above the habit keys."
+                alt="Ascend's Today screen: the pixel-art Climb strip, a hot-air balloon at Altitude 8,763 m · Above the clouds, the mountain's peak in view, above the habit keys."
                 sizes="300px"
               />
             </Phone>
