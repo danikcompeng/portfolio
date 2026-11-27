@@ -975,4 +975,4 @@ Verdict: **Ship**. No regressions against round 12 at 390 and 1440, light and da
 - Round 11: Bitewise's one decision is "Missing stays missing" (its rule everywhere, also in the case study) over "No Undo timer", which left the site.
 - Round 12: the tour's own play/pause is the browser's native control, so the blur crossfade is on the theme toggle and the hero's pause/play buttons only.
 - Round 12: the expand's frame times at 4x CPU throttle in Chrome are mostly within 33 ms, with one 100 ms frame as Bitewise's tour is torn down after the shrink lands; a real iPhone check is on the phone-test list.
-- Round 13: kept Orbit's "500+ unit tests" floor though its plan now records 610: raising a number on the page is Dani's call (it would read "600+").
+- Round 13: kept Orbit's "500+ unit tests" floor though its plan now records 610: raising a number on the page is Dani's call (it would read "600+"). Dani said yes (2026-11-27): "600+ unit tests", source network-crm plans/crm.md (vitest 610/610).

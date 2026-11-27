@@ -181,7 +181,7 @@ export const orbit = {
   },
   stats: {
     unitTests: {
-      floor: 500,
+      floor: 600,
       exact: 610,
       asOf: "2026-11-27",
       source: "network-crm plans/crm.md, motion polish checks before the 51f5333 re-recording (vitest 610/610, e2e 64/64); earlier 527 at Feature 5",
