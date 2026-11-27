@@ -39,7 +39,7 @@ export const bitewiseLoop: Loop = {
   start: 4.6,
 };
 
-/** Ascend's loop: holding the habits until the Summit card (habit-tracker 2901fa6). */
+/** Ascend's loop: holding the habits until the Summit card (habit-tracker 687de6d, Feature 10i). */
 export const ascendLoop: Loop = {
   sources: { dark: "/media/ascend-loop-dark.mp4", light: "/media/ascend-loop-light.mp4" },
   posters: { dark: ascendPosterDark, light: ascendPosterLight },
@@ -49,7 +49,7 @@ export const ascendLoop: Loop = {
   loopFrom: 0,
 };
 
-/** Orbit's loop: the 3D map turning and growing (network-crm ce70efc). */
+/** Orbit's loop: the 3D map turning and growing (network-crm 51f5333). */
 export const orbitLoop: Loop = {
   sources: { dark: "/media/orbit-loop-dark.mp4", light: "/media/orbit-loop-light.mp4" },
   posters: { dark: orbitPosterDark, light: orbitPosterLight },
@@ -82,11 +82,11 @@ export const demos: Record<"bitewise" | "ascend" | "orbit", Demo> = {
   },
   ascend: {
     sources: { dark: "/media/ascend-demo-dark.mp4", light: "/media/ascend-demo-light.mp4" },
-    start: { dark: 3, light: 3.5 },
+    start: { dark: 3.1, light: 3.1 }, // habit-tracker 687de6d (round 13)
   },
   orbit: {
     sources: { dark: "/media/orbit-demo-dark.mp4", light: "/media/orbit-demo-light.mp4" },
-    start: { dark: 3.5, light: 3.3 },
+    start: { dark: 3.3, light: 3.5 }, // network-crm 51f5333 (round 13)
   },
 };
 

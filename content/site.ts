@@ -124,7 +124,7 @@ export const ascend = {
   oneLiner: "A habit tracker you press like a physical key.",
   // habit-tracker README.md
   detail: "Hold a habit for 0.65 s to complete it; tap a done one to undo.",
-  // public/media/ascend-loop-*.mp4: what the recording shows (habit-tracker 2901fa6).
+  // public/media/ascend-loop-*.mp4: what the recording shows (habit-tracker 687de6d).
   video: {
     caption: "Holding habits to the Summit",
     alt: "A recording of Ascend's Today screen: three habits held one after another, the hot-air balloon climbing from 8,763 m above the clouds until a New zone: Summit card appears.",
@@ -164,10 +164,11 @@ export const orbit = {
   name: "Orbit",
   // network-crm README.md:3-5, shortened
   oneLiner: "A personal CRM for an internship search, with a map of who introduced you to whom.",
-  // public/media/orbit-loop-*.mp4: what the recording shows (network-crm ce70efc).
+  // public/media/orbit-loop-*.mp4: what the recording shows (network-crm 51f5333; the slider
+  // starts on Sep 28 in this recording).
   video: {
     caption: "The 3D map, turning and growing",
-    alt: "A recording of Orbit's 3D map on the demo account: you as a planet in the centre and 20 demo contacts on tilted rings, turned with a drag, then Watch it grow replaying the network from Sep 27 to today.",
+    alt: "A recording of Orbit's 3D map on the demo account: you as a planet in the centre and 20 demo contacts on tilted rings, turned with a drag, then Watch it grow replaying the network from Sep 28 to Today.",
   },
   // public/media/orbit-person-*.png: the live demo's page for Grace Liu (2026-11-27).
   still: {
@@ -181,9 +182,9 @@ export const orbit = {
   stats: {
     unitTests: {
       floor: 500,
-      exact: 527,
-      asOf: "2026-11-24",
-      source: "network-crm plans/crm.md, Reviews, Feature 5 code-reviewer 'Tests' row (527 unit tests, 29 e2e); no later count recorded",
+      exact: 610,
+      asOf: "2026-11-27",
+      source: "network-crm plans/crm.md, motion polish checks before the 51f5333 re-recording (vitest 610/610, e2e 64/64); earlier 527 at Feature 5",
     },
     findings: {
       floor: 230,

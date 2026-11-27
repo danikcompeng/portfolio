@@ -572,6 +572,29 @@ and not again after scrolling, the backdrop blur), 60 fps check in a 4x-throttle
 for the expand, bracket check, reviewers at 390 x 844 light and dark, commit "Motion: expand,
 blur crossfade, mask reveal", push, confirm live, log in the inbox.
 
+## Round 13: Ascend and Orbit videos with motion polish (2026-11-27)
+
+Brief: `~/Documents/claude-inbox/portfolio/07-refresh-ascend-orbit-videos.md`.
+1. **Videos**: the eight loops and tours copied from habit-tracker `687de6d` (Feature 10i) and
+   network-crm `51f5333`; same format, all faststart.
+2. **Tour starts** re-read frame by frame (0.25 s): first settled app screen after the login
+   is Ascend 3.0 s in both themes (3.1 used), Orbit 3.5 s light and 3.25 s dark (3.3 used).
+3. **Posters** re-made from the new files at their start frames (Ascend 1.0 s, Orbit 10.0 s,
+   both still past the fade-in and the touch marker), 786 x 1704, provenance embedded,
+   losslessly optimised. Each is the frame playback starts on, so nothing jumps.
+4. **Stills**: Climb at the top and Grace Liu's page re-captured live today match the tile
+   stills pixel for pixel (no difference at all): kept.
+5. **Alt text**: Orbit's loop now replays from Sep 28 (the demo's dates count back from the
+   recording day); Ascend's alt still matches (three holds, then the New zone: Summit card).
+Checks: video playback, bracket check, 390 and 1440 light and dark for layout shift, reviewers,
+commit "Media: Ascend and Orbit videos with motion polish", push, confirm live.
+6. **Measured**: faststart by atom order (`ftyp`, `moov`, ..., `mdat` in all eight). New sizes:
+   Ascend loops 0.81 / 0.80 MB (were 0.84 / 0.83), tours 1.93 / 1.87 MB; Orbit loops 1.02 /
+   1.10 MB (were 1.03 / 1.12), tours 4.28 / 4.25 MB (light / dark). First load 1.1 MB at 390
+   and 3.0 MB at 1440 in both themes (unchanged), CLS 0. Each new poster is pixel-identical to
+   its loop's start frame (canvas comparison, now an e2e test for all three apps). The stills
+   were compared at their own sizes (Climb 390 x 844 @3 = 1170 x 2532, Grace Liu 393 x 852 @2).
+
 ## Reviews
 
 ### Plan review, logic-checker (2026-11-25)
@@ -897,6 +920,32 @@ Verdict: **Ship after fixes** (1 blocked).
 
 Found while capturing: at 390 Chrome's phone layout counted the hero row's scrolled-off phones in the page width (a 638 px layout viewport, live since round 10). `contain: paint` on the swipe row; test: the page is exactly 390 wide.
 
+### Round 13 plan review, logic-checker (2026-11-27)
+Verdict: **Ready after fixes**.
+
+| # | Severity | Finding | Outcome | How |
+|---|---|---|---|---|
+| 1 | Medium | Weight not re-measured; sizes not recorded. | Fixed | Item 6. |
+| 2 | Medium | Tests can't catch a poster that jumps. | Fixed | e2e: each hero poster vs its loop's start frame, drawn to a canvas. The after-login starts were read frame by frame (logged). |
+| 3 | Low | Faststart unproven. | Fixed | Atom order, item 6. |
+| 4 | Low | "to today" in Orbit's alt ages. | Fixed | "to Today", the slider's own label. |
+| 5 | Low | Still comparison sizes unstated. | Fixed | Item 6. |
+
+### Round 13 build review, code-reviewer (2026-11-27)
+Verdict: **Ship** (optional hardening).
+
+| # | Severity | Finding | Outcome | How |
+|---|---|---|---|---|
+| 1 | Medium | The poster test's bar (mean < 3) is loose: a neighbouring second could pass for Orbit. | Fixed | Measured 0.1 to 0.5 for the right frame, ~2.4 a second away (Orbit); bar now < 1. A negative control means little for still scenes (Ascend's Today barely changes in a second, so no jump either). |
+| 2 | Medium | Nothing checks the tour starts land past the login. | Fixed | e2e: each start frame is far from the login frame (> 10; measured 18 to 47) and settled (< 2 vs 0.25 s later; measured under 0.8). |
+| 3 | Low | Start times live in three places. | Kept | `media.ts` imports PNGs, so the e2e files mirror the numbers; the two new tests catch drift between them and the files. |
+| 4 | Low | Orbit's test-count source said "no later count recorded". | Fixed | 610 (vitest, network-crm plans/crm.md, motion polish checks), 2026-11-27; the page's floor stays "500+" (still true). |
+| 5 | Low | No recording date for the Orbit loop (its "Sep 28" depends on it). | Fixed | SOURCES.md: recorded on the live site 2026-11-27, after `e3ee93b`. |
+| 6 | Low | README test count. | Fixed | 66 Playwright checks. |
+
+### Round 13 build review, design-critic (2026-11-27)
+Verdict: **Ship**. No regressions against round 12 at 390 and 1440, light and dark; the posters match their themes; the new frames read in their phones. Logged, not changed: the Bitewise hero phone caught mid-crossfade (a capture artefact, as before), and the demo dates differ between apps (Ascend and Orbit show Nov 27, Bitewise's case study Nov 25).
+
 ## Decided while Dani was away
 
 - Theme follows the system with a remembered toggle, over dark-for-everyone: it respects the visitor's setting and is a one-line change (open question 3).
@@ -926,3 +975,4 @@ Found while capturing: at 390 Chrome's phone layout counted the hero row's scrol
 - Round 11: Bitewise's one decision is "Missing stays missing" (its rule everywhere, also in the case study) over "No Undo timer", which left the site.
 - Round 12: the tour's own play/pause is the browser's native control, so the blur crossfade is on the theme toggle and the hero's pause/play buttons only.
 - Round 12: the expand's frame times at 4x CPU throttle in Chrome are mostly within 33 ms, with one 100 ms frame as Bitewise's tour is torn down after the shrink lands; a real iPhone check is on the phone-test list.
+- Round 13: kept Orbit's "500+ unit tests" floor though its plan now records 610: raising a number on the page is Dani's call (it would read "600+").

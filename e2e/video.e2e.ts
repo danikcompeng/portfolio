@@ -126,6 +126,91 @@ test("at 1440 the side loops load only after Bitewise's has started, with no lay
   expect(events.filter((e) => e.startsWith("shift"))).toEqual([]);
 });
 
+// Each loop's poster is the very frame playback starts on, so nothing jumps when the video
+// takes over (round 13: re-made whenever a recording changes).
+test("every hero poster matches its loop's start frame", async ({ page }) => {
+  await page.goto("/");
+  for (const [file, poster, t] of [
+    ["bitewise-loop", "bitewise-loop-poster", 4.6],
+    ["ascend-loop", "ascend-loop-poster", 1],
+    ["orbit-loop", "orbit-loop-poster", 10],
+  ] as const) {
+    for (const theme of ["light", "dark"]) {
+      const diff = await page.evaluate(
+        async ([src, img, t]) => {
+          const once = (el: EventTarget, ev: string) => new Promise((r) => el.addEventListener(ev, r, { once: true }));
+          const v = document.createElement("video");
+          v.muted = true;
+          v.src = src;
+          await once(v, "loadedmetadata");
+          v.currentTime = t;
+          await once(v, "seeked");
+          const im = new Image();
+          im.src = img;
+          await im.decode();
+          const px = (s: CanvasImageSource) => {
+            const c = document.createElement("canvas");
+            c.width = 393;
+            c.height = 852;
+            const x = c.getContext("2d")!;
+            x.drawImage(s, 0, 0, 393, 852);
+            return x.getImageData(0, 0, 393, 852).data;
+          };
+          const a = px(v);
+          const b = px(im);
+          let sum = 0;
+          for (let i = 0; i < a.length; i += 4) sum += Math.abs(a[i] - b[i]) + Math.abs(a[i + 1] - b[i + 1]) + Math.abs(a[i + 2] - b[i + 2]);
+          return sum / (a.length / 4) / 3;
+        },
+        [`/media/${file}-${theme}.mp4`, `/media/${poster}-${theme}.png`, t] as const,
+      );
+      // Measured: 0.1 to 0.5 for the right frame; an Orbit frame 1 s away is ~2.4.
+      expect(diff, `${file}-${theme}`).toBeLessThan(1);
+    }
+  }
+});
+
+// Each tour's start (components/media.ts, mirrored in START below) lands past the login, on a
+// settled app screen: far from the login frame, and nearly the same 0.25 s later.
+test("each Demo video tour starts past its login, on a settled screen", async ({ page }) => {
+  await page.goto("/");
+  const frameDiff = (src: string, t1: number, t2: number) =>
+    page.evaluate(
+      async ([src, t1, t2]) => {
+        const once = (el: EventTarget, ev: string) => new Promise((r) => el.addEventListener(ev, r, { once: true }));
+        const grab = async (t: number) => {
+          const v = document.createElement("video");
+          v.muted = true;
+          v.src = src;
+          await once(v, "loadedmetadata");
+          v.currentTime = t;
+          await once(v, "seeked");
+          const c = document.createElement("canvas");
+          c.width = 393;
+          c.height = 852;
+          const x = c.getContext("2d")!;
+          x.drawImage(v, 0, 0, 393, 852);
+          return x.getImageData(0, 0, 393, 852).data;
+        };
+        const a = await grab(t1);
+        const b = await grab(t2);
+        let sum = 0;
+        for (let i = 0; i < a.length; i += 4) sum += Math.abs(a[i] - b[i]) + Math.abs(a[i + 1] - b[i + 1]) + Math.abs(a[i + 2] - b[i + 2]);
+        return sum / (a.length / 4) / 3;
+      },
+      [src, t1, t2] as const,
+    );
+  for (const app of ["bitewise", "ascend", "orbit"]) {
+    for (const theme of ["light", "dark"] as const) {
+      const src = `/media/${app}-demo-${theme}.mp4`;
+      const start = START[app][theme];
+      // Measured: 18 to 47 from the login at 1 s; under 0.8 from 0.25 s later.
+      expect(await frameDiff(src, start, 1), `${app}-${theme} vs login`).toBeGreaterThan(10);
+      expect(await frameDiff(src, start, start + 0.25), `${app}-${theme} settled`).toBeLessThan(2);
+    }
+  }
+});
+
 // The side loops never wait forever for Bitewise's (logic-checker, round 11).
 const sideSrc = (page: Page) => page.evaluate(() => document.querySelector("#top li:nth-child(2) video")!.getAttribute("src"));
 const leadSrc = (page: Page) => page.evaluate(() => document.querySelector("#top li:nth-child(1) video")!.getAttribute("src"));
@@ -174,8 +259,8 @@ test("the hero loops pause behind an open Demo video and play again after it clo
 // Round 11: each starts at its first app screen (components/media.ts, read frame by frame).
 const START: Record<string, Record<"light" | "dark", number>> = {
   bitewise: { light: 2.8, dark: 3 },
-  ascend: { light: 3.5, dark: 3 },
-  orbit: { light: 3.3, dark: 3.5 },
+  ascend: { light: 3.1, dark: 3.1 },
+  orbit: { light: 3.5, dark: 3.3 },
 };
 for (const { name, slug, title } of [
   { name: "Bitewise", slug: "bitewise", title: "#bw-title" },
