@@ -9,7 +9,7 @@ A landing page that works like a product launch page, with me as the maker: the 
 ## What it does
 
 - Opens on a phone playing a real recording of [Bitewise](https://trybitewise.vercel.app), my meal tracker. As you scroll, the phone straightens and stays pinned while four steps explain the app, and its screen changes with each step.
-- Shows my work as tiles in each app's own colour: Bitewise, [Ascend](https://ascend-dk.vercel.app) (a habit tracker) and [Orbit](https://orbit-dk.vercel.app) (a CRM for my internship search), each with a live link, a real screenshot, one decision and its test and review counts.
+- Shows my work as tiles in each app's own colour: Bitewise, [Ascend](https://ascend-dk.vercel.app) (a habit tracker) and [Orbit](https://orbit-dk.vercel.app) (a CRM for my internship search), each with a live link, a real recording, one decision and its test and review counts.
 - Walks through how I build with AI: a written plan, read-only reviewer agents before and after the code, and three real bugs they caught.
 - Ends on an About section and my email, with a copy button.
 - Dark and light themes: it follows your system setting, and a toggle remembers your choice.
@@ -26,7 +26,7 @@ A landing page that works like a product launch page, with me as the maker: the 
 - **Plan first.** [`plans/portfolio.md`](plans/portfolio.md) has every decision and why, and the source of every number.
 - **Reviewed before any code.** A read-only logic-checker agent reviewed the plan and found 16 problems (1 critical, 3 high). The critical one: my "How I build" copy claimed more than my own review logs showed. Every finding and its fix is in the plan's Reviews log.
 - **Built with the Impeccable design skill**, then reviewed by a code-reviewer, a design-critic (Playwright screenshots at 390 and 1440 px, light and dark) and a finish reviewer. The code-reviewer caught a video that kept decoding after Reduce Motion was turned on, and a theme switch that restarted the video from 0. The agents are in [`.claude/agents/`](.claude/agents).
-- **Tested.** 52 unit tests (contrast of every text colour in both themes read from the CSS, the content rules, the scroll logic) and 19 Playwright checks (axe at both sizes and themes, links, Reduce Motion, the theme toggle, the 404 page, and the video in real Chrome: plays, pauses under a still, keeps its place across a theme switch).
+- **Tested.** 60 unit tests (contrast of every text colour in both themes read from the CSS, the content rules, the scroll logic) and 40 Playwright checks (axe at both sizes and themes, links, Reduce Motion, the theme toggle, the 404 page, and the videos in real Chrome: they play, pause under a still, keep their place across a theme switch, load only when near and loop back to their start).
 
 ## Stack
 

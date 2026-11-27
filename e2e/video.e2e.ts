@@ -97,5 +97,53 @@ test("at the end, the hero loops back past the login screen, not to 0", async ({
   // Poll rather than sleep: on a busy machine the wrap can take longer than a fixed wait.
   const time = () => page.evaluate((s) => document.querySelector<HTMLVideoElement>(s)!.currentTime, stage);
   await expect.poll(async () => { const t = await time(); return t > 4.5 && t < 8; }, { timeout: 10_000 }).toBe(true);
-  expect(await playing(page, stage)).toBe(true);
+  // Right after the wrap it may still be seeking (readyState < 2) on a busy machine.
+  await expect.poll(() => playing(page, stage)).toBe(true);
 });
+
+// The Ascend and Orbit tiles (round 9): lazy, from the poster frame, pausable, looping to 0.
+for (const { name, title, start } of [
+  { name: "Ascend", title: "#as-title", start: 1 },
+  { name: "Orbit", title: "#or-title", start: 10 },
+]) {
+  const sel = `article:has(${title}) video`;
+
+  test(`${name}: the tile plays from its poster frame, pauses, and loops back to the start`, async ({ page }) => {
+    await page.goto("/");
+    // Record where the first playback starts, whenever it happens: a slow machine could
+    // otherwise see Orbit (4 s from 10 s) already wrapped to 0 (code-reviewer, round 9).
+    await page.evaluate((s) => {
+      const v = document.querySelector<HTMLVideoElement>(s)!;
+      const w = window as unknown as { __t0?: number };
+      v.addEventListener("playing", () => { w.__t0 ??= v.currentTime; });
+    }, sel);
+    await page.locator(sel).scrollIntoViewIfNeeded();
+    await expect.poll(() => playing(page, sel), { timeout: 15_000 }).toBe(true);
+    const t0 = await page.evaluate(() => (window as unknown as { __t0?: number }).__t0 ?? -1);
+    expect(t0).toBeGreaterThanOrEqual(start - 0.1);
+
+    const button = page.locator(`article:has(${title})`).getByRole("button", { name: `Pause the ${name} video` });
+    await button.click();
+    await expect(button).toHaveAttribute("aria-pressed", "true");
+    await expect.poll(() => playing(page, sel)).toBe(false);
+    await button.click();
+    await expect.poll(() => playing(page, sel)).toBe(true);
+
+    // No native loop: it wraps to 0 (Ascend's fade-in, Orbit's hand turn) and keeps playing.
+    await page.evaluate((s) => {
+      const v = document.querySelector<HTMLVideoElement>(s)!;
+      v.currentTime = v.duration - 0.3;
+    }, sel);
+    const time = () => page.evaluate((s) => document.querySelector<HTMLVideoElement>(s)!.currentTime, sel);
+    await expect.poll(async () => (await time()) < 3, { timeout: 10_000 }).toBe(true);
+    await expect.poll(() => playing(page, sel)).toBe(true);
+  });
+
+  test(`${name}: the tile stops when scrolled out of view`, async ({ page }) => {
+    await page.goto("/");
+    await page.locator(sel).scrollIntoViewIfNeeded();
+    await expect.poll(() => playing(page, sel), { timeout: 15_000 }).toBe(true);
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await expect.poll(() => playing(page, sel)).toBe(false);
+  });
+}

@@ -80,10 +80,19 @@ describe("content rules", () => {
     }
   });
 
+  it("each tour link pair points at its own theme's video", () => {
+    for (const pair of [site.links.ascendTour, site.links.orbitTour]) {
+      expect(pair.dark).toMatch(/-dark\.mp4$/);
+      expect(pair.light).toMatch(/-light\.mp4$/);
+    }
+  });
+
   it("links only over https (or mailto / same-site)", () => {
-    for (const [name, href] of Object.entries(site.links)) {
+    for (const [name, value] of Object.entries(site.links)) {
       if (name === "email") continue;
-      expect(href, name).toMatch(/^https:\/\//);
+      // A theme pair ({ dark, light }) is checked link by link.
+      const hrefs = typeof value === "string" ? [value] : Object.values(value);
+      for (const href of hrefs) expect(href, name).toMatch(/^https:\/\//);
     }
   });
 

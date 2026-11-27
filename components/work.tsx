@@ -1,19 +1,30 @@
 import { PageLink } from "./page-link";
 import { ascend, bitewise, fmt, flags, links, orbit, type Stat } from "@/content/site";
 import { ArrowUpRight } from "./icons";
-import { ascendScreen, orbitScreen, tour } from "./media";
-import { Phone, ScreenLayer } from "./phone";
+import { ascendLoop, orbitLoop, tour } from "./media";
+import { Phone } from "./phone";
 import { PauseButton, VideoLayer, VideoProvider } from "./loop-video";
 import { Reveal } from "./reveal";
 
-export function OutLink({ href, children }: { href: string; children: string }) {
+export function OutLink({
+  href,
+  children,
+  className = "",
+  label,
+}: {
+  href: string;
+  children: string;
+  className?: string;
+  /** A fuller accessible name, when the visible text repeats elsewhere on the page. */
+  label?: string;
+}) {
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-link press"
-      aria-label={`${children} (opens in a new tab)`}
+      className={`text-link press ${className}`}
+      aria-label={`${label ?? children} (opens in a new tab)`}
     >
       {children}
       <ArrowUpRight />
@@ -32,6 +43,57 @@ export function Facts({ items }: { items: { stat: Stat; label: string }[] }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+/** One link per theme, each shown only in its theme: the tour the visitor opens matches the page. */
+function ThemedOutLink({
+  hrefs,
+  children,
+  label,
+}: {
+  hrefs: { dark: string; light: string };
+  children: string;
+  label?: string;
+}) {
+  return (
+    <>
+      <OutLink href={hrefs.dark} className="only-dark" label={label}>{children}</OutLink>
+      <OutLink href={hrefs.light} className="only-light" label={label}>{children}</OutLink>
+    </>
+  );
+}
+
+/**
+ * A half tile's phone, cropped by the tile's bottom edge, playing the app's loop. The
+ * caption (with its pause button) sits above the phone, since the phone runs off the tile.
+ */
+function TileVideo({
+  loop,
+  name,
+  video,
+  id,
+}: {
+  loop: typeof ascendLoop;
+  name: string;
+  video: { caption: string; alt: string };
+  /** Prefix for the caption's id, which names the figure (the pause button's label doesn't). */
+  id: string;
+}) {
+  return (
+    <VideoProvider sources={loop.sources} start={loop.start} loopFrom={loop.loopFrom} lazy>
+      <figure className="tile-media screen-crop mt-auto w-[var(--phone-w)] pt-12" aria-labelledby={`${id}-caption`}>
+        <figcaption className="mb-4 flex items-center justify-center gap-3 text-[0.9375rem] text-ink-muted">
+          <PauseButton label={`Pause the ${name} video`} />
+          <span id={`${id}-caption`}>{video.caption}</span>
+        </figcaption>
+        <div role="img" aria-label={video.alt}>
+          <Phone>
+            <VideoLayer posters={loop.posters} sizes="300px" />
+          </Phone>
+        </div>
+      </figure>
+    </VideoProvider>
   );
 }
 
@@ -87,13 +149,13 @@ export function Work() {
               </div>
             </div>
             <VideoProvider sources={tour.sources} start={tour.start} loopFrom={tour.loopFrom} lazy>
-              <figure className="tile-media flex flex-col items-center gap-3 justify-self-center">
+              <figure className="tile-media flex flex-col items-center gap-3 justify-self-center" aria-labelledby="bw-video-caption">
                 <Phone style={{ "--phone-w": "min(68vw, 290px)" } as React.CSSProperties}>
                   <VideoLayer posters={tour.posters} sizes="290px" />
                 </Phone>
                 <figcaption className="flex items-center gap-3 text-[0.9375rem] text-ink-muted">
                   <PauseButton label="Pause the Bitewise tour" />
-                  The full demo tour
+                  <span id="bw-video-caption">The full demo tour</span>
                 </figcaption>
               </figure>
             </VideoProvider>
@@ -119,18 +181,11 @@ export function Work() {
           <div className="mt-6">
             <Decision {...ascend.decision} />
           </div>
-          <div className="mt-4">
+          <div className="mt-4 flex flex-wrap gap-x-6">
             <OutLink href={links.ascend}>Open Ascend</OutLink>
+            <ThemedOutLink hrefs={links.ascendTour} label="Watch the tour of Ascend, a video on GitHub">Watch the tour</ThemedOutLink>
           </div>
-          <div className="tile-media screen-crop mt-auto pt-8">
-            <Phone>
-              <ScreenLayer
-                image={ascendScreen}
-                alt="Ascend's Today screen: the pixel-art Climb strip, a hot-air balloon at Altitude 8,763 m · Above the clouds, the mountain's peak in view, above the habit keys."
-                sizes="300px"
-              />
-            </Phone>
-          </div>
+          <TileVideo loop={ascendLoop} name={ascend.name} video={ascend.video} id="as-video" />
         </Reveal>
 
         {/* Orbit */}
@@ -150,18 +205,11 @@ export function Work() {
           <div className="mt-6">
             <Decision {...orbit.decision} />
           </div>
-          <div className="mt-4">
+          <div className="mt-4 flex flex-wrap gap-x-6">
             <OutLink href={links.orbit}>Open Orbit</OutLink>
+            <ThemedOutLink hrefs={links.orbitTour} label="Watch the tour of Orbit, a video on GitHub">Watch the tour</ThemedOutLink>
           </div>
-          <div className="tile-media screen-crop mt-auto pt-8">
-            <Phone>
-              <ScreenLayer
-                image={orbitScreen}
-                alt="Orbit's 3D map: me as a planet in the centre, with people on tilted rings by introduction depth."
-                sizes="300px"
-              />
-            </Phone>
-          </div>
+          <TileVideo loop={orbitLoop} name={orbit.name} video={orbit.video} id="or-video" />
         </Reveal>
 
       </div>

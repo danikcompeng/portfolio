@@ -2,6 +2,7 @@
 // both themes, Reduce Motion is respected, the theme choice survives a reload.
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+import * as site from "../content/site";
 
 const PHONE = { viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true };
 const DESKTOP = { viewport: { width: 1440, height: 900 } };
@@ -28,6 +29,68 @@ test("external links open in a new tab safely, and none point anywhere unplanned
     expect(l.rel).toBe("noopener noreferrer");
     expect(l.label ?? "").toMatch(/opens in a new tab/);
   }
+});
+
+test("Watch the tour: one link per tile, to the tour in the theme on screen", async ({ browser }) => {
+  for (const theme of ["dark", "light"] as const) {
+    const ctx = await browser.newContext({ ...DESKTOP, colorScheme: theme });
+    const page = await ctx.newPage();
+    await page.goto("/");
+    for (const [tile, app, repo, file] of [
+      ["#as-title", "Ascend", "habit-tracker", "ascend-demo"],
+      ["#or-title", "Orbit", "network-crm", "orbit-demo"],
+    ]) {
+      const link = page
+        .locator(`article:has(${tile})`)
+        .getByRole("link", { name: `Watch the tour of ${app}, a video on GitHub (opens in a new tab)` });
+      await expect(link).toHaveCount(1);
+      await expect(link).toHaveAttribute(
+        "href",
+        `https://github.com/danikcompeng/${repo}/blob/main/design/videos/${file}-${theme}.mp4`,
+      );
+    }
+    await ctx.close();
+  }
+});
+
+test("each tile's recording is one image with its description; the figure is named by its caption", async ({ page }) => {
+  await page.goto("/");
+  for (const [tile, video] of [
+    ["#as-title", site.ascend.video],
+    ["#or-title", site.orbit.video],
+  ] as const) {
+    const article = page.locator(`article:has(${tile})`);
+    await expect(article.getByRole("img", { name: video.alt })).toHaveCount(1);
+    await expect(article.getByRole("figure", { name: video.caption })).toHaveCount(1);
+  }
+  await expect(page.getByRole("figure", { name: "The full demo tour" })).toHaveCount(1);
+});
+
+test("Reduce Motion: pressing play on a tile loads and plays its video", async ({ browser }) => {
+  const ctx = await browser.newContext({ ...DESKTOP, reducedMotion: "reduce" });
+  const page = await ctx.newPage();
+  await page.goto("/", { waitUntil: "networkidle" });
+  const article = page.locator("article:has(#or-title)");
+  await article.locator("video").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(500);
+  expect(await article.locator("video").getAttribute("src")).toBeNull();
+  await article.getByRole("button", { name: "Pause the Orbit video" }).click();
+  await expect.poll(() => article.locator("video").getAttribute("src")).toMatch(/orbit-loop-(dark|light)\.mp4$/);
+  await ctx.close();
+});
+
+test("the Ascend and Orbit videos load only once their tiles come near", async ({ browser }) => {
+  const ctx = await browser.newContext(PHONE);
+  const page = await ctx.newPage();
+  await page.goto("/", { waitUntil: "networkidle" });
+  const src = (tile: string) =>
+    page.evaluate((t) => document.querySelector(`article:has(${t}) video`)?.getAttribute("src") ?? null, tile);
+  expect(await src("#as-title")).toBeNull();
+  expect(await src("#or-title")).toBeNull();
+  await page.locator("#or-title").scrollIntoViewIfNeeded();
+  await expect.poll(() => src("#as-title")).toMatch(/\/media\/ascend-loop-(dark|light)\.mp4$/);
+  await expect.poll(() => src("#or-title")).toMatch(/\/media\/orbit-loop-(dark|light)\.mp4$/);
+  await ctx.close();
 });
 
 test("nothing unsupplied shows: no resume link, no [placeholder] text", async ({ page }) => {
@@ -168,7 +231,11 @@ test("Reduce Motion: the phone is flat and no video plays or downloads", async (
   const ctx = await browser.newContext({ ...DESKTOP, reducedMotion: "reduce" });
   const page = await ctx.newPage();
   await page.goto("/", { waitUntil: "networkidle" });
+  // Bring the lazy tile videos near too, so the check covers every video on the page.
+  await page.locator("#or-title").scrollIntoViewIfNeeded();
   await page.waitForTimeout(800);
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  await page.waitForTimeout(300);
   const state = await page.evaluate(() => ({
     playing: [...document.querySelectorAll("video")].filter((v) => !v.paused).length,
     sources: [...document.querySelectorAll("video")].filter((v) => v.getAttribute("src")).length,

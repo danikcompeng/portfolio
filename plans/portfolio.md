@@ -432,6 +432,32 @@ Dani's brief: `~/Documents/claude-inbox/portfolio/` (Feature 10b, habit-tracker 
    components, app); the Ascend decision ("up to 150 m, and a missed day never costs any")
    still matches Feature 10b, which keeps the daily climb rules.
 
+## Round 9: Ascend and Orbit demo videos (2026-11-27)
+
+Dani's brief: `~/Documents/claude-inbox/portfolio/05-ascend-orbit-videos.md`.
+1. **Loops** copied into `public/media`: `ascend-loop-{light,dark}.mp4` from habit-tracker at
+   `2901fa6` (the brief names `0ba6183`; the videos were re-recorded after Feature 10h in
+   `2901fa6`, same format, pushed), `orbit-loop-{light,dark}.mp4` from network-crm at `ce70efc`.
+   Both are faststart (moov first).
+2. **Posters** are the frame playback starts on, so nothing changes when the video takes over:
+   Ascend at 1.0 s (the recording fades in from the page colour), Orbit at 10.0 s (its first
+   seconds show the recorder's touch marker). Both loop from 0 (`loopFrom: 0`): Ascend's
+   fade-out/fade-in and Orbit's turn are built to wrap there. Provenance in each PNG's tEXt
+   chunk; SOURCES.md rows. The old `ascend-today-*` and `orbit-map-*` screenshots are removed:
+   the posters are the stills now (a still from elsewhere would jump when the video appears).
+3. **Tiles** use the same `VideoProvider` as Bitewise's tour: lazy (600 px), theme-matched,
+   muted, playsInline, paused off screen, poster only under Reduce Motion until play is
+   pressed. The phone stays cropped by the tile's bottom edge, so its caption and 44 px pause
+   button sit above it, centred. The phone is one `role="img"` with a description of the
+   recording; the figure is named by its caption.
+4. **Watch the tour** links each tile to its demo mp4 on GitHub in the theme on screen (two
+   links, one hidden per theme by `.only-dark`/`.only-light`). All four checked 200, repos
+   public.
+5. **Weight and shift** (Chrome, `next build` + `next start`): first load about 1.5 MB at 390
+   and 1440 in both themes, unchanged; the two loops add about 1.9 MB only once their tiles
+   come near, one theme only (5.8 MB after a full scroll, Bitewise's tour included). CLS 0 on
+   load and after scrolling, at 390 and 1440, light and dark.
+
 ## Reviews
 
 ### Plan review, logic-checker (2026-11-25)
@@ -606,6 +632,32 @@ Disposition: **fix**. Fidelity matched the contract and Dani's layout; three mat
 
 Verdict pass over the recaptures: all three fixes **resolved**, no regressions seen; disposition **ship** (scoped to these fixes).
 
+### Round 9 review, code-reviewer (2026-11-27)
+Verdict: **Ship after fixes**.
+
+| # | Severity | Finding | Outcome | How |
+|---|---|---|---|---|
+| 1 | Medium | Orbit's alt said "me" and "turned by hand": the 20 people are the demo account's, and the drag is scripted. | Fixed | "you as a planet in the centre and 20 demo contacts on tilted rings, turned with a drag". |
+| 2 | Low | Two links named "Watch the tour" going to different places. | Fixed | Names "Watch the tour of Ascend/Orbit, a video on GitHub" (the visible words stay first, for axe's label-in-name rule). |
+| 3 | Low | The pause button's label was part of each figure's name. | Fixed | Figures (Bitewise's too) are named by their caption text via `aria-labelledby`. |
+| 4 | Low | Orbit's start-time check had a ~4 s window before the clip wraps. | Fixed | The test records the time at the first `playing` event. |
+| 5 | Low | README: "(or screenshot)" and the test counts were stale. | Fixed | 60 unit tests, 40 Playwright checks. |
+| 6 | Low | Poster tEXt chunks might hold a local path. | No change | Repo-relative paths only, checked. |
+| 7 | Low | Section screenshots catch the Bitewise tour mid-playback. | Kept | Not from this change; logged. The dark tour is on Recipes at 51.8 s (checked frame by frame), so visitors don't see a skeleton on start. |
+| – | Tests | Missing: Reduce Motion play on a tile, the img/figure names, the tour pair's themes. | Added | smoke and site.test. The hero loop's one-shot check after the wrap failed under parallel load (still seeking); it now polls, 30 of 30 on repeat. |
+
+### Round 9 review, design-critic (2026-11-27)
+Verdict: **Ship after fixes**.
+
+| # | Severity | Finding | Outcome | How |
+|---|---|---|---|---|
+| 1 | Medium | "Watch the tour" sits just above a play button and could read as playing the tile. | Partly | Kept Dani's link text from the brief; 16 px more space above the caption (pt-12); the accessible name says it's a video on GitHub. |
+| 2 | Medium | Half-tile captions hug the phone's left edge; Bitewise's is centred. | Fixed | Centred. |
+| 3 | Low | Orbit's crop cuts "The same network, as a list" (as in round 8). | Kept | Not from this change. |
+| 4 | Low | Two loops play side by side at 1440. | Kept | The brief asks for both; each has its own pause. |
+| 5 | Low | Orbit's facts row leaves a gap (subgrid, as in round 8). | Kept | Not from this change. |
+| 6 | Low | "Summit" capitalised. | Kept | The app's own zone name ("New zone Summit"). |
+
 ## Decided while Dani was away
 
 - Theme follows the system with a remembered toggle, over dark-for-everyone: it respects the visitor's setting and is a one-line change (open question 3).
@@ -626,3 +678,5 @@ Verdict pass over the recaptures: all three fixes **resolved**, no regressions s
 - Round 5: gave the case study its own link-preview image (its title, Bitewise's colour only) over the home page's, since a page-level `openGraph` drops the root image anyway.
 - Round 5: captured a new swap frame from the live demo for the case study only (Try the demo, nothing swapped or reset) over cropping the old one, and left the home story's frame as it is.
 - Round 5: made the hero-loop video test poll for the wrap instead of a fixed 1.2 s wait; it failed once on a busy machine and passed 18 of 18 on repeat.
+- Round 9: used habit-tracker's videos at `2901fa6` over the brief's `0ba6183`: the same videos, re-recorded after Feature 10h, and what the repo's main branch (and the tour links) now serve.
+- Round 9: made each tile's poster the frame its video starts on (Ascend 1.0 s, Orbit 10.0 s) and removed the old screenshots, over keeping them as posters: a different still would visibly jump when the video takes over.

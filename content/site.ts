@@ -32,6 +32,15 @@ export const links = {
   bitewiseFixOvernight: "https://github.com/danikcompeng/meal-cost-tracker/commit/8ca92ae",
   ascend: "https://ascend-dk.vercel.app",
   orbit: "https://orbit-dk.vercel.app",
+  // The full demo tours, in the theme the visitor sees: habit-tracker 2901fa6, network-crm ce70efc.
+  ascendTour: {
+    dark: "https://github.com/danikcompeng/habit-tracker/blob/main/design/videos/ascend-demo-dark.mp4",
+    light: "https://github.com/danikcompeng/habit-tracker/blob/main/design/videos/ascend-demo-light.mp4",
+  },
+  orbitTour: {
+    dark: "https://github.com/danikcompeng/network-crm/blob/main/design/videos/orbit-demo-dark.mp4",
+    light: "https://github.com/danikcompeng/network-crm/blob/main/design/videos/orbit-demo-light.mp4",
+  },
 } as const;
 
 /**
@@ -150,6 +159,11 @@ export const ascend = {
   oneLiner: "A habit tracker you press like a physical key.",
   // habit-tracker README.md
   detail: "Hold a habit for 0.65 s to complete it; tap a done one to undo.",
+  // public/media/ascend-loop-*.mp4: what the recording shows (habit-tracker 2901fa6).
+  video: {
+    caption: "Holding habits to the Summit",
+    alt: "A recording of Ascend's Today screen: three habits held one after another, the hot-air balloon climbing from 8,763 m above the clouds until a New zone: Summit card appears.",
+  },
   decision: {
     title: "A climb that never slips",
     // habit-tracker plans/habit-tracker.md, Feature 10 rules 1-2 and "Consequences" (at most 150 m a day)
@@ -181,6 +195,11 @@ export const orbit = {
   name: "Orbit",
   // network-crm README.md:3-5, shortened
   oneLiner: "A personal CRM for an internship search, with a map of who introduced you to whom.",
+  // public/media/orbit-loop-*.mp4: what the recording shows (network-crm ce70efc).
+  video: {
+    caption: "The 3D map, turning and growing",
+    alt: "A recording of Orbit's 3D map on the demo account: you as a planet in the centre and 20 demo contacts on tilted rings, turned with a drag, then Watch it grow replaying the network from Sep 27 to today.",
+  },
   decision: {
     title: "A map that stays put",
     // network-crm plans/crm.md, Feature 7 plan, Angles ("Pure and deterministic, no force run")

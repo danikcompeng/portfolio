@@ -1,7 +1,7 @@
 // Static imports give next/image the real sizes. Provenance is embedded in each file and
 // listed in public/media/SOURCES.md.
-import ascendDark from "@/public/media/ascend-today-dark.png";
-import ascendLight from "@/public/media/ascend-today-light.png";
+import ascendPosterDark from "@/public/media/ascend-loop-poster-dark.png";
+import ascendPosterLight from "@/public/media/ascend-loop-poster-light.png";
 import costDark from "@/public/media/bitewise-cost-dark.png";
 import costLight from "@/public/media/bitewise-cost-light.png";
 import loopPosterDark from "@/public/media/bitewise-loop-poster-dark.png";
@@ -15,8 +15,8 @@ import swapSheetDark from "@/public/media/bitewise-swap-sheet-dark.png";
 import swapSheetLight from "@/public/media/bitewise-swap-sheet-light.png";
 import todayDark from "@/public/media/bitewise-today-dark.png";
 import todayLight from "@/public/media/bitewise-today-light.png";
-import orbitDark from "@/public/media/orbit-map-dark.png";
-import orbitLight from "@/public/media/orbit-map-light.png";
+import orbitPosterDark from "@/public/media/orbit-loop-poster-dark.png";
+import orbitPosterLight from "@/public/media/orbit-loop-poster-light.png";
 
 export const screens = {
   today: { dark: todayDark, light: todayLight },
@@ -45,5 +45,21 @@ export const tour = {
 /** The case study's swap: the sheet opened with the page unscrolled, so the screen's top is intact. */
 export const swapSheet = { dark: swapSheetDark, light: swapSheetLight };
 
-export const ascendScreen = { dark: ascendDark, light: ascendLight };
-export const orbitScreen = { dark: orbitDark, light: orbitLight };
+/** Ascend's loop: holding the habits until the Summit card (habit-tracker 2901fa6). */
+export const ascendLoop = {
+  sources: { dark: "/media/ascend-loop-dark.mp4", light: "/media/ascend-loop-light.mp4" },
+  posters: { dark: ascendPosterDark, light: ascendPosterLight },
+  /** The poster frame: Today, just past the recording's fade-in. */
+  start: 1,
+  /** Each loop replays the fade-in after the fade-out. */
+  loopFrom: 0,
+};
+
+/** Orbit's loop: the 3D map turning and growing (network-crm ce70efc). */
+export const orbitLoop = {
+  sources: { dark: "/media/orbit-loop-dark.mp4", light: "/media/orbit-loop-light.mp4" },
+  posters: { dark: orbitPosterDark, light: orbitPosterLight },
+  /** The poster frame: the whole map, with no touch marker on screen (the first seconds have one). */
+  start: 10,
+  loopFrom: 0,
+};
