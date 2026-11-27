@@ -1069,7 +1069,7 @@ Verdict: **Ship after fixes**.
 | 8 | Low | A tap on the still did nothing. | Fixed | A tap anywhere on it plays (pointer only; the button stays the named control). |
 | 9 | Low | The poster is a full PNG. | Kept | 255 / 257 KB, loaded only on a refusal; kept lossless so the "equal to the 4.0 s frame" check stays exact. |
 
-Also added: Esc on a refused tour closes it and reopening plays with no still; axe on the refused state.
+Also added: Esc on a refused tour closes it and reopening plays with no still; axe on the refused state. Found on the live run: the case study image test read `currentSrc` before a source was picked (2 of 20 failed); it now waits for it (30 of 30 pass).
 
 ### Round 15 build review, design-critic (2026-11-27)
 Verdict: **Ship after fixes**. No regressions against round 14.

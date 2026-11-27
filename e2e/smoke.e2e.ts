@@ -361,7 +361,8 @@ for (const theme of ["light", "dark"] as const) {
     const shot = page.getByRole("img", { name: site.bitewise.screens.today.alt });
     await expect(shot).toHaveCount(1);
     await expect(shot).toBeVisible();
-    expect(await shot.evaluate((img: HTMLImageElement) => img.currentSrc)).toMatch(new RegExp(`bitewise-today-${theme}`));
+    // currentSrc is empty until the browser has picked a source: wait for it.
+    await expect.poll(() => shot.evaluate((img: HTMLImageElement) => img.currentSrc)).toMatch(new RegExp(`bitewise-today-${theme}`));
     await ctx.close();
   });
 }
