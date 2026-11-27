@@ -551,8 +551,8 @@ input never blocked; Reduce Motion gets instant (or a plain fade) instead.
    phone is hidden while its copy is open, so it reads as one object. Its poster is the
    tile still's already-loaded image (`currentSrc`), so nothing new downloads and the screen
    doesn't go blank before the tour arrives. Closing (button, Esc via `cancel`, backdrop)
-   runs the same animation backwards, then closes; a second close during it is ignored, and
-   the page stays interactive afterwards. If the tile's phone isn't measurable (off screen,
+   runs its own forward ease-out shrink from wherever the phone is, then closes; a second Esc
+   during it closes at once, and the page stays interactive afterwards. If the tile's phone isn't measurable (off screen,
    0 size), it just fades. Reduce Motion: no animation, as now.
 2. **Blur crossfade on icon swaps**: the theme toggle's sun/moon and the hero pause/play.
    Both icons are stacked in one cell; the outgoing one fades to 0 with `blur(4px)` and
@@ -872,6 +872,31 @@ Verdict: **Ready after fixes**.
 | 10 | Low | Reduce Motion should keep the tile phone; pick the still by theme; `--dur-reveal` (560 ms) is over the cap. | Fixed / logged | No `data-away` under Reduce Motion (tested); `img.only-${theme}`; the reveal is from round 1 and outside this brief, left as is. |
 | 11 | – | Simpler option: transform and opacity only. | Partly | Kept the clip (exact crop), but the clip runs as its own animation so the transform can stay on the compositor, and the tour mounts after the expand lands (first-open frame times at 4x CPU: 300 ms worst → 67 ms). |
 
+### Round 12 build review, code-reviewer (2026-11-27)
+Verdict: **Ship after fixes**.
+
+| # | Severity | Finding | Outcome | How |
+|---|---|---|---|---|
+| 1 | Medium | The still could cover the tour and its controls if no frame ever arrives (stall, iOS Low Power Mode). | Fixed | The still shows only while the phone moves; once it lands the video mounts with the same picture as its `poster`, so the native controls always show. Test (390, dark). |
+| 2 | Medium | The tile's phone could blink out for a frame on close. | Fixed | `data-away` removed in the `finally`, just before `close()`. |
+| 3 | Low | Closing during the expand downloaded the tour and snapped the phone to full size first. | Fixed | The video mounts only if still open and not closing; the close commits the current styles and animates to the tile from there. Test: Esc during the expand, no `-demo-` request. |
+| 4 | Medium | "Esc twice" passed on the 240 ms shrink alone. | Fixed | The shrink is paused after the first key; only the second can close it. |
+| 5 | Low | The headline test couldn't tell if the mask applied. | Fixed | Frozen at the start: the computed mask is the gradient. |
+| 6 | Low | The plan said a second close is ignored. | Fixed | Updated. |
+
+### Round 12 build review, design-critic (2026-11-27)
+Verdict: **Ship after fixes** (1 blocked).
+
+| # | Severity | Finding | Outcome | How |
+|---|---|---|---|---|
+| 1 | High | The still can cover the tour indefinitely on iOS. | Fixed | As code-reviewer #1 (poster). |
+| 2 | Medium | Skip the headline wipe: at 240 ms on the expo curve it's ~95% done half-way, unseen; main-thread mask on the largest element. | Changed | Kept (Dani's brief asks for it), made visible: 400 ms (`--dur-ui` + `--dur-press`) on a plain ease-out. The h1 isn't the LCP element (a poster is, measured), and without mask support it's just shown. |
+| 3 | Medium | The light backdrop is muddy grey. | Fixed | `light-dark()`: 0.35 of a lighter grey in light, 0.6 in dark, same blur; the gutter colour matches. |
+| 4 | Low | The phone's top edge pops in over the nav. | Fixed | The start clip also hides what the sticky nav covers. |
+| 5 | Low | A clip animation that clips nothing still costs main-thread work. | Fixed | No clip animation when nothing is hidden. |
+
+Found while capturing: at 390 Chrome's phone layout counted the hero row's scrolled-off phones in the page width (a 638 px layout viewport, live since round 10). `contain: paint` on the swipe row; test: the page is exactly 390 wide.
+
 ## Decided while Dani was away
 
 - Theme follows the system with a remembered toggle, over dark-for-everyone: it respects the visitor's setting and is a one-line change (open question 3).
@@ -899,3 +924,5 @@ Verdict: **Ready after fixes**.
 - Round 10: the Demo video tours start at 0:00 (the apps' Try the demo screens), like the files on GitHub.
 - Round 10: from 1100 px the subline and button moved beside the headline (same words) so the three phones mostly fit the first screen.
 - Round 11: Bitewise's one decision is "Missing stays missing" (its rule everywhere, also in the case study) over "No Undo timer", which left the site.
+- Round 12: the tour's own play/pause is the browser's native control, so the blur crossfade is on the theme toggle and the hero's pause/play buttons only.
+- Round 12: the expand's frame times at 4x CPU throttle in Chrome are mostly within 33 ms, with one 100 ms frame as Bitewise's tour is torn down after the shrink lands; a real iPhone check is on the phone-test list.

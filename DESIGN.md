@@ -287,6 +287,12 @@ A flat CSS device sized by one variable, `--phone-w`: a dark body with a real be
 ### Missing material
 Anything still to be supplied (a headshot, the resume) is switched off by a flag in `content/site.ts` and leaves no trace on the page; `scripts/check-built-html.mjs` fails the build if a "[" ever reaches visible text. Never filled with invented material.
 
+### Motion moments (round 12)
+- **Demo video** grows out of the tile's phone (transform, plus a clip matching the tile's crop) and shrinks back into it, 240 ms ease-out both ways, showing the tile's own picture while it moves; the page behind dims (lighter in light mode) and blurs 6 px.
+- **Icon swaps** (theme toggle, hero pause/play) blur-crossfade in 160 ms.
+- **The headline** wipes in once on load behind a soft gradient mask, 400 ms.
+All of them are instant or absent under Reduce Motion.
+
 ### Reveal
 Content that starts below the fold fades in from 0.97 scale over 560 ms once, with up to a few 60 to 80 ms staggers. Nothing visible at load is hidden; under Reduce Motion nothing is hidden.
 
