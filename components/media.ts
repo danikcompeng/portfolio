@@ -6,6 +6,8 @@ import ascendPosterDark from "@/public/media/ascend-loop-poster-dark.png";
 import ascendPosterLight from "@/public/media/ascend-loop-poster-light.png";
 import loopPosterDark from "@/public/media/bitewise-loop-poster-dark.png";
 import loopPosterLight from "@/public/media/bitewise-loop-poster-light.png";
+import costDark from "@/public/media/bitewise-cost-dark.png";
+import costLight from "@/public/media/bitewise-cost-light.png";
 import swapSheetDark from "@/public/media/bitewise-swap-sheet-dark.png";
 import swapSheetLight from "@/public/media/bitewise-swap-sheet-light.png";
 import todayDark from "@/public/media/bitewise-today-dark.png";
@@ -58,17 +60,35 @@ export const orbitLoop: Loop = {
 
 /** Each tile's still: a screen its hero loop doesn't feature. */
 export const stills = {
-  bitewise: { dark: swapSheetDark, light: swapSheetLight },
+  bitewise: { dark: costDark, light: costLight },
   ascend: { dark: ascendClimbDark, light: ascendClimbLight },
   orbit: { dark: orbitPersonDark, light: orbitPersonLight },
 } as const;
 
-/** The full demo tours, played in the Demo video dialog and loaded only when it opens. */
-export const demos = {
-  bitewise: { dark: "/media/bitewise-demo-dark.mp4", light: "/media/bitewise-demo-light.mp4" },
-  ascend: { dark: "/media/ascend-demo-dark.mp4", light: "/media/ascend-demo-light.mp4" },
-  orbit: { dark: "/media/orbit-demo-dark.mp4", light: "/media/orbit-demo-light.mp4" },
-} as const;
+export type Demo = {
+  sources: { dark: string; light: string };
+  /** Seconds into each file where the first app screen is up, past the login (round 11). */
+  start: { dark: number; light: number };
+};
+
+/**
+ * The full demo tours, played in the Demo video dialog and loaded only when it opens. Each
+ * starts at its first app screen, read frame by frame (0.25 s steps) from that file.
+ */
+export const demos: Record<"bitewise" | "ascend" | "orbit", Demo> = {
+  bitewise: {
+    sources: { dark: "/media/bitewise-demo-dark.mp4", light: "/media/bitewise-demo-light.mp4" },
+    start: { dark: 3, light: 2.8 },
+  },
+  ascend: {
+    sources: { dark: "/media/ascend-demo-dark.mp4", light: "/media/ascend-demo-light.mp4" },
+    start: { dark: 3, light: 3.5 },
+  },
+  orbit: {
+    sources: { dark: "/media/orbit-demo-dark.mp4", light: "/media/orbit-demo-light.mp4" },
+    start: { dark: 3.5, light: 3.3 },
+  },
+};
 
 /** The case study's swap: the sheet opened with the page unscrolled, so the screen's top is intact. */
 export const swapSheet = { dark: swapSheetDark, light: swapSheetLight };

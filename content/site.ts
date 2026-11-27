@@ -58,7 +58,7 @@ export const hero = {
   primary: { label: "See the work", href: "#work" },
 };
 
-/** The swap sheet, opened on the live demo: the Bitewise tile and the case study both show it. */
+/** The swap sheet, opened on the live demo: the case study's figure. */
 const swapSheetAlt =
   "The swap sheet instead of Overnight oats: Egg fried rice first, $1.36 per serving, 21 g protein, uses 3 foods you've had this week.";
 
@@ -72,8 +72,11 @@ export const bitewise = {
     caption: "Today's rings, then a swap",
     alt: "A recording of Bitewise's Today screen on the demo account: the calorie, protein, carbs, fat and water rings fill, then I'm tired of this on lunch skips one suggestion, swaps in the next and undoes it.",
   },
-  // The tile's still: the case study's swap figure (public/media/SOURCES.md).
-  still: { alt: swapSheetAlt },
+  // The tile's still: a recipe's cost per serving (public/media/bitewise-cost-*, round 11), a
+  // screen the hero loop doesn't show.
+  still: {
+    alt: "The Chicken rice bowl recipe: $2.48 cost per serving, makes 4 servings, 22 g protein per dollar; sugar, fiber, sat fat and sodium show dashes, as unknown.",
+  },
   // The case study's first screen.
   screens: {
     today: {
@@ -106,18 +109,13 @@ export const bitewise = {
       source: "meal-cost-tracker .claude/agent-memory/code-reviewer/review-history.md, lines starting '- 2026-'",
     },
   } satisfies Record<string, Stat>,
-  decisions: [
-    {
-      title: "Missing stays missing",
-      // CLAUDE.md, README.md:36-39
-      body: "A number that looks right but quietly leaves something out is worse than no number, so an unknown price shows a dash.",
-    },
-    {
-      title: "No Undo timer",
-      // plans/polish.md
-      body: "Web pages can't tell whether VoiceOver is on. Instead of guessing, Undo has no timer, for everyone.",
-    },
-  ],
+  // One decision per tile, like Ascend and Orbit (round 11).
+  decision: {
+    title: "Missing stays missing",
+    // CLAUDE.md, README.md:36-39; the dash: components/recipe-cost.tsx:11 ("Unknown cost: a big
+    // '—' ... never a lower number")
+    body: "A number that looks right but quietly leaves something out is worse than no number, so an unknown price shows a dash.",
+  },
 };
 
 export const ascend = {

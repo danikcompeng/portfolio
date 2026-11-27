@@ -510,6 +510,68 @@ Dani's brief (in chat): the home page becomes intro with three phones, the three
    opens. CLS 0 on load and after scrolling, 390 and 1440, light and dark. 53 unit tests, 49
    Playwright checks (plus the screenshot run), bracket check clean.
 
+## Round 11: even tiles, trimmed tours (2026-11-27)
+
+Dani's decisions on round 10:
+1. **One decision and the same links on every tile.** Bitewise keeps "Missing stays missing"
+   (the app's one rule, also the case study's); "No Undo timer" leaves the site. Links: Open
+   Bitewise (was "Try the live demo"), Demo video, and, on Bitewise only (Dani's pick), Read
+   the case study. "Code on GitHub" leaves the tile (`links.bitewiseCode` stays for the case
+   study).
+2. **Bitewise still: the recipe cost screen** (`bitewise-cost-*`, restored from `4fae67d`:
+   frames at 53.6 s of the dark tour and 53.7 s of the light real-scan tour, provenance
+   embedded; alt as in round 9's story step), so the tile no longer repeats the loop's swap.
+3. **CLAUDE.md and `.claude/agents/design-critic.md`** describe the current page: hero with
+   three phones, three equal tiles, About; no How I build, no pinned story.
+4. **Tours start after login**, at the first app screen, per file (found frame by frame at
+   0.25 s): Bitewise light 2.8 s, dark 3.0 s; Ascend light 3.5 s, dark 3.0 s; Orbit light
+   3.3 s, dark 3.5 s (2.8 and 3.3 are the first settled 0.25 s frame plus a margin). The
+   files stay as they are: the source carries a media fragment (`#t=3`), so the browser
+   starts there natively and nothing is hidden (logic-checker #1). Scrubbing back, or the
+   native replay after the end, goes to 0.
+5. **At 1440 the side loops wait for the first**: inside the hero row, Ascend's and Orbit's
+   sources are set only after Bitewise's loop has fired `playing` once, or fails to load, or
+   has its autoplay refused, or the visitor presses its button, or 5 s after its source was
+   set (a stalled network): never forever (logic-checker #2). Their posters show until then,
+   same box, so nothing shifts. Pressing play on a side one still loads it at once. At 390
+   the row rule already holds them back; it now also waits for the lead.
+Checks: tests for each (tile links and one decision, cost still, tour start time per theme,
+load order at 1440), bracket check, code-reviewer and design-critic, commit "Home: even
+tiles, trimmed tours", push, confirm live. Then the motion polish brief (06).
+
+## Round 12: motion polish (2026-11-27)
+
+Brief: `~/Documents/claude-inbox/portfolio/06-motion-polish.md`, after round 11 is pushed. The
+page Dani sends a PM today: subtle, nothing that risks breaking it. Existing tokens only
+(`--dur-press` 160 ms, `--dur-ui` 240 ms, `--ease-out`); nothing over 400 ms; no library;
+input never blocked; Reduce Motion gets instant (or a plain fade) instead.
+1. **Expand from the tile's phone.** On Demo video, the dialog's phone animates (Web
+   Animations, transform + clip-path only, `--dur-ui`) from the tile phone's rect, clipped to
+   the part the tile shows, to its centred size; the backdrop fades in with it. The tile's
+   phone is hidden while its copy is open, so it reads as one object. Its poster is the
+   tile still's already-loaded image (`currentSrc`), so nothing new downloads and the screen
+   doesn't go blank before the tour arrives. Closing (button, Esc via `cancel`, backdrop)
+   runs the same animation backwards, then closes; a second close during it is ignored, and
+   the page stays interactive afterwards. If the tile's phone isn't measurable (off screen,
+   0 size), it just fades. Reduce Motion: no animation, as now.
+2. **Blur crossfade on icon swaps**: the theme toggle's sun/moon and the hero pause/play.
+   Both icons are stacked in one cell; the outgoing one fades to 0 with `blur(4px)` and
+   `scale(.8)`, the incoming one the reverse, `--dur-press`. The tour's own play/pause is the
+   browser's native control and can't be styled: skipped there, logged. Reduce Motion: an
+   instant swap.
+3. **Headline mask reveal, once on load**: the h1 wipes in left to right with a soft-edged
+   gradient mask (`mask-image` moved by `mask-position`; a clip-path edge would be hard),
+   `--dur-ui` + a short ease, CSS only, so it plays once per page load and never on scroll.
+   Never hidden without CSS animation support; Reduce Motion: none.
+4. **Stage the focus**: the backdrop already dims the page (0.78); it now also blurs it
+   (`backdrop-filter: blur(6px)`) with the dim eased to 0.6 so the blur is visible, and the
+   scrollbar gutter's colour updated to match. The blur fades in with the backdrop.
+Checks: e2e for each (the expand's first frame sits on the tile's phone, close plays back and
+returns focus, no animations under Reduce Motion, the icon transition, the h1 animation once
+and not again after scrolling, the backdrop blur), 60 fps check in a 4x-throttled CPU trace
+for the expand, bracket check, reviewers at 390 x 844 light and dark, commit "Motion: expand,
+blur crossfade, mask reveal", push, confirm live, log in the inbox.
+
 ## Reviews
 
 ### Plan review, logic-checker (2026-11-25)
@@ -756,6 +818,43 @@ Verdict: **Ship after fixes**.
 | 7 | Low | Weak checks: no positive control for the dialog animation; the focus check accepted body. | Fixed | Animates with motion, not without; focus never lands on the page behind (body = the browser's own controls, which a modal allows). |
 | – | Tests | Missing: seek-bar drag, double-click, scroll lock and no shift, lock lifted after a backdrop close, play under Reduce Motion off-snap at 390. | Added | smoke. |
 
+### Round 11 plan review, logic-checker (2026-11-27)
+Verdict: **Ready after fixes**.
+
+| # | Severity | Finding | Outcome | How |
+|---|---|---|---|---|
+| 1 | High | Hiding the tour until a JS seek lands can leave a blank phone with no controls (error, stall, iOS Low Power Mode). | Fixed | A `#t=` media fragment: the browser starts there itself; nothing hidden. |
+| 2 | High | "Wait for Bitewise's `playing`" can hold the side loops forever (paused before start, autoplay refused, stall). | Fixed | Also released on error, refusal, a press of its button, and 5 s after its source is set. Tests for the press, the error and the stall. |
+| 3 | Medium | 2.8 s and 3.3 s aren't on the 0.25 s grid. | Kept | First settled frame (2.75, 3.25) plus a margin; noted in the plan. |
+| 4 | Medium | Test gaps; the dialog screenshot could catch a blank phone; exact `src` compare. | Fixed | Tests added; `src` checked with the fragment; the screenshot shows Orbit's Today. iOS tour opening goes on the phone-test list. |
+| 5 | Low | Load not re-measured. | Fixed | Same totals (the rule changes order, not bytes); CLS 0. |
+| 6 | Low | SOURCES.md and DESIGN.md stale; code-reviewer brief mentions pinned sections. | Fixed, except the brief | Rows and breakpoint updated; the code-reviewer's generic "pinned sections" check left as is. |
+| 7 | Low | Replay restarts at the login. | Kept | Noted in the plan. |
+| 8 | Low | "Open Bitewise" on the tile, "Try the live demo" on the case study. | Kept | Dani asked for the case study to stay as it is. |
+| 9 | Low | The cost alt could mention the dashes. | Fixed | "...sugar, fiber, sat fat and sodium show dashes, as unknown." |
+
+### Round 11 build review, code-reviewer (2026-11-27)
+Verdict: **Ship after fixes** (tests and docs only).
+
+| # | Severity | Finding | Outcome | How |
+|---|---|---|---|---|
+| 1 | Medium | The "button releases the side loops" test would pass on the 5 s timer alone. | Fixed | Waits for Bitewise's source, checks the side is still empty, then a 3 s poll. |
+| 2 | Medium | No tests for the timer or the error release. | Fixed | Abort → side loads within 3 s; stall → nothing at 3.5 s, loaded by ~5 s. |
+| 3 | Low | A misnamed test duplicating a smoke check. | Fixed | Removed. |
+| 4 | Low | Plan items 4 and 5 didn't match the code; no logic-checker log. | Fixed | Updated; logged above. |
+| 5 | Low | The tile's "an unknown price shows a dash" cited the README, which says "no price yet". | Fixed | Cites meal-cost-tracker `components/recipe-cost.tsx:11` ("Unknown cost: a big '—'"). |
+| 6 | Low | `#t=` not verified on a real iPhone in Low Power Mode. | Logged | On the phone-test list. |
+
+### Round 11 build review, design-critic (2026-11-27)
+Verdict: **Ship after fixes**.
+
+| # | Severity | Finding | Outcome | How |
+|---|---|---|---|---|
+| 1 | Medium | At 1440 the link rows didn't line up and Ascend's and Orbit's links had ~150 px tall hit areas. | Fixed | Link rows `content-start items-start`, `gap-x-5`: Open Bitewise and Demo video share a line. e2e: first links level, under 60 px tall. |
+| 2 | Low | The cost still works and no longer repeats the loop. | Kept | |
+| 3 | Low | The dialog opens on an app screen; its caption sits on busy dimmed text at 390. | Fixed | Caption on a backdrop-coloured pill. |
+| 4 | Low | Facts rows differ in height. | Kept | The decisions still line up. |
+
 ## Decided while Dani was away
 
 - Theme follows the system with a remembered toggle, over dark-for-everyone: it respects the visitor's setting and is a one-line change (open question 3).
@@ -782,3 +881,4 @@ Verdict: **Ship after fixes**.
 - Round 10: Orbit's still is the top of Grace Liu's page (name, follow-up, how you met), captured from the live demo; her timeline is further down and doesn't fit the same screen.
 - Round 10: the Demo video tours start at 0:00 (the apps' Try the demo screens), like the files on GitHub.
 - Round 10: from 1100 px the subline and button moved beside the headline (same words) so the three phones mostly fit the first screen.
+- Round 11: Bitewise's one decision is "Missing stays missing" (its rule everywhere, also in the case study) over "No Undo timer", which left the site.

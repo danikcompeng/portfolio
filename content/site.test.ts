@@ -82,7 +82,7 @@ describe("content rules", () => {
   });
 
   it("each video pair points at its own theme's file, and every file is in public/media", () => {
-    const pairs = [bitewiseLoop.sources, ascendLoop.sources, orbitLoop.sources, ...Object.values(demos)];
+    const pairs = [bitewiseLoop.sources, ascendLoop.sources, orbitLoop.sources, ...Object.values(demos).map((d) => d.sources)];
     expect(pairs.length).toBe(6);
     for (const pair of pairs) {
       expect(pair.dark).toMatch(/-dark\.mp4$/);

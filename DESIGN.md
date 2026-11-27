@@ -235,7 +235,7 @@ Work is three tiles of the same size from 1100 px (three columns, 20 px gap), sh
 
 The case study (`/work/bitewise`) opens on a full-width product tile (title, mono facts, links, the phone), then one 38rem reading column of h2-at-title sections. At 1024 px and up the column starts inside the tile's padding, in line with the h1, and a phone screen sits in the second column beside the section it illustrates (the swap, beside the ranking and the two sections after it), up to 340 px wide and never wider than that column, with a mono caption; below 1024 px it follows its section's text.
 
-Breakpoints in use: 640 px (two-up decisions in a one-column tile), 768 px (wide nav links), 1024 px (case study columns), 1100 px (three tiles, three hero phones). Everything works at 390 px wide; the body clips horizontal overflow.
+Breakpoints in use: 640 px (About facts in two columns), 768 px (wide nav links), 1024 px (case study columns), 1100 px (three tiles, three hero phones). Everything works at 390 px wide; the body clips horizontal overflow.
 
 ## Elevation & Depth
 

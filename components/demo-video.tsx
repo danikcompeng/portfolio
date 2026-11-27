@@ -11,9 +11,10 @@ import { useEffect, useRef, useState } from "react";
 import type { Theme } from "@/lib/client-state";
 import { useTheme } from "@/lib/client-state";
 import { Close, Play } from "./icons";
+import type { Demo } from "./media";
 import { Phone } from "./phone";
 
-export function DemoVideo({ name, sources }: { name: string; sources: { dark: string; light: string } }) {
+export function DemoVideo({ name, demo }: { name: string; demo: Demo }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const pressedOnBackdrop = useRef(false);
@@ -80,7 +81,10 @@ export function DemoVideo({ name, sources }: { name: string; sources: { dark: st
             {openTheme ? (
               <video
                 className="demo-video"
-                src={sources[openTheme]}
+                // A media fragment starts it past the login, at the first app screen: the
+                // browser does it natively, nothing is hidden, and the controls can still go
+                // back to 0. (A browser without fragments just starts at 0.)
+                src={`${demo.sources[openTheme]}#t=${demo.start[openTheme]}`}
                 muted
                 playsInline
                 controls

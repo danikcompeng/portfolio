@@ -23,7 +23,10 @@ test("external links open in a new tab safely, and none point anywhere unplanned
   const links = await page.$$eval("a[target=_blank]", (as) =>
     as.map((a) => ({ href: a.getAttribute("href"), rel: a.getAttribute("rel"), label: a.getAttribute("aria-label") })),
   );
-  expect(links.length).toBeGreaterThan(5);
+  // Exactly the planned destinations: the three apps, GitHub and LinkedIn.
+  expect([...new Set(links.map((l) => l.href))].sort()).toEqual(
+    [site.links.bitewise, site.links.ascend, site.links.orbit, site.links.github, site.links.linkedin].sort(),
+  );
   for (const l of links) {
     expect(l.href, JSON.stringify(l)).toMatch(/^https:\/\//);
     expect(l.rel).toBe("noopener noreferrer");
@@ -64,10 +67,28 @@ test("each hero phone is one image with its description, named by its caption; e
   );
 });
 
-test("the three tiles are the same size, side by side at 1440", async ({ browser }) => {
+test("every tile has one decision and the same links (Bitewise adds its case study)", async ({ page }) => {
+  await page.goto("/");
+  for (const { name, title } of APPS) {
+    const article = page.locator(`article:has(${title})`);
+    await expect(article.locator("h4")).toHaveCount(1);
+    const names = await article.locator(".text-link").evaluateAll((ls) => ls.map((l) => l.textContent?.trim()));
+    expect(names).toEqual([`Open ${name}`, "Demo video", ...(name === "Bitewise" ? ["Read the case study"] : [])]);
+  }
+  await expect(page.getByRole("link", { name: /Code on GitHub/ })).toHaveCount(0);
+});
+
+test("the three tiles are the same size, side by side at 1440, with their link rows level", async ({ browser }) => {
   const ctx = await browser.newContext({ ...DESKTOP, reducedMotion: "reduce" });
   const page = await ctx.newPage();
   await page.goto("/");
+  const firstLinks = await page.$$eval("#work article", (as) =>
+    as.map((a) => a.querySelector(".text-link")!.getBoundingClientRect().toJSON() as DOMRect),
+  );
+  for (const l of firstLinks) {
+    expect(Math.abs(l.top - firstLinks[0].top)).toBeLessThan(1);
+    expect(l.height).toBeLessThan(60);
+  }
   const boxes = await page.$$eval("#work article", (as) => as.map((a) => a.getBoundingClientRect().toJSON() as DOMRect));
   expect(boxes).toHaveLength(3);
   for (const b of boxes) {
@@ -154,7 +175,7 @@ test("Demo video: one button per tile; the dialog opens on top, Esc and the back
 
       await button.click();
       await expect(dialog).toBeVisible();
-      await expect(dialog.locator("video")).toHaveAttribute("src", `/media/${slug}-demo-${theme}.mp4`);
+      await expect(dialog.locator("video")).toHaveAttribute("src", new RegExp(`^/media/${slug}-demo-${theme}\\.mp4#t=[\\d.]+$`));
       await expect(dialog.getByRole("button", { name: "Close the video" })).toBeFocused();
       await expect(page.locator("html")).toHaveAttribute("data-dialog", "");
       await page.keyboard.press("Escape");

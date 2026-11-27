@@ -7,28 +7,32 @@ canvas; the sections below follow it.
 
 ## Sections (top to bottom)
 
-1. Nav: name; Work, How I build, About, Resume.
-2. Hero: "From idea to live app, end to end." Tilted phone playing the
-   Bitewise loop video (`~/Documents/meal-cost-tracker/design/videos/bitewise-loop-dark.mp4`).
-   Buttons: See the work, Try Bitewise (https://trybitewise.vercel.app).
-   Flat CSS-perspective phone first; a 3D (React Three Fiber) version only
-   if time allows, lazy-loaded, with the flat one as the Reduce Motion and
-   phone fallback.
-3. Bitewise story: phone pinned while four steps scroll past (the
-   problem, the swap, the scan, cost per serving).
-4. Work grid: Bitewise (big tile, case study + live demo), Ascend
-   (habit tracker, https://ascend-dk.vercel.app), Network CRM (when
-   live). No budget tracker. Real screenshots
-   from each repo's docs/screenshots. Anything I still have to supply
+1. Nav: name; Work, About, Resume (once the PDF exists).
+2. Hero: "From idea to live app, end to end." and the subline, one
+   button (See the work). Below it, three equal phones, Bitewise, Ascend
+   and Orbit in that order, each playing its own loop from public/media
+   (theme-matched, muted, inline, paused under Reduce Motion) with a
+   caption and a pause button. Flat CSS phones with a gentle tilt, flat
+   under Reduce Motion. A swipeable row on phones, three columns over the
+   tiles from 1100 px. Only loops on screen load, and the side ones wait
+   for Bitewise's to start.
+3. Work: three tiles of the same size and layout, so none looks like the
+   main project: Bitewise (https://trybitewise.vercel.app), Ascend
+   (habit tracker, https://ascend-dk.vercel.app) and Orbit (network CRM,
+   https://orbit-dk.vercel.app). Each has one line, its numbers, one
+   decision, Open [app], Demo video (the full tour in an on-page dialog,
+   starting after the login) and a cropped phone with a theme-matched
+   still of a screen its hero loop doesn't show. Bitewise also links its
+   case study. No budget tracker. Anything I still have to supply
    (photos, resume) stays hidden behind a flag in content/site.ts; no
    [BRACKETS] in production.
-5. How I build: plan → logic-checker → build → code-reviewer +
-   design-critic → phone test → ship, with real numbers from the repos
-   (tests, review findings).
-6. About: TMU Computer Engineering, Toronto Humanoid Robotics Club,
+4. About: TMU Computer Engineering, Toronto Humanoid Robotics Club,
    guitar. Engineering work and school only. Resume PDF, GitHub
    (danikcompeng), LinkedIn, email. No phone number.
-7. Case study page /work/bitewise (Thursday).
+5. Case study page /work/bitewise (live).
+
+No "How I build" section and no pinned Bitewise story: both were removed
+on 2026-11-27 (plans/portfolio.md, rounds 10 and 11).
 
 ## Stack and rules
 

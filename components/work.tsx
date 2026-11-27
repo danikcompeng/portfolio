@@ -99,20 +99,18 @@ export function Work() {
               { stat: bitewise.stats.codeReviews, label: "code reviews" },
             ]}
           />
-          <div className="mt-6 grid gap-6 sm:max-[1099px]:grid-cols-2">
-            {bitewise.decisions.map((d) => (
-              <Decision key={d.title} {...d} />
-            ))}
+          <div className="mt-6">
+            <Decision {...bitewise.decision} />
           </div>
-          <div className="mt-4 flex flex-wrap gap-x-6">
-            <OutLink href={links.bitewise}>Try the live demo</OutLink>
-            <DemoVideo name={bitewise.name} sources={demos.bitewise} />
+          <div className="mt-4 flex flex-wrap content-start items-start gap-x-5">
+            <OutLink href={links.bitewise}>Open Bitewise</OutLink>
+            <DemoVideo name={bitewise.name} demo={demos.bitewise} />
+            {/* Bitewise's case study (Dani's call: the one extra link, round 11). */}
             {flags.caseStudy ? (
               <PageLink href="/work/bitewise" className="text-link press">
                 Read the case study
               </PageLink>
             ) : null}
-            <OutLink href={links.bitewiseCode}>Code on GitHub</OutLink>
           </div>
           <TileStill image={stills.bitewise} alt={bitewise.still.alt} />
         </Reveal>
@@ -136,9 +134,9 @@ export function Work() {
           <div className="mt-6">
             <Decision {...ascend.decision} />
           </div>
-          <div className="mt-4 flex flex-wrap gap-x-6">
+          <div className="mt-4 flex flex-wrap content-start items-start gap-x-5">
             <OutLink href={links.ascend}>Open Ascend</OutLink>
-            <DemoVideo name={ascend.name} sources={demos.ascend} />
+            <DemoVideo name={ascend.name} demo={demos.ascend} />
           </div>
           <TileStill image={stills.ascend} alt={ascend.still.alt} />
         </Reveal>
@@ -160,9 +158,9 @@ export function Work() {
           <div className="mt-6">
             <Decision {...orbit.decision} />
           </div>
-          <div className="mt-4 flex flex-wrap gap-x-6">
+          <div className="mt-4 flex flex-wrap content-start items-start gap-x-5">
             <OutLink href={links.orbit}>Open Orbit</OutLink>
-            <DemoVideo name={orbit.name} sources={demos.orbit} />
+            <DemoVideo name={orbit.name} demo={demos.orbit} />
           </div>
           <TileStill image={stills.orbit} alt={orbit.still.alt} />
         </Reveal>

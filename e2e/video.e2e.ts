@@ -100,6 +100,61 @@ test("turning on Reduce Motion mid-visit stops and releases the hero loops", asy
   }
 });
 
+test("at 1440 the side loops load only after Bitewise's has started, with no layout shift", async ({ page }) => {
+  const events: string[] = [];
+  await page.exposeFunction("__log", (e: string) => events.push(e));
+  await page.addInitScript(() => {
+    const log = (window as unknown as { __log: (e: string) => void }).__log;
+    document.addEventListener("playing", (e) => {
+      const src = (e.target as HTMLVideoElement).getAttribute("src") ?? "";
+      if (src.includes("bitewise-loop")) log("bitewise playing");
+    }, true);
+    new PerformanceObserver((l) => {
+      for (const e of l.getEntries() as (PerformanceEntry & { value: number })[]) if (e.value > 0) log(`shift ${e.value}`);
+    }).observe({ type: "layout-shift", buffered: true });
+  });
+  page.on("request", (r) => {
+    const m = r.url().match(/\/(ascend|orbit|bitewise)-loop-/);
+    if (m) events.push(`request ${m[1]}`);
+  });
+  await page.goto("/");
+  await expect.poll(() => Promise.all([1, 2, 3].map((n) => playing(page, `#top li:nth-child(${n}) video`))), { timeout: 20_000 }).toEqual([true, true, true]);
+  const first = (e: string) => events.indexOf(e);
+  expect(first("request bitewise")).toBeGreaterThanOrEqual(0);
+  expect(first("request ascend")).toBeGreaterThan(first("bitewise playing"));
+  expect(first("request orbit")).toBeGreaterThan(first("bitewise playing"));
+  expect(events.filter((e) => e.startsWith("shift"))).toEqual([]);
+});
+
+// The side loops never wait forever for Bitewise's (logic-checker, round 11).
+const sideSrc = (page: Page) => page.evaluate(() => document.querySelector("#top li:nth-child(2) video")!.getAttribute("src"));
+const leadSrc = (page: Page) => page.evaluate(() => document.querySelector("#top li:nth-child(1) video")!.getAttribute("src"));
+
+test("pressing Bitewise's button before its loop has started lets the side loops load at once", async ({ page }) => {
+  await page.route(/bitewise-loop-/, () => {}); // held back: it can't start
+  await page.goto("/");
+  await expect.poll(() => leadSrc(page)).toMatch(/bitewise-loop/);
+  await page.waitForTimeout(500); // hydrated, timer still far off
+  expect(await sideSrc(page)).toBeNull();
+  await page.getByRole("button", { name: "Pause the Bitewise video" }).click();
+  await expect.poll(() => sideSrc(page), { timeout: 3_000 }).toMatch(/ascend-loop/);
+});
+
+test("a Bitewise loop that fails to load lets the side loops load at once", async ({ page }) => {
+  await page.route(/bitewise-loop-/, (r) => r.abort());
+  await page.goto("/");
+  await expect.poll(() => sideSrc(page), { timeout: 3_000 }).toMatch(/ascend-loop/);
+});
+
+test("a Bitewise loop that stalls lets the side loops load after about 5 s", async ({ page }) => {
+  await page.route(/bitewise-loop-/, () => {});
+  await page.goto("/");
+  await expect.poll(() => leadSrc(page)).toMatch(/bitewise-loop/);
+  await page.waitForTimeout(3_500);
+  expect(await sideSrc(page)).toBeNull();
+  await expect.poll(() => sideSrc(page), { timeout: 4_000 }).toMatch(/ascend-loop/);
+});
+
 test("the hero loops pause behind an open Demo video and play again after it closes", async ({ page }) => {
   await page.goto("/");
   const loops = () => Promise.all([1, 2, 3].map((n) => playing(page, `#top li:nth-child(${n}) video`)));
@@ -114,6 +169,12 @@ test("the hero loops pause behind an open Demo video and play again after it clo
 });
 
 // Demo video (round 10): each tile's tour opens in a dialog, plays there, and closes.
+// Round 11: each starts at its first app screen (components/media.ts, read frame by frame).
+const START: Record<string, Record<"light" | "dark", number>> = {
+  bitewise: { light: 2.8, dark: 3 },
+  ascend: { light: 3.5, dark: 3 },
+  orbit: { light: 3.3, dark: 3.5 },
+};
 for (const { name, slug, title } of [
   { name: "Bitewise", slug: "bitewise", title: "#bw-title" },
   { name: "Ascend", slug: "ascend", title: "#as-title" },
@@ -126,6 +187,17 @@ for (const { name, slug, title } of [
       const requested: string[] = [];
       page.on("request", (r) => {
         if (r.url().includes("-demo-")) requested.push(r.url().split("/").pop()!);
+      });
+      // Note where the tour first plays from.
+      await page.addInitScript(() => {
+        document.addEventListener(
+          "playing",
+          (e) => {
+            const w = window as unknown as { __t0?: number };
+            if ((e.target as Element).closest("dialog")) w.__t0 ??= (e.target as HTMLVideoElement).currentTime;
+          },
+          true,
+        );
       });
       await page.goto("/", { waitUntil: "networkidle" });
       expect(requested).toEqual([]);
@@ -140,7 +212,9 @@ for (const { name, slug, title } of [
         const el = document.querySelector<HTMLVideoElement>(s)!;
         return { src: el.getAttribute("src"), muted: el.muted, controls: el.controls };
       }, sel);
-      expect(v).toEqual({ src: `/media/${slug}-demo-${theme}.mp4`, muted: true, controls: true });
+      expect(v).toEqual({ src: `/media/${slug}-demo-${theme}.mp4#t=${START[slug][theme]}`, muted: true, controls: true });
+      // It starts past the login, at the first app screen.
+      expect(await page.evaluate(() => (window as unknown as { __t0?: number }).__t0)).toBeGreaterThanOrEqual(START[slug][theme] - 0.1);
       expect([...new Set(requested)]).toEqual([`${slug}-demo-${theme}.mp4`]);
 
       await dialog.getByRole("button", { name: "Close the video" }).click();

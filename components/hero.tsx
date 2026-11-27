@@ -35,7 +35,8 @@ export function Hero() {
         <VideoRow className="hero-phones" label="Bitewise, Ascend and Orbit, recorded on their live demos">
           {apps.map(({ id, name, loop, video }) => (
             <li key={id}>
-              <VideoProvider sources={loop.sources} start={loop.start} loopFrom={loop.loopFrom} lazy>
+              {/* Bitewise leads: the others load once it plays (round 11). */}
+              <VideoProvider sources={loop.sources} start={loop.start} loopFrom={loop.loopFrom} lazy lead={id === "bw"}>
                 <figure className="hero-phone" aria-labelledby={`${id}-hero-caption`}>
                   <div className="tilt" role="img" aria-label={video.alt}>
                     <Phone>

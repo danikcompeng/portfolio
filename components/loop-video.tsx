@@ -38,18 +38,28 @@ type VideoState = {
   onSeeked: () => void;
   onTimeUpdate: (e: React.SyntheticEvent<HTMLVideoElement>) => void;
   onEnded: (e: React.SyntheticEvent<HTMLVideoElement>) => void;
+  onError: () => void;
 };
 
 const VideoContext = createContext<VideoState | null>(null);
 
-/** A horizontal scroll row of videos: the element whose box decides which ones load. */
-const RowContext = createContext<HTMLElement | null | undefined>(undefined);
+/**
+ * A horizontal scroll row of videos: the element whose box decides which ones load, and
+ * whether the row's lead video has started (the others wait for it, round 11).
+ */
+type Row = { el: HTMLElement | null; leadDone: boolean; markLead: () => void };
+const RowContext = createContext<Row | undefined>(undefined);
 
-/** A swipeable row (an <ul>): videos inside load only once mostly inside it. */
+/**
+ * A swipeable row (an <ul>): videos inside load only once mostly inside it, and all but the
+ * `lead` one only after the lead has played (or failed), so the first loop gets the bandwidth.
+ */
 export function VideoRow({ children, className, label }: { children: ReactNode; className?: string; label: string }) {
   const [row, setRow] = useState<HTMLUListElement | null>(null);
+  const [leadDone, setLeadDone] = useState(false);
+  const markLead = useCallback(() => setLeadDone(true), []);
   return (
-    <RowContext.Provider value={row}>
+    <RowContext.Provider value={{ el: row, leadDone, markLead }}>
       <ul ref={setRow} className={className} aria-label={label}>
         {children}
       </ul>
@@ -69,6 +79,7 @@ export function VideoProvider({
   start = 0,
   loopFrom,
   lazy = false,
+  lead = false,
 }: {
   children: ReactNode;
   sources: { dark: string; light: string };
@@ -76,6 +87,8 @@ export function VideoProvider({
   start?: number;
   /** Where each loop restarts (default: `start`), so it never replays the demo's login. */
   loopFrom?: number;
+  /** Inside a <VideoRow>: the video the others wait for. */
+  lead?: boolean;
   /** Set the source only once the video is within ~600 px of the viewport. */
   lazy?: boolean;
 }) {
@@ -85,10 +98,17 @@ export function VideoProvider({
   const theme = useTheme();
   const reduced = useMediaQuery(REDUCED_MOTION_QUERY);
   const covered = useDialogOpen();
-  // Inside a <VideoRow>: null until the row mounts, then the row's element.
-  const row = useContext(RowContext);
+  // Inside a <VideoRow>: its element (null until it mounts) and the lead's state.
+  const rowCtx = useContext(RowContext);
+  const row = rowCtx?.el;
   const [near, setNear] = useState(!lazy);
-  const [inRow, setInRow] = useState(row === undefined);
+  const [inRow, setInRow] = useState(rowCtx === undefined);
+  // Not the lead of a row: wait until the lead has played.
+  const leadOk = !rowCtx || lead || rowCtx.leadDone;
+  const markLead = lead ? rowCtx?.markLead : undefined;
+  // The lead lets the others go once it plays, fails, is refused, or the visitor presses its
+  // button; and in any case 5 s after its source is set (a stalled network), so they can't
+  // wait forever (logic-checker, round 11).
   const [inView, setInView] = useState(false);
   const [pageVisible, setPageVisible] = useState(true);
   const [intent, setIntent] = useState<Intent>("auto");
@@ -99,7 +119,7 @@ export function VideoProvider({
   // Reduced motion and no choice yet: poster only, nothing downloads until they press play.
   const optedOut = reduced && intent === "auto";
   // Pressing play counts as asking for it, wherever it sits in the row.
-  const src = near && (inRow || intent === "play") && theme && !optedOut ? sources[theme] : undefined;
+  const src = near && ((inRow && leadOk) || intent === "play") && theme && !optedOut ? sources[theme] : undefined;
   const wants = intent === "play" || (intent === "auto" && !reduced);
   const shouldPlay = Boolean(src) && inView && pageVisible && !covered && wants;
 
@@ -141,6 +161,15 @@ export function VideoProvider({
       inside?.disconnect();
     };
   }, [frame, lazy, row]);
+
+  useEffect(() => {
+    if (markLead && intent !== "auto") markLead();
+  }, [markLead, intent]);
+  useEffect(() => {
+    if (!markLead || !src) return;
+    const timer = setTimeout(markLead, 5000);
+    return () => clearTimeout(timer);
+  }, [markLead, src]);
 
   useEffect(() => {
     const onChange = () => setPageVisible(document.visibilityState === "visible");
@@ -188,7 +217,10 @@ export function VideoProvider({
     onPlaying: () => {
       setPlaying(true);
       setShownSrc(src);
+      markLead?.();
     },
+    // A lead that can't load mustn't hold the others back.
+    onError: () => markLead?.(),
     onPause: () => setPlaying(false),
     // The position survives a theme swap on the element itself (data-t), so the new
     // source resumes where the old one was; the first load starts at the poster frame.
@@ -226,7 +258,7 @@ export function VideoLayer({
   priority?: boolean;
 }) {
   // Destructured: a context object with a callback ref inside reads as a ref to the linter.
-  const { setFrame, setVideo, src, ready, onPlaying, onPause, onLoadedMetadata, onSeeked, onTimeUpdate, onEnded } =
+  const { setFrame, setVideo, src, ready, onPlaying, onPause, onLoadedMetadata, onSeeked, onTimeUpdate, onEnded, onError } =
     useVideo();
   return (
     <div className="layer" data-active="true" ref={setFrame} aria-hidden="true">
@@ -249,6 +281,7 @@ export function VideoLayer({
         onSeeked={onSeeked}
         onTimeUpdate={onTimeUpdate}
         onEnded={onEnded}
+        onError={onError}
       />
     </div>
   );

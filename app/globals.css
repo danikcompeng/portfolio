@@ -626,10 +626,14 @@ button.text-link {
   justify-items: center;
   gap: 12px;
 }
+/* A pill of the backdrop's colour, so it reads over the dimmed page behind. */
 .demo-caption {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: oklch(0.1 0.004 260 / 0.7);
   font-family: var(--font-mono);
   font-size: 0.8125rem;
-  color: oklch(0.86 0.006 260);
+  color: oklch(0.9 0.006 260);
 }
 .demo-video {
   position: absolute;
