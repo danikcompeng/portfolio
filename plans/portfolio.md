@@ -595,6 +595,38 @@ commit "Media: Ascend and Orbit videos with motion polish", push, confirm live.
    its loop's start frame (canvas comparison, now an e2e test for all three apps). The stills
    were compared at their own sizes (Climb 390 x 844 @3 = 1170 x 2532, Grace Liu 393 x 852 @2).
 
+## Round 14: Bitewise videos with motion polish (2026-11-27)
+
+Brief: `~/Documents/claude-inbox/portfolio/08-refresh-bitewise-videos.md`.
+0. **Gate**: meal-cost-tracker's `motion-polish` is merged into main (`0a7f5a8`, an ancestor
+   check on origin) and live: trybitewise.vercel.app is aliased to the production deploy built
+   at 15:23:17 from that commit (committed 15:23:07).
+1. **Videos** from main at `0a7f5a8`: `bitewise-loop-{light,dark}.mp4` and the `-real-scan`
+   tours as `bitewise-demo-{light,dark}.mp4` (Dani's iPhone scan at 55.72 s / 55.88 s). Same
+   format (786 × 1704, 25 fps); all faststart by atom order (`moov` before `mdat`).
+2. **Loop start** read frame by frame (25 fps, mean change per frame): the login gives way at
+   1.32 s, Today appears at 1.68 s light / 1.64 s dark, the rings fill until ~2.9 s, still from
+   3.0 s to the crossfade into the swap shot at 5.04 s (both themes). Start and loop point
+   3.2 s (was 4.6, which left ~0.5 s of Today before the old crossfade; now ~1.8 s).
+3. **Tour starts** (media fragment, as round 11): Today appears at 2.36 s light / 2.32 s dark
+   (was 2.64 / 2.92); first 0.25 s frame plus a margin: 2.5 s in both themes (was 2.8 / 3.0).
+   The tour opens with the rings starting to fill, as before.
+4. **Posters**: frame 80 (3.2 s) of each loop, 786 × 1704, provenance embedded, lossless
+   (pixels identical to the decoded frame).
+5. **Still**: the recipe cost screen in the new tours (49.80 s light, 52.16 s dark) against the
+   tile stills: mean difference 0.75 / 0.92 of 255, close to the stills' own source frames
+   (0.75 / 0.79), and no pixel off by more than 40: compression noise, the screen hasn't
+   changed. Kept.
+6. **Alt and caption**: the caption still matches. The alt said the rings fill, which no visitor
+   sees (playback and the poster start with them full, at 4.6 s before as at 3.2 s now): it now
+   says they're full, then the swap sheet on lunch (Skip, Swap to this, Undo).
+7. **Checks**: typecheck, lint, 53 unit tests, build + bracket check, 66 Playwright checks
+   (poster = start frame, tours past login, playback, load order), CLS and weight on `next start`.
+8. **Measured**: CLS 0 on load and after a full scroll at 390 and 1440, light and dark. First
+   load 1.13 / 1.10 MB at 390 (light / dark; was 1.1) and 2.86 / 2.91 MB at 1440 (was 3.0); the
+   loops are 0.72 / 0.70 MB (were 0.79 / 0.78), the tours 2.58 / 2.45 MB (were 2.73 / 2.51).
+   Screenshots in `docs/screenshots/round-14`.
+
 ## Reviews
 
 ### Plan review, logic-checker (2026-11-25)
@@ -946,6 +978,27 @@ Verdict: **Ship** (optional hardening).
 ### Round 13 build review, design-critic (2026-11-27)
 Verdict: **Ship**. No regressions against round 12 at 390 and 1440, light and dark; the posters match their themes; the new frames read in their phones. Logged, not changed: the Bitewise hero phone caught mid-crossfade (a capture artefact, as before), and the demo dates differ between apps (Ascend and Orbit show Nov 27, Bitewise's case study Nov 25).
 
+### Round 14 build review, code-reviewer (2026-11-27)
+Verdict: **Ship after fixes**.
+
+| # | Severity | Finding | Outcome | How |
+|---|---|---|---|---|
+| 1 | Medium | The loop's alt says the rings fill; no visitor sees that (start and poster are past it). | Fixed | "its ... rings full, then ..." (content/site.ts); item 6. |
+| 2 | Low | SOURCES.md said "re-recorded on production, after its motion polish"; production got the polish only at `0a7f5a8`, after the recording. | Fixed | "re-recorded with its motion polish `55f1be7`, in `639d06c`; the polish reached production at `0a7f5a8`". The polish is in the files: its instant saves bring the tour's recipe screen ~4 s earlier (`639d06c`'s message). |
+| 3 | Low | `bitewise-today-*` provenance points at frames in replaced files. | Fixed | Pinned to the files before `639d06c`. |
+| 4 | Low | site.ts cites README.md:10-12 for the tour links. | Fixed | 12-14. |
+| 5 | Low | Poster test can't tell 3.2 s from any frame on the still stretch; loop-wrap window (loopFrom + 3) would accept a wrap into the swap shot. | Fixed | Bitewise control: the poster must differ (> 1) from 1.8 s, mid-fill (measured 1.7 to 2.2). The wrap test records the wrap's own seek, which must land within 0.05 s of `loopFrom`; checked it fails with a wrong loop point (4.4). |
+| 6 | Low | Tour "settled" comment may not hold for Bitewise. | Fixed | Re-measured in Chrome: 0.62 / 0.78 vs 0.25 s later (rings filling), still under 0.8; comment says so. |
+| 7 | Low | Timings mirrored in three e2e tables. | Kept | As round 13 #3: the poster, start and wrap tests catch drift against the files. |
+| 8 | Low | Plan wording (0.92 "the same as" 0.79; Checks line breaks the list). | Fixed | "close to"; numbered. |
+
+### Round 14 build review, design-critic (2026-11-27)
+Verdict: **Ship**. No regressions against round 13; the Bitewise hero phone improved (a settled Today, level with Ascend's and Orbit's home screens, theme-matched in both). Logged, not changed:
+- The case study's Today screen (`bitewise-today-*`, dated Wed Nov 25) now shows the same numbers as the hero (dated Fri Nov 27). Re-capturing it is a case-study change outside this brief: left for Dani.
+- The tour's 2.5 s first frame is mid-fill (rings a quarter drawn) and would show frozen if autoplay were refused. The old starts (2.8 / 3.0) were mid-fill the same way; kept the round 11 rule. Added to the phone-test list: open Bitewise's Demo video in iOS Low Power Mode.
+- "Demo account" pill close to the screen's top edge: comes from the recording, as before.
+- Section 5 (Design direction) still describes the round-1 hero; the critic judged against CLAUDE.md and rounds 10 to 14.
+
 ## Decided while Dani was away
 
 - Theme follows the system with a remembered toggle, over dark-for-everyone: it respects the visitor's setting and is a one-line change (open question 3).
@@ -976,3 +1029,5 @@ Verdict: **Ship**. No regressions against round 12 at 390 and 1440, light and da
 - Round 12: the tour's own play/pause is the browser's native control, so the blur crossfade is on the theme toggle and the hero's pause/play buttons only.
 - Round 12: the expand's frame times at 4x CPU throttle in Chrome are mostly within 33 ms, with one 100 ms frame as Bitewise's tour is torn down after the shrink lands; a real iPhone check is on the phone-test list.
 - Round 13: kept Orbit's "500+ unit tests" floor though its plan now records 610: raising a number on the page is Dani's call (it would read "600+"). Dani said yes (2026-11-27): "600+ unit tests", source network-crm plans/crm.md (vitest 610/610).
+- Round 14: Bitewise's loop starts at 3.2 s (settled Today, ~1.8 s before the swap shot) over the first frame after the login (1.7 s, rings empty), so the poster is a full screen; tours start at 2.5 s by the round 11 rule.
+- Round 14: kept the case study's Nov 25 Today screen, though it now matches the hero's numbers: re-capturing it wasn't in the brief.

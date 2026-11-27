@@ -31,12 +31,12 @@ export const screens = {
   today: { dark: todayDark, light: todayLight },
 } as const;
 
-/** Bitewise's loop: Today's rings, then a swap and Undo (meal-cost-tracker record-demo shots 1 + 4). */
+/** Bitewise's loop: Today's rings, then a swap and Undo (meal-cost-tracker record-demo shots 1 + 4, at 0a7f5a8). */
 export const bitewiseLoop: Loop = {
   sources: { dark: "/media/bitewise-loop-dark.mp4", light: "/media/bitewise-loop-light.mp4" },
   posters: { dark: loopPosterDark, light: loopPosterLight },
-  /** The poster frame: Today, settled, past the login screen and its crossfade. */
-  start: 4.6,
+  /** The poster frame: Today, settled, past the login screen and the rings' fill (still 3.0 to 5.0 s). */
+  start: 3.2,
 };
 
 /** Ascend's loop: holding the habits until the Summit card (habit-tracker 687de6d, Feature 10i). */
@@ -78,7 +78,7 @@ export type Demo = {
 export const demos: Record<"bitewise" | "ascend" | "orbit", Demo> = {
   bitewise: {
     sources: { dark: "/media/bitewise-demo-dark.mp4", light: "/media/bitewise-demo-light.mp4" },
-    start: { dark: 3, light: 2.8 },
+    start: { dark: 2.5, light: 2.5 }, // meal-cost-tracker 0a7f5a8 (round 14)
   },
   ascend: {
     sources: { dark: "/media/ascend-demo-dark.mp4", light: "/media/ascend-demo-light.mp4" },

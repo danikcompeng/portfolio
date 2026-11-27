@@ -25,7 +25,7 @@ export const links = {
   linkedin: "https://www.linkedin.com/in/dani-kainikkara-42824b395/",
   bitewise: "https://trybitewise.vercel.app",
   bitewiseCode: "https://github.com/danikcompeng/meal-cost-tracker",
-  // meal-cost-tracker README.md:10-12, "Full tour with a real iPhone scan" (the light one):
+  // meal-cost-tracker README.md:12-14, "Full tour with a real iPhone scan" (the light one):
   // the case study's "Full tour video". The home page plays the tours itself (Demo video).
   bitewiseTour: "https://github.com/danikcompeng/meal-cost-tracker/blob/main/design/videos/bitewise-demo-light-real-scan.mp4",
   // The two code-reviewer catches, linked to their fixes as README.md:71-74 does.
@@ -70,7 +70,7 @@ export const bitewise = {
   // public/media/bitewise-loop-*.mp4: shots 1 and 4 of meal-cost-tracker e2e/record-demo.ts.
   video: {
     caption: "Today's rings, then a swap",
-    alt: "A recording of Bitewise's Today screen on the demo account: the calorie, protein, carbs, fat and water rings fill, then I'm tired of this on lunch skips one suggestion, swaps in the next and undoes it.",
+    alt: "A recording of Bitewise's Today screen on the demo account, its calorie, protein, carbs, fat and water rings full, then I'm tired of this on lunch skips one suggestion, swaps in the next and undoes it.",
   },
   // The tile's still: a recipe's cost per serving (public/media/bitewise-cost-*, round 11), a
   // screen the hero loop doesn't show.

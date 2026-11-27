@@ -16,7 +16,7 @@ const time = (page: Page, sel: string) => page.evaluate((s) => document.querySel
 
 // The hero's three loops (round 10): from the poster frame, pausable, looping past any login.
 const HERO = [
-  { name: "Bitewise", n: 1, start: 4.6, loopFrom: 4.6 },
+  { name: "Bitewise", n: 1, start: 3.2, loopFrom: 3.2 },
   { name: "Ascend", n: 2, start: 1, loopFrom: 0 },
   { name: "Orbit", n: 3, start: 10, loopFrom: 0 },
 ];
@@ -57,11 +57,18 @@ for (const { name, n, start, loopFrom } of HERO) {
     await expect.poll(() => playing(page, sel)).toBe(true);
 
     // No native loop: it wraps to its loop point (never the demo's login at 0 for Bitewise).
+    // The wrap's own seek is recorded, so a wrap that lands later (say, in Bitewise's swap
+    // shot, 1.8 s after its loop point) fails (code-reviewer, round 14).
     await page.evaluate((s) => {
       const v = document.querySelector<HTMLVideoElement>(s)!;
+      const w = window as unknown as { __seeks: number[] };
+      w.__seeks = [];
       v.currentTime = v.duration - 0.3;
+      v.addEventListener("seeked", () => w.__seeks.push(v.currentTime));
     }, sel);
-    await expect.poll(async () => { const t = await time(page, sel); return t >= loopFrom - 0.1 && t < loopFrom + 3; }, { timeout: 10_000 }).toBe(true);
+    await expect
+      .poll(() => page.evaluate(() => (window as unknown as { __seeks: number[] }).__seeks), { timeout: 10_000 })
+      .toContainEqual(expect.closeTo(loopFrom, 1));
     // Right after the wrap it may still be seeking (readyState < 2) on a busy machine.
     await expect.poll(() => playing(page, sel)).toBe(true);
   });
@@ -130,13 +137,16 @@ test("at 1440 the side loops load only after Bitewise's has started, with no lay
 // takes over (round 13: re-made whenever a recording changes).
 test("every hero poster matches its loop's start frame", async ({ page }) => {
   await page.goto("/");
-  for (const [file, poster, t] of [
-    ["bitewise-loop", "bitewise-loop-poster", 4.6],
-    ["ascend-loop", "ascend-loop-poster", 1],
-    ["orbit-loop", "orbit-loop-poster", 10],
+  // `control`: a frame the bar must reject. Bitewise's Today holds still from 3.0 to 5.0 s, so
+  // any frame there would pass (and wouldn't jump either); one early in the rings' fill must
+  // not (measured 1.7 to 2.2; code-reviewer, round 14).
+  for (const [file, poster, t, control] of [
+    ["bitewise-loop", "bitewise-loop-poster", 3.2, 1.8],
+    ["ascend-loop", "ascend-loop-poster", 1, null],
+    ["orbit-loop", "orbit-loop-poster", 10, null],
   ] as const) {
     for (const theme of ["light", "dark"]) {
-      const diff = await page.evaluate(
+      const diffAt = (t: number) => page.evaluate(
         async ([src, img, t]) => {
           const once = (el: EventTarget, ev: string) => new Promise((r) => el.addEventListener(ev, r, { once: true }));
           const v = document.createElement("video");
@@ -164,8 +174,9 @@ test("every hero poster matches its loop's start frame", async ({ page }) => {
         },
         [`/media/${file}-${theme}.mp4`, `/media/${poster}-${theme}.png`, t] as const,
       );
-      // Measured: 0.1 to 0.5 for the right frame; an Orbit frame 1 s away is ~2.4.
-      expect(diff, `${file}-${theme}`).toBeLessThan(1);
+      // Measured: 0.1 to 0.7 for the right frame; an Orbit frame 1 s away is ~2.4.
+      expect(await diffAt(t), `${file}-${theme}`).toBeLessThan(1);
+      if (control !== null) expect(await diffAt(control), `${file}-${theme} control`).toBeGreaterThan(1);
     }
   }
 });
@@ -204,7 +215,8 @@ test("each Demo video tour starts past its login, on a settled screen", async ({
     for (const theme of ["light", "dark"] as const) {
       const src = `/media/${app}-demo-${theme}.mp4`;
       const start = START[app][theme];
-      // Measured: 18 to 47 from the login at 1 s; under 0.8 from 0.25 s later.
+      // Measured: 18 to 47 from the login at 1 s; under 0.8 from 0.25 s later (Bitewise's
+      // rings are still filling at 2.5 s: 0.6 to 0.8, round 14).
       expect(await frameDiff(src, start, 1), `${app}-${theme} vs login`).toBeGreaterThan(10);
       expect(await frameDiff(src, start, start + 0.25), `${app}-${theme} settled`).toBeLessThan(2);
     }
@@ -258,7 +270,7 @@ test("the hero loops pause behind an open Demo video and play again after it clo
 // Demo video (round 10): each tile's tour opens in a dialog, plays there, and closes.
 // Round 11: each starts at its first app screen (components/media.ts, read frame by frame).
 const START: Record<string, Record<"light" | "dark", number>> = {
-  bitewise: { light: 2.8, dark: 3 },
+  bitewise: { light: 2.5, dark: 2.5 },
   ascend: { light: 3.1, dark: 3.1 },
   orbit: { light: 3.5, dark: 3.3 },
 };
