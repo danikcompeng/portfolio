@@ -12,6 +12,13 @@
 // the video's poster (so the native controls are never covered), and it comes back as it closes, so it reads as one object. Transform, opacity and clip-path
 // only, --dur-ui, ease-out both ways. Closing never waits on the animation: the dialog closes
 // in a `finally`, and a second Esc closes it at once. Reduce Motion: no movement at all.
+//
+// Round 15: the tour starts with play(), not the autoplay attribute, so a refusal (iOS Low
+// Power Mode) can be seen. A paused video shows its start frame, never its poster, so a tour
+// whose first frame is mid-animation (Bitewise's rings filling) gets a settled still and a
+// Play button over it instead (a tap anywhere on the still works too); pressing Play plays
+// from the usual start. The native controls stay off while the still covers them, the still
+// fades once the tour is really playing, and focus moves to the video (or Close).
 
 import { useEffect, useRef, useState } from "react";
 import type { Theme } from "@/lib/client-state";
@@ -82,6 +89,11 @@ export function DemoVideo({ name, demo }: { name: string; demo: Demo }) {
   // The tour mounts once the phone has landed, so the expand runs without the video's start-up.
   // From then on the still is the video's poster, so the native controls always show.
   const [videoOn, setVideoOn] = useState(false);
+  const tour = useRef<HTMLVideoElement>(null);
+  const closeButton = useRef<HTMLButtonElement>(null);
+  // The settled still over a refused tour: shown, then fading once the tour plays, then gone.
+  const [cover, setCover] = useState<"none" | "shown" | "leaving">("none");
+  const refocus = useRef(false);
   const theme = useTheme();
   const id = `demo-${name.toLowerCase()}`;
 
@@ -96,6 +108,7 @@ export function DemoVideo({ name, demo }: { name: string; demo: Demo }) {
     setStill(tile?.querySelector<HTMLImageElement>(`img.only-${theme}`)?.currentSrc || null);
     setStillShown(false);
     setVideoOn(false);
+    setCover("none");
     d.showModal();
     // Only once it's open: a failed showModal must not leave the page locked.
     document.documentElement.setAttribute("data-dialog", "");
@@ -173,6 +186,31 @@ export function DemoVideo({ name, demo }: { name: string; demo: Demo }) {
     trigger.current?.focus({ preventScroll: true });
   };
 
+  // Start the tour once it's mounted. A refusal shows the paused state (and the settled still,
+  // if this tour has one); anything else (an abort on close) needs nothing.
+  useEffect(() => {
+    if (!videoOn || !openTheme) return;
+    tour.current?.play().catch((err: unknown) => {
+      if (err instanceof DOMException && err.name === "NotAllowedError" && demo.poster) setCover("shown");
+    });
+  }, [videoOn, openTheme, demo.poster]);
+
+  // The Play button goes once the tour plays: put focus on the video (its controls are back),
+  // or on Close if this browser doesn't focus a video, never on the page behind.
+  useEffect(() => {
+    if (cover === "shown" || !refocus.current) return;
+    refocus.current = false;
+    tour.current?.focus();
+    if (document.activeElement !== tour.current) closeButton.current?.focus();
+  }, [cover]);
+
+  const startTour = () => {
+    refocus.current = true;
+    void tour.current?.play().catch(() => {});
+  };
+
+  const poster = cover !== "none" && openTheme ? demo.poster?.[openTheme] : undefined;
+
   // Unmounted while open (a client navigation): release the page.
   useEffect(() => {
     const button = trigger.current;
@@ -220,12 +258,13 @@ export function DemoVideo({ name, demo }: { name: string; demo: Demo }) {
         }}
       >
         <div className="demo-phone" ref={phoneBox}>
-          <button type="button" className="media-button press demo-close" aria-label="Close the video" autoFocus onClick={() => void requestClose()}>
+          <button ref={closeButton} type="button" className="media-button press demo-close" aria-label="Close the video" autoFocus onClick={() => void requestClose()}>
             <Close />
           </button>
           <Phone>
             {openTheme && videoOn ? (
               <video
+                ref={tour}
                 className="demo-video"
                 // A media fragment starts it past the login, at the first app screen: the
                 // browser does it natively, nothing is hidden, and the controls can still go
@@ -233,14 +272,36 @@ export function DemoVideo({ name, demo }: { name: string; demo: Demo }) {
                 src={`${demo.sources[openTheme]}#t=${demo.start[openTheme]}`}
                 muted
                 playsInline
-                controls
-                autoPlay
+                // Off while the settled still covers them (a refused tour): Play is the one control.
+                controls={cover !== "shown"}
                 preload="auto"
                 disablePictureInPicture
                 // The same picture as the still, so the hand-over can't be seen; the controls
                 // show over it even if autoplay is refused or the tour never buffers.
                 poster={still ?? undefined}
+                onPlaying={() => setCover((c) => (c === "shown" ? (reduced() ? "none" : "leaving") : c))}
               />
+            ) : null}
+            {poster ? (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element -- loaded only on a refusal */}
+                <img
+                  className="demo-poster"
+                  src={poster.src}
+                  width={poster.width}
+                  height={poster.height}
+                  alt=""
+                  data-shown={cover === "shown"}
+                  // A tap anywhere on the still plays too (pointer only; the button is the named control).
+                  onClick={cover === "shown" ? startTour : undefined}
+                  onTransitionEnd={() => setCover((c) => (c === "leaving" ? "none" : c))}
+                />
+                {cover === "shown" ? (
+                  <button type="button" className="media-button press demo-play" aria-label={`Play the ${name} demo video`} onClick={startTour}>
+                    <Play fill="currentColor" />
+                  </button>
+                ) : null}
+              </>
             ) : null}
             {openTheme && still ? (
               // eslint-disable-next-line @next/next/no-img-element -- the tile's already-loaded image, reused as is

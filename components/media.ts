@@ -8,6 +8,8 @@ import loopPosterDark from "@/public/media/bitewise-loop-poster-dark.png";
 import loopPosterLight from "@/public/media/bitewise-loop-poster-light.png";
 import costDark from "@/public/media/bitewise-cost-dark.png";
 import costLight from "@/public/media/bitewise-cost-light.png";
+import demoPosterDark from "@/public/media/bitewise-demo-poster-dark.png";
+import demoPosterLight from "@/public/media/bitewise-demo-poster-light.png";
 import swapSheetDark from "@/public/media/bitewise-swap-sheet-dark.png";
 import swapSheetLight from "@/public/media/bitewise-swap-sheet-light.png";
 import todayDark from "@/public/media/bitewise-today-dark.png";
@@ -69,6 +71,11 @@ export type Demo = {
   sources: { dark: string; light: string };
   /** Seconds into each file where the first app screen is up, past the login (round 11). */
   start: { dark: number; light: number };
+  /**
+   * A settled frame, shown only if autoplay is refused (iOS Low Power Mode), for a tour whose
+   * first frame is mid-animation: a paused video shows its start frame, not its poster.
+   */
+  poster?: { dark: typeof demoPosterDark; light: typeof demoPosterLight };
 };
 
 /**
@@ -79,6 +86,8 @@ export const demos: Record<"bitewise" | "ascend" | "orbit", Demo> = {
   bitewise: {
     sources: { dark: "/media/bitewise-demo-dark.mp4", light: "/media/bitewise-demo-light.mp4" },
     start: { dark: 2.5, light: 2.5 }, // meal-cost-tracker 0a7f5a8 (round 14)
+    // Its rings are still filling at 2.5 s; this is Today at 4.0 s, rings full (round 15).
+    poster: { dark: demoPosterDark, light: demoPosterLight },
   },
   ascend: {
     sources: { dark: "/media/ascend-demo-dark.mp4", light: "/media/ascend-demo-light.mp4" },

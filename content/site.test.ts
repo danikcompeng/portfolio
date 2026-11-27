@@ -91,6 +91,30 @@ describe("content rules", () => {
     }
   });
 
+  // Every shipping picture carries its origin in a PNG text chunk (SOURCES.md). The case study's
+  // Today alt describes the details-open capture of Nov 27 (round 15), so the file must be it.
+  it("every PNG in public/media carries its origin, and the Today screen is the details-open capture", () => {
+    const origin = (file: string) => {
+      const b = readFileSync(file);
+      for (let o = 8; o < b.length; ) {
+        const n = b.readUInt32BE(o);
+        if (b.toString("latin1", o + 4, o + 8) === "tEXt") return b.toString("latin1", o + 8, o + 8 + n);
+        o += 12 + n;
+      }
+      return "";
+    };
+    const dir = join(process.cwd(), "public", "media");
+    const pngs = readdirSync(dir).filter((f) => extname(f) === ".png");
+    expect(pngs.length).toBeGreaterThan(10);
+    for (const f of pngs) expect(origin(join(dir, f)), f).toMatch(/^(impeccable:prompt|Source)\0\S/);
+    for (const theme of ["light", "dark"]) {
+      const text = origin(join(dir, `bitewise-today-${theme}.png`));
+      expect(text).toContain("Show details opened");
+      expect(text).toContain("2026-11-27");
+    }
+    expect(site.bitewise.screens.today.alt).toMatch(/details open.*1,274 of 2,200 kcal/);
+  });
+
   it("links only over https (or mailto / same-site)", () => {
     for (const [name, value] of Object.entries(site.links)) {
       if (name === "email") continue;

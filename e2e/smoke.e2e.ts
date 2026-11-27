@@ -350,6 +350,22 @@ test("case study: loads clean, with its own title, a link preview and no placeho
   expect(errors).toEqual([]);
 });
 
+// Round 15: the case study's header phone shows the Today image for the theme on screen, named
+// by its alt. What the image itself shows (details open, Nov 27) is checked in
+// content/site.test.ts, from the origin embedded in the file.
+for (const theme of ["light", "dark"] as const) {
+  test(`case study: the header phone shows Today in ${theme}, named by its alt`, async ({ browser }) => {
+    const ctx = await browser.newContext({ ...DESKTOP, colorScheme: theme });
+    const page = await ctx.newPage();
+    await page.goto(CASE);
+    const shot = page.getByRole("img", { name: site.bitewise.screens.today.alt });
+    await expect(shot).toHaveCount(1);
+    await expect(shot).toBeVisible();
+    expect(await shot.evaluate((img: HTMLImageElement) => img.currentSrc)).toMatch(new RegExp(`bitewise-today-${theme}`));
+    await ctx.close();
+  });
+}
+
 test("case study: outside links open in a new tab safely, including the two commit links", async ({ page }) => {
   await page.goto(CASE);
   const links = await page.$$eval("a[target=_blank]", (as) =>

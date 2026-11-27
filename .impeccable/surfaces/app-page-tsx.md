@@ -7,6 +7,12 @@ related_targets: []
 
 # Surface: landing page (`/`)
 
+> **Superseded in part (2026-11-27).** This brief and `.impeccable/design.json` (the `untilt`
+> motion, the pinned phone) describe the round-1 page: one tilted Bitewise phone that
+> straightens on scroll while a four-step story passes, two buttons, How I build. Those were
+> removed in rounds 10 and 11. The current bar is `plans/portfolio.md` section 5 and
+> CLAUDE.md: three equal phones, three equal tiles, the Demo video dialog.
+
 Mode: **Persuade**. The visitor (a product or design-engineering lead, or a recruiter, arriving from a message or resume link) should know within seconds who Dani is and what Dani ships, try Bitewise or look at the work, and leave with an obvious way to get in touch.
 
 - Action: "Try Bitewise" (live demo, no sign-up) and "See the work"; the close is the email.

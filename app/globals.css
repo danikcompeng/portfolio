@@ -752,6 +752,52 @@ button.text-link {
 .demo-still[data-shown="false"] {
   opacity: 0;
 }
+/* Only when autoplay is refused, for a tour that starts mid-animation: a settled still,
+   dimmed so it reads as paused, and a Play button over the paused video (round 15). The still
+   fades once the tour is playing. */
+.demo-poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.82);
+  cursor: pointer;
+  transition: opacity var(--dur-ui) var(--ease-out);
+}
+.demo-poster[data-shown="false"] {
+  opacity: 0;
+  pointer-events: none;
+}
+/* A player control, not app UI: the caption pill's dark glass in both themes, larger than the
+   hero's 44 px buttons, with a filled triangle. */
+.demo-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  width: 64px;
+  height: 64px;
+  background: oklch(0.1 0.004 260 / 0.7);
+  color: oklch(0.98 0 0);
+  border-color: oklch(1 0 0 / 0.24);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 24px oklch(0 0 0 / 0.28);
+}
+.demo-play:hover {
+  background: oklch(0.1 0.004 260 / 0.85);
+}
+.demo-play .icon {
+  width: 26px;
+  height: 26px;
+  translate: 1px 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .demo-poster {
+    transition: none;
+  }
+}
 /* The phone itself grows from the tile (components/demo-video.tsx); the backdrop, the close
    button and the caption fade in and out around it. */
 @media (prefers-reduced-motion: no-preference) {

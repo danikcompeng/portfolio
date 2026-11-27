@@ -86,11 +86,13 @@ without its file fails a unit test, and `scripts/check-built-html.mjs` fails the
 
 ## 5. Design direction
 
-This section is the bar for the design-critic and the finish review.
+This section is the bar for the design-critic and the finish review. Updated in round 15 to
+the page as it stands (three-phone hero since round 10, motion since round 12).
 
 - **Thesis:** the page is a neutral stage; the products bring the colour. It refuses the
-  template portfolio (name, skills list, grid of same-size project cards) and the SaaS split
-  hero with a badge row.
+  template portfolio (name, skills list, a grid of plain project cards) and the SaaS split
+  hero with a badge row. The three Work tiles are the same size on purpose (round 10: no app
+  looks like the main one), but each carries its app: its colour, its phone, its numbers.
 - **Ground:** near-black, not pure black (`oklch(0.16 0.004 260)`), raised surfaces a step
   lighter, alpha hairlines. Light: off-white (`oklch(0.985 0.002 260)`) with near-black ink.
   Text ≥ 4.5:1 on every surface it sits on, checked by a unit test that reads the CSS.
@@ -99,22 +101,41 @@ This section is the bar for the design-critic and the finish review.
   (`#FF8F57` / `#B8420E`), Orbit blue (`#8AA8FF` / `#1D4ED8`). Each product's tile is tinted
   with its hue (a deep tint on dark, a pale tint on light) and its links use its accent. No
   site-wide accent, no neon, no glow, no gradient text.
-- **Type:** Geist for everything, display set large and tight (600 weight, −0.035em, max
-  6rem); Geist Mono only for data (counts, agent names, file paths, dates), tabular. Body
+- **Type:** Geist for everything, display set large and tight (600 weight, −0.038em,
+  `clamp(2.75rem, 1.1rem + 5.2vw, 5.5rem)`); Geist Mono only for data (counts, dates, file and agent names), tabular, and for
+  small media captions (the Demo video caption, the case study figure captions). Body
   17–18 px, 65–75ch.
 - **Shape:** concentric radii (outer = inner + padding), one radius scale (8 / 14 / 22 /
   30 px), one icon set drawn in-house at 1.5 px stroke.
-- **First viewport (1440 × 900):** nav row; h1 "From idea to live app, end to end." at ~88 px
-  over two lines, left; subline; two buttons; the phone on the right at ~75% of the viewport
-  height, tilted back in perspective, playing the Bitewise loop, a small label under it. At
-  390 px: h1, subline, buttons, then the phone's top edge above the fold.
-- **Signature interaction:** scrolling from the hero, the phone straightens and stays pinned
-  while the four Bitewise steps pass on the left and its screen changes with them.
+- **First viewport (1440 × 900):** nav row (name; Work, About, and Resume once its PDF exists
+  (flags.resumePdf); theme toggle); h1 "From idea to live app, end to end." over two lines,
+  left; from 1100 px the subline and one button (See the work) sit in a column to its right,
+  the button level with its last line. Below, three equal phones, Bitewise, Ascend and Orbit, on
+  Work's three columns, each over its tile, mostly within the first screen. Each plays its own
+  loop (theme-matched, muted, opening on a settled home screen), with its name and caption
+  under it and a 44 px pause button. All three share one gentle static tilt
+  (`rotateY(-10deg) rotateX(6deg)`), flat under Reduce Motion. No phone is bigger than the
+  others: none is the main project. At 390 px: h1, subline, button, then a swipeable row
+  that snaps phone by phone with the next one peeking in, its top above the fold.
+- **Loading order:** a loop loads only when its phone is on screen; at 1440 the side loops wait
+  for Bitewise's to start (or fail, or 5 s), so the first one plays sooner.
+- **Work:** three tiles of the same size and layout, each tinted with its product's colour:
+  name, one line, numbers, one decision, links (Open, Demo video; Bitewise also its case
+  study), then a cropped phone with a still of a screen its loop doesn't show.
+- **Signature interaction:** Demo video. The tile's phone grows into a centred dialog and the
+  full tour plays there, starting after the login; closing shrinks it back into the tile. The
+  page behind dims and blurs. If autoplay is refused, a settled still and a Play button
+  show instead of a half-drawn frame (round 15).
+- **Case study (/work/bitewise):** a header tinted with Bitewise's field (title, numbers, links,
+  the phone with Today), then long-form text at reading width with one figure (the swap
+  sheet) and quoted catches linking their commits.
 - **Motion grammar:** exponential ease-out (`cubic-bezier(0.16, 1, 0.3, 1)`), 150–250 ms for
   presses and toggles, 400–600 ms for reveals and screen changes. Reveals start at 0.97 scale
   and fade in, once, and only for content below the fold at load. Press feedback (0.97) on
-  everything clickable. Content is visible without JS. Reduce Motion: no tilt, no autoplay,
-  no reveals, instant screen changes.
+  everything clickable. Content is visible without JS. Once on load the h1 wipes in with a soft mask (400 ms);
+  icon swaps (theme toggle, pause/play) blur-crossfade. Reduce Motion: no tilt, no autoplay of
+  the hero loops (posters until play is pressed; a Demo video still plays when opened, as the
+  visitor asked for it), no reveals or wipe, no expand, instant swaps.
 - **Browser surfaces themed:** selection colour, focus ring (2 px, offset 3 px), scrollbar
   colours, caret, underline offset.
 
@@ -627,6 +648,40 @@ Brief: `~/Documents/claude-inbox/portfolio/08-refresh-bitewise-videos.md`.
    loops are 0.72 / 0.70 MB (were 0.79 / 0.78), the tours 2.58 / 2.45 MB (were 2.73 / 2.51).
    Screenshots in `docs/screenshots/round-14`.
 
+## Round 15: three tidy-ups (2026-11-27)
+
+Dani's brief (in chat), after round 14's review notes:
+1. **Case study Today screen**: the live demo re-seeds the same meals daily, so a plain
+   re-capture would repeat the hero's numbers exactly (926 kcal left, $4.20, Overnight oats).
+   Dani's pick: today's live Today with Show details opened (Playwright, 393 × 852 @2, both
+   themes; nothing logged, swapped or reset): dated Nov 27, and below the rings the daily
+   targets (1,274 of 2,200 kcal ... 750 of 2,000 ml), which the hero never shows. Scrolled 70 px
+   so the whole card, "Today costs $4.20" included, clears the Scan button (design-critic):
+   the screen opens on the date row. Alt updated, with a source comment.
+2. **Demo video when autoplay is refused** (iOS Low Power Mode): a paused video shows its start
+   frame, never its poster (checked in Chrome: with `#t=2.5` and a poster, the paused video
+   shows the 2.5 s frame, rings a quarter drawn). So the tour now starts with `play()`
+   instead of the autoplay attribute; on NotAllowedError, a tour with a settled poster
+   (Bitewise: Today at 4.0 s, rings full, still from 3.1 to 6.3 s, `bitewise-demo-poster-*`)
+   shows it, dimmed, with a 64 px Play button over the video (the caption pill's dark glass in
+   both themes, a filled triangle); a tap anywhere on the still plays too. The native controls
+   stay off while the still covers them. Pressing Play plays from the usual start (2.5 s); the
+   button goes, the still fades out over `--dur-ui` once the tour is really playing (none under
+   Reduce Motion), and focus moves to the video (or Close). Ascend's and Orbit's tours open on
+   settled screens (0.02 to 0.25 vs 0.25 s later), so they keep the native controls. The
+   poster (255 / 257 KB) loads only on a refusal.
+3. **Section 5** describes the page as it stands: three-phone hero, loading order, equal
+   tiles, the Demo video as the signature interaction, the motion added in round 12, and the
+   real display type values.
+Checks: e2e for the refusal per theme (refusal proven by a flag; still visible and
+theme-matched, equal to the tour's 4.0 s frame and unlike its start frame; controls off; axe;
+Play by click in light and keyboard in dark plays from the usual start, not 0 or 4.0; still
+and button go, controls back, focus inside the dialog), Esc on a refused tour and reopening,
+Ascend's and Orbit's refusals stay paused on their start with native controls; the case
+study's header phone per theme; a unit test that every media PNG carries its origin and the
+Today file is the details-open capture. 54 unit tests, 73 Playwright checks, bracket check;
+screenshots in `docs/screenshots/round-15`.
+
 ## Reviews
 
 ### Plan review, logic-checker (2026-11-25)
@@ -999,6 +1054,36 @@ Verdict: **Ship**. No regressions against round 13; the Bitewise hero phone impr
 - "Demo account" pill close to the screen's top edge: comes from the recording, as before.
 - Section 5 (Design direction) still describes the round-1 hero; the critic judged against CLAUDE.md and rounds 10 to 14.
 
+### Round 15 build review, code-reviewer (2026-11-27)
+Verdict: **Ship after fixes**.
+
+| # | Severity | Finding | Outcome | How |
+|---|---|---|---|---|
+| 1 | Medium | Pressing Play unmounts the focused button: focus falls to `<body>`. | Fixed | Focus moves to the video once the still goes (Close if the browser won't focus a video); tested by keyboard. |
+| 2 | Medium | The still covers native controls that stay in the tab order and the accessibility tree. | Fixed | `controls` off while the still shows; back after Play (tested). |
+| 3 | Medium | Ascend's refusal test would pass with no refusal. | Fixed | A flag proves the refusal; paused at its start; Orbit too. |
+| 4 | Low | The case study test checked a constant against itself. | Fixed | Removed; a unit test reads the PNG's embedded origin (details opened, 2026-11-27). |
+| 5 | Low | Play could restart from 0 unnoticed. | Fixed | First playing time ≥ start − 0.1 and < 3.5. |
+| 6 | Low | New alt numbers had no source comment. | Fixed | Points at SOURCES.md. |
+| 7 | Low | README, the round 14 note, section 5 (Reduce Motion, Resume) and `.impeccable/` disagreed with the page. | Fixed | README names Bitewise's tour; the note says superseded; section 5 fixed; a superseded notice on the `.impeccable` landing brief (it names `design.json` too, left as generated). |
+| 8 | Low | A tap on the still did nothing. | Fixed | A tap anywhere on it plays (pointer only; the button stays the named control). |
+| 9 | Low | The poster is a full PNG. | Kept | 255 / 257 KB, loaded only on a refusal; kept lossless so the "equal to the 4.0 s frame" check stays exact. |
+
+Also added: Esc on a refused tour closes it and reopening plays with no still; axe on the refused state.
+
+### Round 15 build review, design-critic (2026-11-27)
+Verdict: **Ship after fixes**. No regressions against round 14.
+
+| # | Severity | Finding | Outcome | How |
+|---|---|---|---|---|
+| 1 | Medium | In dark the Play disc was darker than the card behind it and read as app UI. | Fixed | Dark glass (the caption pill's) in both themes, blur, a filled triangle; the still dimmed (brightness 0.82) so it reads as paused. |
+| 2 | Medium | Play snapped the rings from full back to a quarter. | Fixed | The still stays until the tour is really playing, then fades over `--dur-ui` (kept the 2.5 s start, as Dani asked). |
+| 3 | Medium | Focus lost on Play. | Fixed | As code-reviewer #1. |
+| 4 | Medium | "Today costs $4.20" cut by the Scan button in the new still. | Fixed | Re-captured scrolled 70 px: the whole card clears it. |
+| 5 | Low | At 390 the case study's first viewport still shows the ring and macros, like the hero. | Logged | The targets table sits just below; the demo re-seeds the same meals, so the top is the same screen by nature. |
+| 6 | Low | Two dates on the case study (Today Nov 27, the swap figure Nov 25). | Logged | The swap's caption says it was captured on the live demo; not re-captured for its date. |
+| 7 | Low | Section 5 gaps (mono captions, case study page, subline wording). | Fixed | All three. |
+
 ## Decided while Dani was away
 
 - Theme follows the system with a remembered toggle, over dark-for-everyone: it respects the visitor's setting and is a one-line change (open question 3).
@@ -1030,4 +1115,6 @@ Verdict: **Ship**. No regressions against round 13; the Bitewise hero phone impr
 - Round 12: the expand's frame times at 4x CPU throttle in Chrome are mostly within 33 ms, with one 100 ms frame as Bitewise's tour is torn down after the shrink lands; a real iPhone check is on the phone-test list.
 - Round 13: kept Orbit's "500+ unit tests" floor though its plan now records 610: raising a number on the page is Dani's call (it would read "600+"). Dani said yes (2026-11-27): "600+ unit tests", source network-crm plans/crm.md (vitest 610/610).
 - Round 14: Bitewise's loop starts at 3.2 s (settled Today, ~1.8 s before the swap shot) over the first frame after the login (1.7 s, rings empty), so the poster is a full screen; tours start at 2.5 s by the round 11 rule.
-- Round 14: kept the case study's Nov 25 Today screen, though it now matches the hero's numbers: re-capturing it wasn't in the brief.
+- Round 14: kept the case study's Nov 25 Today screen, though it now matches the hero's numbers: re-capturing it wasn't in the brief. (Superseded in round 15: re-captured with its details open.)
+- Round 15: the case study's Today capture is scrolled 70 px (opens on the date row, without the Today title and Demo account pill) so the whole card clears the Scan button, over the full top with "Today costs" cut.
+- Round 15: only Bitewise's tour gets the refusal still and Play button; Ascend's and Orbit's start frames are already settled, so a refusal leaves them on their native controls.

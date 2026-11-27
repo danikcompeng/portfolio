@@ -77,10 +77,11 @@ export const bitewise = {
   still: {
     alt: "The Chicken rice bowl recipe: $2.48 cost per serving, makes 4 servings, 22 g protein per dollar; sugar, fiber, sat fat and sodium show dashes, as unknown.",
   },
-  // The case study's first screen.
+  // The case study's first screen. public/media/SOURCES.md, bitewise-today-*: what the capture
+  // shows (live demo, Show details open, 2026-11-27; every number checked against both themes).
   screens: {
     today: {
-      alt: "Bitewise's Today screen: 926 kcal left in a ring, protein, carbs, fat and water rings, and what today costs.",
+      alt: "Bitewise's Today screen with its details open: 926 kcal left in a ring, the protein, carbs, fat and water rings, and each against its daily target, from 1,274 of 2,200 kcal to 750 of 2,000 ml of water, and what today costs.",
     },
   },
   stats: {

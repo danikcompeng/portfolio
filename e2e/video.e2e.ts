@@ -1,6 +1,7 @@
 // Video behaviour in branded Chrome, which decodes H.264 (bundled Chromium may not, so a
 // "nothing plays" check there could pass for the wrong reason: code-reviewer, review 1).
 // Needs Google Chrome installed (it is on this machine; CI would need `npx playwright install chrome`).
+import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
 test.use({ channel: "chrome", viewport: { width: 1440, height: 900 } });
@@ -325,4 +326,145 @@ for (const { name, slug, title } of [
       await ctx.close();
     });
   }
+}
+
+// Round 15: autoplay refused (iOS Low Power Mode). A paused video shows its start frame, never
+// its poster, and Bitewise's start frame has its rings mid-fill: it gets a settled still (Today
+// at 4.0 s, rings full) and a Play button, which plays from the usual start. The first play()
+// in the dialog is refused here, as Low Power Mode does; the Play button's own call goes
+// through. `__refused` proves the refusal happened; `__t0` is where the tour first plays from.
+const REFUSE_FIRST_PLAY = () => {
+  const w = window as unknown as { __refused?: boolean; __t0?: number };
+  const play = HTMLMediaElement.prototype.play;
+  HTMLMediaElement.prototype.play = function (this: HTMLMediaElement) {
+    if (!w.__refused && this.closest("dialog")) {
+      w.__refused = true;
+      return Promise.reject(new DOMException("Refused", "NotAllowedError"));
+    }
+    return play.call(this);
+  };
+  document.addEventListener(
+    "playing",
+    (e) => {
+      if ((e.target as Element).closest("dialog")) w.__t0 ??= (e.target as HTMLVideoElement).currentTime;
+    },
+    true,
+  );
+};
+const flag = (page: Page, key: "__refused" | "__t0") => page.evaluate((k) => (window as unknown as Record<string, unknown>)[k], key);
+const tourState = (page: Page) =>
+  page.evaluate(() => {
+    const v = document.querySelector<HTMLVideoElement>("dialog[open] video");
+    return v ? { paused: v.paused, controls: v.controls, time: v.currentTime, ready: v.readyState } : null;
+  });
+
+for (const theme of ["light", "dark"] as const) {
+  // Light presses Play with the mouse, dark with the keyboard.
+  const how = theme === "light" ? "click" : "keyboard";
+  test(`Bitewise: a refused ${theme} tour shows its settled still and a Play button (${how}), then plays from its start`, async ({ browser }) => {
+    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: theme });
+    const page = await ctx.newPage();
+    await page.addInitScript(REFUSE_FIRST_PLAY);
+    await page.goto("/", { waitUntil: "networkidle" });
+    await page.locator("article:has(#bw-title)").getByRole("button", { name: "Demo video of Bitewise" }).click();
+    const dialog = page.getByRole("dialog", { name: "Bitewise demo video" });
+    const poster = dialog.locator(".demo-poster");
+    const play = dialog.getByRole("button", { name: "Play the Bitewise demo video" });
+    await expect(poster).toBeVisible();
+    await expect(poster).toHaveAttribute("src", new RegExp(`bitewise-demo-poster-${theme}`));
+    await expect(play).toBeVisible();
+    expect(await flag(page, "__refused")).toBe(true);
+    // Paused, and its native controls are off while the still covers them: Play is the one control.
+    await expect.poll(() => tourState(page)).toMatchObject({ paused: true, controls: false });
+
+    // The still is the tour's own settled frame (4.0 s), clearly not its mid-fill start frame.
+    const diffAt = (t: number) =>
+      page.evaluate(
+        async ([src, t]) => {
+          const once = (el: EventTarget, ev: string) => new Promise((r) => el.addEventListener(ev, r, { once: true }));
+          const px = (s: CanvasImageSource) => {
+            const c = document.createElement("canvas");
+            c.width = 393;
+            c.height = 852;
+            const x = c.getContext("2d")!;
+            x.drawImage(s, 0, 0, 393, 852);
+            return x.getImageData(0, 0, 393, 852).data;
+          };
+          const v = document.createElement("video");
+          v.muted = true;
+          v.src = src;
+          await once(v, "loadedmetadata");
+          v.currentTime = t;
+          await once(v, "seeked");
+          const a = px(v);
+          const b = px(document.querySelector<HTMLImageElement>("dialog[open] .demo-poster")!);
+          let sum = 0;
+          for (let i = 0; i < a.length; i += 4) sum += Math.abs(a[i] - b[i]) + Math.abs(a[i + 1] - b[i + 1]) + Math.abs(a[i + 2] - b[i + 2]);
+          return sum / (a.length / 4) / 3;
+        },
+        [`/media/bitewise-demo-${theme}.mp4`, t] as const,
+      );
+    expect(await diffAt(4), "the settled frame").toBeLessThan(1);
+    expect(await diffAt(START.bitewise[theme]), "the start frame").toBeGreaterThan(1);
+
+    // The refused state passes axe.
+    const axe = await new AxeBuilder({ page }).include("dialog[open]").analyze();
+    expect(axe.violations.map((v) => v.id)).toEqual([]);
+
+    if (how === "click") await play.click();
+    else {
+      await play.focus();
+      await page.keyboard.press("Enter");
+    }
+    await expect.poll(() => playing(page, "dialog[open] video"), { timeout: 15_000 }).toBe(true);
+    // From the usual start (past the login), not from 0 and not from the still's 4.0 s.
+    const t0 = (await flag(page, "__t0")) as number;
+    expect(t0).toBeGreaterThanOrEqual(START.bitewise[theme] - 0.1);
+    expect(t0).toBeLessThan(3.5);
+    // The still fades and goes, the button with it; the controls are back; focus stays in the dialog.
+    await expect(play).toHaveCount(0);
+    await expect(poster).toHaveCount(0);
+    expect((await tourState(page))?.controls).toBe(true);
+    expect(await page.evaluate(() => Boolean(document.activeElement?.closest("dialog[open]")))).toBe(true);
+    await ctx.close();
+  });
+}
+
+test("Bitewise: Esc on a refused tour closes it; reopening, the tour plays with no still", async ({ page }) => {
+  const posters: string[] = [];
+  page.on("request", (r) => {
+    if (r.url().includes("demo-poster")) posters.push(r.url());
+  });
+  await page.addInitScript(REFUSE_FIRST_PLAY);
+  await page.goto("/", { waitUntil: "networkidle" });
+  const button = page.locator("article:has(#bw-title)").getByRole("button", { name: "Demo video of Bitewise" });
+  await button.click();
+  const dialog = page.getByRole("dialog", { name: "Bitewise demo video" });
+  await expect(dialog.locator(".demo-poster")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(button).toBeFocused();
+  expect(posters.length).toBe(1);
+  // Only the first play() is refused: this time it plays, and the still never shows.
+  await button.click();
+  await expect.poll(() => playing(page, "dialog[open] video"), { timeout: 15_000 }).toBe(true);
+  await expect(dialog.locator(".demo-poster, .demo-play")).toHaveCount(0);
+});
+
+for (const [name, slug, title] of [
+  ["Ascend", "ascend", "#as-title"],
+  ["Orbit", "orbit", "#or-title"],
+] as const) {
+  test(`${name} starts on a settled screen: a refused tour stays paused there with its native controls, no still`, async ({ page }) => {
+    await page.addInitScript(REFUSE_FIRST_PLAY);
+    await page.goto("/", { waitUntil: "networkidle" });
+    await page.locator(`article:has(${title})`).getByRole("button", { name: `Demo video of ${name}` }).click();
+    const dialog = page.getByRole("dialog", { name: `${name} demo video` });
+    await expect.poll(async () => (await tourState(page))?.ready ?? 0).toBeGreaterThanOrEqual(2);
+    expect(await flag(page, "__refused")).toBe(true);
+    const state = (await tourState(page))!;
+    expect(state).toMatchObject({ paused: true, controls: true });
+    expect(state.time).toBeCloseTo(START[slug].light, 1);
+    await expect(dialog.locator(".demo-poster, .demo-play")).toHaveCount(0);
+  });
 }
