@@ -6,7 +6,7 @@ import { screens, swapSheet } from "@/components/media";
 import { Nav } from "@/components/nav";
 import { Phone, ScreenLayer } from "@/components/phone";
 import { Facts, OutLink } from "@/components/work";
-import { bitewise, caseStudy, links, story, type Part } from "@/content/site";
+import { bitewise, caseStudy, links, type Part } from "@/content/site";
 
 export const metadata: Metadata = {
   title: caseStudy.metaTitle,
@@ -19,13 +19,6 @@ export const metadata: Metadata = {
     url: "/work/bitewise",
   },
 };
-
-/** A story step's alt text; throws rather than ship an unlabelled screen if an id changes. */
-function altFor(id: string) {
-  const alt = story.steps.find((s) => s.id === id)?.alt;
-  if (!alt) throw new Error(`No story step "${id}" for an alt text`);
-  return alt;
-}
 
 /** One paragraph: plain text, an emphasised word, or a link that opens in a new tab. */
 function Paragraph({ parts }: { parts: Part[] }) {
@@ -85,7 +78,7 @@ export default function BitewiseCaseStudy() {
                 </div>
                 <figure className="justify-self-center">
                   <Phone style={{ "--phone-w": "min(68vw, 290px)" } as React.CSSProperties}>
-                    <ScreenLayer image={screens.today} alt={altFor("problem")} sizes="290px" priority />
+                    <ScreenLayer image={screens.today} alt={bitewise.screens.today.alt} sizes="290px" priority />
                   </Phone>
                 </figure>
               </div>

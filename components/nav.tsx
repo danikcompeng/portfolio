@@ -4,7 +4,7 @@ import { ThemeToggle } from "./theme-toggle";
 
 const linkBase = "press min-h-11 items-center rounded-lg px-2.5 text-[0.9375rem] whitespace-nowrap text-ink-muted hover:text-ink";
 const linkClass = `${linkBase} inline-flex`;
-// Wide screens only: "How I build" and Resume are also in the footer.
+// Wide screens only: Resume is also in the footer.
 const wideLinkClass = `${linkBase} hidden md:inline-flex`;
 
 export function Nav() {
@@ -20,9 +20,6 @@ export function Nav() {
         <div className="flex items-center gap-0.5 sm:gap-1">
           <PageLink href="/#work" className={linkClass}>
             Work
-          </PageLink>
-          <PageLink href="/#how" className={wideLinkClass}>
-            How I build
           </PageLink>
           <PageLink href="/#about" className={linkClass}>
             About

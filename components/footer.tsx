@@ -18,9 +18,6 @@ export function Footer({ onHome = false }: { onHome?: boolean }) {
           <PageLink href={`${home}#work`} className={linkClass}>
             Work
           </PageLink>
-          <PageLink href={`${home}#how`} className={linkClass}>
-            How I build
-          </PageLink>
           <PageLink href={`${home}#about`} className={linkClass}>
             About
           </PageLink>

@@ -85,6 +85,14 @@ html {
   -webkit-text-size-adjust: 100%;
   scrollbar-color: var(--line-strong) var(--bg);
   accent-color: var(--ink);
+  /* The scrollbar's room stays when a Demo video dialog locks the page: no sideways jump. */
+  scrollbar-gutter: stable;
+}
+/* While a Demo video dialog is open the page behind it doesn't scroll (iOS drags included). */
+html[data-dialog] {
+  overflow: hidden;
+  /* The scrollbar's gutter sits outside the ::backdrop: dim it to match. */
+  background: color-mix(in oklch, var(--bg), oklch(0.1 0.004 260) 78%);
 }
 @media (prefers-reduced-motion: no-preference) {
   html {
@@ -180,12 +188,6 @@ blockquote {
   letter-spacing: -0.032em;
   font-weight: 600;
 }
-.t-step {
-  font-size: clamp(1.75rem, 1.2rem + 1.5vw, 2.625rem);
-  line-height: 1.06;
-  letter-spacing: -0.028em;
-  font-weight: 600;
-}
 .t-title {
   font-size: clamp(1.5rem, 1.25rem + 0.7vw, 2rem);
   line-height: 1.1;
@@ -260,6 +262,9 @@ blockquote {
   color: var(--accent, var(--ink));
   text-decoration: underline;
   text-decoration-color: color-mix(in oklch, currentColor 35%, transparent);
+}
+button.text-link {
+  cursor: pointer;
 }
 .text-link:hover {
   text-decoration-color: currentColor;
@@ -361,163 +366,83 @@ blockquote {
 }
 
 /* ------------------------------------------------------------------------------------------
-   Hero + Bitewise story. One DOM, two layouts (plans/portfolio.md D3):
-   pinned when the window is at least 1024 x 540, stacked otherwise.
+   Hero: the text, then the three apps' phones (plans/portfolio.md, round 10). Below 1100 px
+   a swipeable row that snaps phone by phone, the next one peeking in; from 1100 px Work's
+   three columns, so each phone stands over its tile. Keep the widths in sync with SIZES in
+   components/hero.tsx.
    ------------------------------------------------------------------------------------------ */
-.story {
-  position: relative;
-  overflow-x: clip;
-  timeline-scope: --hero;
+.hero {
+  padding-block: clamp(40px, 7vw, 72px) clamp(24px, 4vw, 48px);
 }
-.story-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  max-width: var(--max);
-  margin-inline: auto;
-  padding-inline: var(--gutter);
+.hero-subline {
+  margin-top: 24px;
 }
-.story-hero {
-  padding-block: clamp(40px, 8vw, 72px) 0;
+/* From 1100 px the subline and button sit beside the headline's last line, so the phones
+   start higher and mostly fit the first screen (design-critic, round 10). */
+@media (min-width: 1100px) {
+  .hero-text {
+    display: grid;
+    grid-template-columns: auto minmax(0, 26rem);
+    justify-content: space-between;
+    align-items: end;
+    column-gap: clamp(40px, 5vw, 80px);
+  }
+  .hero-subline {
+    margin-top: 0;
+  }
 }
-.story-inline-phone {
-  --phone-w: min(72vw, 300px);
+.hero-phones {
+  --phone-w: min(64vw, 300px);
   display: flex;
-  justify-content: center;
-  margin-block: 56px 72px;
+  gap: 16px;
+  margin-top: 40px;
+  /* Full-bleed, so a swipe can start at the screen's edge; the gutter stays as padding. */
+  margin-inline: calc(var(--gutter) * -1);
+  padding: 24px var(--gutter) 32px;
+  scroll-padding-inline: var(--gutter);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
 }
-/* Bitewise's colour rises behind the story: a full-bleed field painted with border-image,
-   so it reaches both viewport edges without widening the layout. */
-.story-body {
-  border-image: linear-gradient(var(--bw-line) 0 1px, var(--bw-field) 1px) fill 0 / 0 / 0 100vw;
-  padding-block: 72px 96px;
-}
-.story-step {
-  padding-block: 40px;
-}
-.step-inline-phone {
-  --phone-w: min(64vw, 260px);
-  margin-top: 28px;
-}
-.story-stage {
+.hero-phones::-webkit-scrollbar {
   display: none;
 }
-
-@media (min-width: 1024px) and (min-height: 540px) {
-  .story-grid {
-    grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: clamp(40px, 6vw, 112px);
-  }
-  .story-hero {
-    grid-row: 1;
-    grid-column: 1;
-    min-height: calc(100svh - var(--nav-h));
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding-block: 32px 64px;
-    view-timeline: --hero block;
-  }
-  .story-body {
-    grid-row: 2;
-    grid-column: 1;
-    padding-block: 18svh 0;
-  }
-  /* The h2 and its line hold the centre alone while the video plays; step 1 comes after. */
-  .story-steps {
-    margin-top: 24svh;
-  }
-  /* Top-aligned: a step's heading reaches the centre line as its screen fades in. */
-  .story-step {
-    min-height: 72svh;
-    padding-block: 0;
-  }
-  /* Long enough for step 4 to hold the centre before the phone unpins. */
-  .story-step:last-child {
-    min-height: 60svh;
-  }
-  .story-inline-phone,
-  .step-inline-phone {
-    display: none;
-  }
-  .story-stage {
-    display: block;
-    grid-column: 2;
-    grid-row: 1 / span 2;
-  }
-  .story-sticky {
-    --phone-h: min(76svh, 780px);
-    --phone-w: calc(var(--phone-h) / 2.0932);
-    --caption-h: 64px;
-    position: sticky;
-    top: calc(var(--nav-h) + (100svh - var(--nav-h) - var(--phone-h) - var(--caption-h)) / 2);
+.hero-phones > li {
+  flex: none;
+  scroll-snap-align: start;
+}
+/* As wide as its phone, so the next phone (not a caption) peeks in. */
+.hero-phone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  width: var(--phone-w);
+}
+@media (min-width: 1100px) {
+  .hero-phones {
+    --phone-w: 280px;
     display: grid;
-    grid-template-columns: auto auto;
-    grid-template-rows: auto var(--caption-h);
-    justify-content: center;
-    align-items: center;
-    column-gap: 28px;
-    perspective: 1800px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    margin-top: 32px;
+    margin-inline: 0;
+    padding-inline: 0;
+    overflow: visible;
+  }
+  .hero-phones > li {
+    justify-self: center;
   }
 }
-
-/* The hero tilt: flat by default; tilted only where the scroll timeline can straighten it. */
+/* The same gentle tilt for all three; flat under Reduce Motion. */
 .tilt {
   transform-style: preserve-3d;
 }
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) and (min-width: 1024px) and (min-height: 540px) {
-    .tilt {
-      animation: untilt linear both;
-      animation-timeline: --hero;
-      animation-range: exit 0% exit 70%;
-    }
-  }
-}
-@keyframes untilt {
-  from {
-    transform: rotateY(-18deg) rotateX(8deg) rotateZ(1deg);
-  }
-  to {
-    transform: none;
-  }
-}
-/* On narrow screens, a fixed, gentler tilt for the hero phone only. */
 @media (prefers-reduced-motion: no-preference) {
-  .story-inline-phone .tilt-static {
+  .tilt {
     transform: perspective(1400px) rotateY(-10deg) rotateX(6deg);
   }
-}
-
-.rail {
-  display: grid;
-  gap: 10px;
-  opacity: 0;
-  transition: opacity var(--dur-ui) var(--ease-out);
-}
-.rail[data-started="true"] {
-  opacity: 1;
-}
-.rail > span {
-  width: 3px;
-  height: 28px;
-  border-radius: 2px;
-  background: color-mix(in oklch, var(--ink-muted) 45%, transparent);
-  transition:
-    background-color var(--dur-ui) var(--ease-out),
-    height var(--dur-ui) var(--ease-out);
-}
-.rail > span[data-active="true"] {
-  background: var(--bw-accent);
-  height: 44px;
-}
-
-.stage-caption {
-  grid-column: 1;
-  justify-self: center;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding-top: 16px;
 }
 
 /* ------------------------------------------------------------------------------------------
@@ -570,15 +495,23 @@ blockquote {
     box-shadow var(--dur-ui) var(--ease-out);
 }
 @media (prefers-reduced-motion: no-preference) {
-  .tile:has(a:hover, a:focus-visible) .tile-media {
+  .tile:has(a:hover, a:focus-visible, button.text-link:hover, button.text-link:focus-visible) .tile-media {
     translate: 0 -2px;
   }
 }
-/* A phone screenshot cropped by the tile's bottom edge. */
+/* A phone screenshot cropped by the tile's bottom edge, as wide as the tile allows. The
+   wrapper is the size container, not the tile: containment on the tile would switch off
+   its subgrid rows. */
 .screen-crop {
-  --phone-w: min(calc(100vw - 100px), 300px);
-  margin-inline: auto;
+  container-type: inline-size;
+  --phone-w: min(100cqi, 280px);
+  /* Full width (no auto margins): with containment its width can't come from the phone. */
+  align-self: stretch;
+  width: 100%;
   margin-bottom: calc(var(--pad) * -1 - 120px);
+}
+.screen-crop > .phone {
+  margin-inline: auto;
 }
 
 
@@ -662,131 +595,82 @@ blockquote {
 }
 
 /* ------------------------------------------------------------------------------------------
-   How I build: a drawn pipeline. Circles are Dani, filled squares are read-only agents.
-   Vertical below 1200 px, one horizontal track above.
+   Demo video: a modal dialog over the whole viewport (the ::backdrop dims the page); the
+   phone sits centred, as tall as the window allows. A click on the empty area closes it.
    ------------------------------------------------------------------------------------------ */
-.pipeline {
-  display: grid;
+.demo-dialog {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  overscroll-behavior: contain;
 }
-.station {
+.demo-dialog[open] {
+  display: grid;
+  place-items: center;
+}
+.demo-dialog::backdrop {
+  background: oklch(0.1 0.004 260 / 0.78);
+}
+.demo-phone {
+  --phone-w: min(calc(100vw - 32px), calc((100svh - 140px) / 2.0932), 420px);
   position: relative;
   display: grid;
-  align-content: start;
-  grid-template-columns: 20px minmax(0, 1fr);
-  column-gap: 18px;
-  padding-bottom: 32px;
+  justify-items: center;
+  gap: 12px;
 }
-.station::before {
-  content: "";
+.demo-caption {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: oklch(0.86 0.006 260);
+}
+.demo-video {
   position: absolute;
-  left: 9.5px;
-  top: 26px;
-  bottom: 2px;
-  width: 1px;
-  background: var(--line-strong);
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
-.station:last-child::before {
-  display: none;
+/* In the window's corner on phones; beside the phone's top-right corner from 768 px. */
+.demo-close {
+  position: fixed;
+  top: max(8px, env(safe-area-inset-top));
+  right: max(8px, env(safe-area-inset-right));
+  z-index: 1;
 }
-.node {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  margin-top: 3px;
-  border-radius: 999px;
-  border: 1.5px solid var(--ink);
-  background: var(--bg-sunk);
-}
-.node-agent {
-  border-radius: 6px;
-  background: var(--ink);
-}
-/* The fork: two reviewers on the same build. Below 1024 px they read as two stations. */
-.fork-station {
-  display: block;
-  padding-bottom: 0;
-}
-.fork-station::before {
-  display: none;
-}
-.fork {
-  display: grid;
-}
-.fork-item {
-  position: relative;
-  display: grid;
-  grid-template-columns: 20px minmax(0, 1fr);
-  column-gap: 18px;
-  padding-bottom: 32px;
-}
-.fork-item::before {
-  content: "";
-  position: absolute;
-  left: 9.5px;
-  top: 26px;
-  bottom: 2px;
-  width: 1px;
-  background: var(--line-strong);
-}
-/* Horizontal from 1200 px: below that the fork's indented agent names would wrap. */
-@media (min-width: 1200px) {
-  .pipeline {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-  }
-  .station {
-    grid-template-columns: minmax(0, 1fr);
-    row-gap: 20px;
-    padding: 0 24px 0 0;
-  }
-  .station::before {
-    left: 28px;
-    right: 8px;
-    top: 13px;
-    bottom: auto;
-    width: auto;
-    height: 1px;
-  }
-  .fork-station {
-    padding-right: 24px;
-  }
-  .fork {
-    row-gap: 28px;
-  }
-  .fork-item {
-    grid-template-columns: minmax(0, 1fr);
-    row-gap: 20px;
-    padding-bottom: 0;
-  }
-  /* First reviewer carries the track on; a branch drops from its node to the second's. */
-  .fork-item:first-child::before {
-    left: 28px;
-    right: -24px;
-    top: 13px;
-    bottom: auto;
-    width: auto;
-    height: 1px;
-  }
-  .fork-item:first-child::after {
-    content: "";
+@media (min-width: 768px) {
+  .demo-close {
     position: absolute;
-    left: 9.5px;
-    top: 26px;
-    bottom: -31px;
-    width: 1px;
-    background: var(--line-strong);
-  }
-  .fork-item:last-child::before {
-    display: none;
-  }
-  /* Text sits right of the branch line, which runs down the node's centre. */
-  .fork-item > div {
-    padding-left: 32px;
+    top: 0;
+    right: auto;
+    left: calc(100% + 16px);
   }
 }
-
-blockquote.catch {
-  border-top: 1px solid var(--line);
-  padding-top: 18px;
+@media (prefers-reduced-motion: no-preference) {
+  .demo-dialog[open]::backdrop {
+    animation: demo-fade var(--dur-ui) var(--ease-out);
+  }
+  .demo-dialog[open] .demo-phone {
+    animation: demo-in var(--dur-screen) var(--ease-out);
+  }
+}
+@keyframes demo-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes demo-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
 }
 
 /* ------------------------------------------------------------------------------------------

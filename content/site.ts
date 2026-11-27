@@ -25,22 +25,14 @@ export const links = {
   linkedin: "https://www.linkedin.com/in/dani-kainikkara-42824b395/",
   bitewise: "https://trybitewise.vercel.app",
   bitewiseCode: "https://github.com/danikcompeng/meal-cost-tracker",
-  // meal-cost-tracker README.md:10-12, "Full tour with a real iPhone scan" (the light one).
+  // meal-cost-tracker README.md:10-12, "Full tour with a real iPhone scan" (the light one):
+  // the case study's "Full tour video". The home page plays the tours itself (Demo video).
   bitewiseTour: "https://github.com/danikcompeng/meal-cost-tracker/blob/main/design/videos/bitewise-demo-light-real-scan.mp4",
   // The two code-reviewer catches, linked to their fixes as README.md:71-74 does.
   bitewiseFixFree: "https://github.com/danikcompeng/meal-cost-tracker/commit/599293a",
   bitewiseFixOvernight: "https://github.com/danikcompeng/meal-cost-tracker/commit/8ca92ae",
   ascend: "https://ascend-dk.vercel.app",
   orbit: "https://orbit-dk.vercel.app",
-  // The full demo tours, in the theme the visitor sees: habit-tracker 2901fa6, network-crm ce70efc.
-  ascendTour: {
-    dark: "https://github.com/danikcompeng/habit-tracker/blob/main/design/videos/ascend-demo-dark.mp4",
-    light: "https://github.com/danikcompeng/habit-tracker/blob/main/design/videos/ascend-demo-light.mp4",
-  },
-  orbitTour: {
-    dark: "https://github.com/danikcompeng/network-crm/blob/main/design/videos/orbit-demo-dark.mp4",
-    light: "https://github.com/danikcompeng/network-crm/blob/main/design/videos/orbit-demo-light.mp4",
-  },
 } as const;
 
 /**
@@ -64,55 +56,30 @@ export const hero = {
   subline:
     "I'm Dani Kainikkara, a Computer Engineering student at Toronto Metropolitan University. I\u00a0design, build and test every part myself, with AI as a daily tool.",
   primary: { label: "See the work", href: "#work" },
-  secondary: { label: "Try Bitewise", href: links.bitewise },
-  phoneCaption: "Bitewise · recorded on the live demo",
 };
 
-export const story = {
-  name: "Bitewise",
-  // meal-cost-tracker README.md:3
-  oneLiner: "Cheap meals that hit your macros, on repeat, with a swap when you're bored.",
-  steps: [
-    {
-      id: "problem",
-      title: "The problem",
-      // Dani's words, meal-cost-tracker README.md:17-19, shortened.
-      body: "Calorie trackers don't know what food costs. Meal planners make up recipes with ingredients I don't have. Bitewise puts macros and money on one screen.",
-      screen: "today",
-      alt: "Bitewise's Today screen: 926 kcal left in a ring, protein, carbs, fat and water rings, and what today costs.",
-    },
-    {
-      id: "swap",
-      title: "The swap",
-      // meal-cost-tracker CLAUDE.md (swap ranking), lib/entry-messages.ts (Undo).
-      body: "Bored of a meal? Swipe through my own recipes, ranked by similar protein, foods I've had this week and cost, and swap it in place, with Undo.",
-      screen: "swap",
-      alt: "A swap card instead of Chicken rice bowl: Tuna rice, $2.01 per serving, 46 g protein, uses 3 foods you've had this week.",
-    },
-    {
-      id: "scan",
-      title: "The scan",
-      // components/scan-flow.tsx: "From Open Food Facts · compare with the label".
-      body: "Scan a barcode and Open Food Facts fills in what it knows. I check it against the label and add what I paid.",
-      screen: "scan",
-      alt: "The camera scanner framing the barcode on a bag of bagels.",
-    },
-    {
-      id: "cost",
-      title: "Cost per serving",
-      // components/recipe-cost.tsx; "Missing stays missing", CLAUDE.md.
-      body: "Every recipe comes down to one number, with protein per dollar. If a price is missing it shows a dash, never a lower number.",
-      screen: "cost",
-      alt: "The Chicken rice bowl recipe: $2.48 cost per serving, makes 4 servings, 22 g protein per dollar.",
-    },
-  ],
-} as const;
+/** The swap sheet, opened on the live demo: the Bitewise tile and the case study both show it. */
+const swapSheetAlt =
+  "The swap sheet instead of Overnight oats: Egg fried rice first, $1.36 per serving, 21 g protein, uses 3 foods you've had this week.";
 
 export const bitewise = {
   name: "Bitewise",
-  // A product line that isn't the story's one-liner again (design-critic and finish review 1).
+  // A product line, not the README's one-liner (design-critic and finish review 1).
   // Dani's own words in the career notes: "Macro tracking comes first, cost second."
   tileLine: "A meal tracker for the cheap meals I actually repeat: macros first, cost second.",
+  // public/media/bitewise-loop-*.mp4: shots 1 and 4 of meal-cost-tracker e2e/record-demo.ts.
+  video: {
+    caption: "Today's rings, then a swap",
+    alt: "A recording of Bitewise's Today screen on the demo account: the calorie, protein, carbs, fat and water rings fill, then I'm tired of this on lunch skips one suggestion, swaps in the next and undoes it.",
+  },
+  // The tile's still: the case study's swap figure (public/media/SOURCES.md).
+  still: { alt: swapSheetAlt },
+  // The case study's first screen.
+  screens: {
+    today: {
+      alt: "Bitewise's Today screen: 926 kcal left in a ring, protein, carbs, fat and water rings, and what today costs.",
+    },
+  },
   stats: {
     unitTests: {
       floor: 900,
@@ -164,6 +131,10 @@ export const ascend = {
     caption: "Holding habits to the Summit",
     alt: "A recording of Ascend's Today screen: three habits held one after another, the hot-air balloon climbing from 8,763 m above the clouds until a New zone: Summit card appears.",
   },
+  // public/media/ascend-climb-*.png (habit-tracker docs/screenshots/feature-10/climb-top-*).
+  still: {
+    alt: "Ascend's Climb screen: altitude 8,763 m, above the clouds, 85 m to Summit, with the climb scrolled up into deep space: pixel planets and stars past the 42,500 m and 45,000 m marks.",
+  },
   decision: {
     title: "A climb that never slips",
     // habit-tracker plans/habit-tracker.md, Feature 10 rules 1-2 and "Consequences" (at most 150 m a day)
@@ -200,6 +171,10 @@ export const orbit = {
     caption: "The 3D map, turning and growing",
     alt: "A recording of Orbit's 3D map on the demo account: you as a planet in the centre and 20 demo contacts on tilted rings, turned with a drag, then Watch it grow replaying the network from Sep 27 to today.",
   },
+  // public/media/orbit-person-*.png: the live demo's page for Grace Liu (2026-11-27).
+  still: {
+    alt: "Orbit's page for Grace Liu, a demo contact: Hardware Engineering Intern at Halcyon Labs, Talking, next follow-up in 5 days, introduced through Elena Marsh, met as Elena's student last year.",
+  },
   decision: {
     title: "A map that stays put",
     // network-crm plans/crm.md, Feature 7 plan, Angles ("Pure and deterministic, no force run")
@@ -219,74 +194,6 @@ export const orbit = {
       source: "network-crm plans/crm.md, Reviews at committed HEAD: logic-checker 86, code-reviewer 65, design-critic 82",
     },
   } satisfies Record<string, Stat>,
-};
-
-export const build = {
-  title: "How I build",
-  intro:
-    "On Ascend and Orbit, each feature is planned in writing. A logic-checker reviews the plan before any code; a code-reviewer, and a design-critic when a screen changes, review the build. All three are read-only AI agents: they report, I decide.",
-  stats: {
-    logicChecker: {
-      floor: 180,
-      exact: 184,
-      asOf: "2026-11-25",
-      source: "Ascend 98 + Orbit 86 logic-checker rows, in 9 + 6 plan reviews",
-    },
-    planReviews: {
-      floor: 15,
-      exact: 17,
-      asOf: "2026-11-25",
-      source: "logic-checker plan reviews at committed HEAD: Ascend 11 (F1-4, F5+6, F7, refinement, F8, 8b, 8c, 9), Orbit 6 (code-reviewer recount, review 1)",
-    },
-    codeReviewer: {
-      floor: 140,
-      exact: 148,
-      asOf: "2026-11-25",
-      source: "Ascend 83 + Orbit 65 code-reviewer rows",
-    },
-    designCritic: {
-      floor: 160,
-      exact: 169,
-      asOf: "2026-11-25",
-      source: "Ascend 87 + Orbit 82 design-critic rows",
-    },
-    findings: {
-      floor: 500,
-      exact: 501,
-      asOf: "2026-11-25",
-      source: "Ascend 268 + Orbit 233 numbered review rows",
-    },
-    fixed: {
-      floor: 450,
-      exact: 464,
-      asOf: "2026-11-25",
-      source: "Rows whose outcome starts with 'Fixed': Ascend 240 + Orbit 224",
-    },
-  } satisfies Record<string, Stat>,
-  catches: [
-    {
-      agent: "logic-checker",
-      app: "Ascend",
-      severity: "High",
-      // habit-tracker plans/habit-tracker.md, Feature 3 plan review, #2
-      quote: "Holding Space: auto-repeat keydowns after 650 ms undo the habit just completed, then re-hold, flickering until release.",
-    },
-    {
-      agent: "logic-checker",
-      app: "Orbit",
-      severity: "High",
-      // network-crm plans/crm.md, Feature 3 plan review, #2
-      quote: "Status matching undefined; substring matching turns “No offer” into an offer.",
-    },
-    {
-      agent: "code-reviewer",
-      app: "Orbit",
-      severity: "High",
-      // network-crm plans/crm.md, Feature 5 code-reviewer, #1
-      quote: "Lifting the last, still finger of a pinch (or a two-finger tap) counted as a tap and opened a sheet; a right-click did too.",
-    },
-  ],
-  footnote: "Counts from each repo's review logs and test runs on Nov 25, 2026, rounded down.",
 };
 
 export const about = {
@@ -314,7 +221,7 @@ export const caseStudy = {
   metaTitle: "Bitewise case study · Dani Kainikkara",
   // public/media/SOURCES.md, bitewise-swap-sheet-*: what the frame shows.
   swapFigure: {
-    alt: "The swap sheet instead of Overnight oats: Egg fried rice first, $1.36 per serving, 21 g protein, uses 3 foods you've had this week.",
+    alt: swapSheetAlt,
     caption: "The swap · captured on the live demo",
   },
   metaDescription:

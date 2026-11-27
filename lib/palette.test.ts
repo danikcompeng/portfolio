@@ -20,8 +20,6 @@ const pairs: [string, string, number][] = [
   ["or-accent", "or-field", 4.5],
   // Primary button: page colour on ink.
   ["bg", "ink", 4.5],
-  // The active story tick against the story field (a mark: 3:1).
-  ["bw-accent", "bw-field", 3],
 ];
 
 describe("palette contrast", () => {

@@ -34,12 +34,6 @@ typography:
     fontWeight: 600
     lineHeight: 1.02
     letterSpacing: "-0.032em"
-  step:
-    fontFamily: "Geist, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "clamp(1.75rem, 1.2rem + 1.5vw, 2.625rem)"
-    fontWeight: 600
-    lineHeight: 1.06
-    letterSpacing: "-0.028em"
   title:
     fontFamily: "Geist, ui-sans-serif, system-ui, sans-serif"
     fontSize: "clamp(1.5rem, 1.25rem + 0.7vw, 2rem)"
@@ -163,11 +157,11 @@ components:
 
 **Creative North Star: "The Neutral Stage"**
 
-The page is a launch stage with the house lights down. A near-black floor (light mode: an off-white one with near-black ink) carries no colour of its own. Colour walks on with each product, as that product's own field, hairline and link colour, lifted from its own design tokens. The hero object is a real phone playing the real app: a flat CSS device with a true bezel, tilted back in perspective, that straightens as you scroll and stays pinned while the Bitewise story passes it.
+The page is a launch stage with the house lights down. A near-black floor (light mode: an off-white one with near-black ink) carries no colour of its own. Colour walks on with each product, as that product's own field, hairline and link colour, lifted from its own design tokens. The hero objects are three real phones, one per app, each playing its app: flat CSS devices with a true bezel, tilted back in perspective, equal in size and order (round 10: no app is the main one).
 
 Density is generous and editorial: large tight Geist headings, long measure-capped leads in a muted ink, and numbers set in Geist Mono as data rather than decoration. Surfaces are flat and separated by tone and alpha hairlines; the phone is the only thing that casts a shadow. Motion is short and soft (one ease-out curve, 160 to 560 ms), comes from scroll and press, and disappears under Reduce Motion. Dark is the first theme; light is a full counterpart, and both resolve from one `light-dark()` token each.
 
-The system refuses the template portfolio (name, skills list, grid of same-size project cards) and the SaaS split hero with a badge row.
+The system refuses the template portfolio (name, skills list, a grid of cards that show no real product) and the SaaS split hero with a badge row.
 
 **Key Characteristics:**
 - Neutral stage, hue 260 at near-zero chroma; no site accent.
@@ -188,19 +182,19 @@ A cool, almost colourless neutral stage, with three borrowed product palettes th
 ### Neutral
 - **Night Stage / Paper Stage** (`bg`): the page floor; the near-black base in dark, off-white in light.
 - **Raised Step** (`bg-raised`): one step lighter (pure white in light mode). Neutral tiles and media buttons.
-- **Sunk Step** (`bg-sunk`): one step deeper. The How I build band, pipeline node fills, media-button hover.
+- **Sunk Step** (`bg-sunk`): one step deeper. Media-button hover.
 - **Muted Ink** (`ink-muted`): sublines, leads, labels, captions, nav links at rest. Holds 4.5:1 on every surface, product fields included.
-- **Hairline** (`line`) and **Strong Hairline** (`line-strong`): alpha borders that tint whatever they sit on. `line` divides sections and backs hover fills; `line-strong` outlines secondary buttons and the pipeline track.
+- **Hairline** (`line`) and **Strong Hairline** (`line-strong`): alpha borders that tint whatever they sit on. `line` divides sections and backs hover fills; `line-strong` outlines secondary buttons and media buttons.
 - **Shadow Tint** (`shadow-color`): used only in the phone's cast shadow.
 - **Phone Body** (`phone-body`) and **Phone Edge** (`phone-edge`): fixed dark values, the same in both themes, because the device is a dark object like the real thing.
 
 ### Product Fields (borrowed, never the site's own)
-- **Matcha Field / Matcha** (`bw-field`, `bw-accent`, `bw-line`): Bitewise, from meal-cost-tracker's DESIGN.md. Paints the full-bleed band behind the Bitewise story, the Bitewise tile, its links and the story rail's active tick.
+- **Matcha Field / Matcha** (`bw-field`, `bw-accent`, `bw-line`): Bitewise, from meal-cost-tracker's DESIGN.md. The Bitewise tile and its links only.
 - **Persimmon Field / Persimmon** (`as-field`, `as-accent`, `as-line`): Ascend, from habit-tracker's DESIGN.md. The Ascend tile and its links only.
 - **Orbit Field / Orbit Blue** (`or-field`, `or-accent`, `or-line`): Orbit, from network-crm's globals. The Orbit tile and its links only.
 
 ### Named Rules
-**The Borrowed Colour Rule.** The site owns no accent. Colour enters only as a product's field, line and accent, taken from that product's own tokens and scoped to that product's tile or story. A project without its own palette gets a neutral `bg-raised` tile.
+**The Borrowed Colour Rule.** The site owns no accent. Colour enters only as a product's field, line and accent, taken from that product's own tokens and scoped to that product's tile. A project without its own palette gets a neutral `bg-raised` tile.
 
 **The Ink Action Rule.** The primary action is solid ink on the page colour. Inside a product tile, links take that product's accent through `--accent`; everywhere else they are ink.
 
@@ -216,33 +210,32 @@ A cool, almost colourless neutral stage, with three borrowed product palettes th
 
 ### Hierarchy
 - **Display** (600, 44 to 88 px fluid, 0.98): the hero h1 only, capped near 16ch.
-- **Headline / Section** (600, 36 to 60 px fluid, 1.02): every section h2 (Bitewise, Work, How I build, About, Say hello).
-- **Step** (600, 28 to 42 px fluid, 1.06): the four Bitewise story steps.
-- **Title** (600, 24 to 32 px fluid, 1.1): tile names and sub-heads such as "Caught before it shipped".
-- **Lead** (400, 17 to 20 px fluid, 1.55): sublines, story bodies, tile one-liners, quoted catches. Measure-capped at 30 to 44rem.
+- **Headline / Section** (600, 36 to 60 px fluid, 1.02): every section h2 (Work, About, Say hello).
+- **Title** (600, 24 to 32 px fluid, 1.1): tile names and the case study's section heads.
+- **Lead** (400, 17 to 20 px fluid, 1.55): sublines and tile one-liners. Measure-capped at 30 to 44rem.
 - **Body** (400, 17 px, 1.6): running text and about facts.
 - **Reading** (400, 17 px, 1.65, in full ink, 38rem measure): the case study's prose (`.cs-prose`); its inline links take 500 and a 35% underline, their arrow kept with the last word.
-- **Body Small** (400, 15 px): nav links, decision bodies, fact labels, pipeline bodies, figure captions. Small headings at this size (decision titles, station names) take 600 and -0.01em.
+- **Body Small** (400, 15 px): nav links, decision bodies, fact labels, figure captions. Small headings at this size (decision titles) take 600 and -0.01em.
 - **Caption** (400, 14 px): footer and footnotes.
 - **Button** (550, 16 px, 1): buttons and text links.
-- **Data** (Geist Mono 400, 13 px, 1.5, tabular figures): counts, the phone caption, tile metadata, catch attributions. A count beside its label is set at 15 px, weight 500, in full ink, with the label in muted body-small.
+- **Data** (Geist Mono 400, 13 px, 1.5, tabular figures): counts, the case study's phone caption, tile metadata. A count beside its label is set at 15 px, weight 500, in full ink, with the label in muted body-small.
 
 ### Named Rules
-**The Mono Means Data Rule.** Geist Mono appears only where the content is data: numbers, metadata, recorded-on captions, agent names. Always tabular. Never for prose or the four heading levels; an agent's name is the one heading set in mono, because it is an identifier.
+**The Mono Means Data Rule.** Geist Mono appears only where the content is data: numbers, metadata, recorded-on captions. Always tabular. Never for prose or the heading levels.
 
-**The Tightening Scale Rule.** All four heading steps are weight 600, and tracking tightens as size grows (-0.024em at title to -0.038em at display), with line height falling toward 1.
+**The Tightening Scale Rule.** All three heading steps are weight 600, and tracking tightens as size grows (-0.024em at title to -0.038em at display), with line height falling toward 1.
 
 ## Layout
 
-One centred column, `content-max` wide with a fluid `gutter` on each side. Sections breathe on `section-block` padding top and bottom; the How I build band is full-bleed `bg-sunk` with a top hairline. The nav is a 56 px sticky bar.
+One centred column, `content-max` wide with a fluid `gutter` on each side. Sections breathe on `section-block` padding top and bottom. The nav is a 56 px sticky bar.
 
-The hero and the Bitewise story share one DOM with two layouts. At 1024 x 540 and up it is **pinned**: a two-column grid with the text left and a sticky stage right holding the phone (height `min(76svh, 780px)`, width derived from the 393 x 852 screen), a vertical progress rail and a mono caption; the hero takes a full viewport and each step at least 72svh so a step's heading meets the centre line as its screen fades in. Below that it is **stacked**: the hero phone sits under the buttons with its top edge above the fold, and each step carries its own phone. The Bitewise field is painted full-bleed with `border-image`, reaching both viewport edges without widening the layout.
+The hero is the text (h1, subline, one button), then the three phones in Work's order, each with its caption (the app's name in ink, what the loop shows in muted body-small) and a pause button below it. Below 1100 px they are a full-bleed row that snaps phone by phone (each `min(64vw, 300px)`), the next phone peeking in; from 1100 px they take Work's three columns at 280 px, so each phone stands over its tile. A loop loads only once its phone is mostly inside the row.
 
-Work is a 12-column bento at 1024 px and up (Bitewise 12, then Ascend 6 and Orbit 6) with a 20 px gap; one column below. Phone recordings in the half tiles (Ascend, Orbit) are cropped by the tile's bottom edge, with their caption and pause button above the phone, since the phone runs off the tile. How I build is a vertical track below 1200 px and one six-station horizontal track above, with a fork where two reviewers read the same build. About is 4 + 8 columns when the headshot exists (photo last on narrow screens), one column until then; it closes on a hairline and a large email link.
+Work is three tiles of the same size from 1100 px (three columns, 20 px gap), sharing six subgrid rows so names, lines, facts, decisions, links and phones line up; one column below. Each tile ends in a phone cropped by its bottom edge, showing a theme-matched still of a screen the hero loop doesn't feature. **Demo video** opens a native modal dialog: a dimmed backdrop, the tour in a phone as tall as the window allows, a 44 px close button top right; Esc or a click outside closes it and focus returns to the button. About is 4 + 8 columns when the headshot exists (photo last on narrow screens), one column until then; it closes on a hairline and a large email link.
 
 The case study (`/work/bitewise`) opens on a full-width product tile (title, mono facts, links, the phone), then one 38rem reading column of h2-at-title sections. At 1024 px and up the column starts inside the tile's padding, in line with the h1, and a phone screen sits in the second column beside the section it illustrates (the swap, beside the ranking and the two sections after it), up to 340 px wide and never wider than that column, with a mono caption; below 1024 px it follows its section's text.
 
-Breakpoints in use: 640 px (two-up decisions), 768 px (wide nav links), 1024 px (bento, horizontal pipeline), 1024 x 540 (pinned story). Everything works at 390 px wide; the body clips horizontal overflow.
+Breakpoints in use: 640 px (two-up decisions in a one-column tile), 768 px (wide nav links), 1024 px (case study columns), 1100 px (three tiles, three hero phones). Everything works at 390 px wide; the body clips horizontal overflow.
 
 ## Elevation & Depth
 
@@ -252,11 +245,11 @@ Flat by default. Depth comes from tonal steps (`bg-sunk` below the page, `bg-rai
 - **Phone body** (`box-shadow: inset 0 0 0 1px var(--phone-edge), inset 0 1px 0 1px oklch(1 0 0 / 0.06), 0 0 0 1px light-dark(oklch(0 0 0 / 0), oklch(1 0 0 / 0.08)), 0 2px 4px -1px var(--shadow-color), 0 32px 64px -24px var(--shadow-color)`): the phone, everywhere it appears.
 
 ### Named Rules
-**The One Lifted Object Rule.** Only the phone casts a shadow. Tiles, buttons, the nav and the pipeline stay flat and separate by tone and hairline.
+**The One Lifted Object Rule.** Only the phone casts a shadow. Tiles, buttons and the nav stay flat and separate by tone and hairline.
 
 ## Shapes
 
-Soft, concentric corners. The working radius is 14 px (`r-2`): buttons, photos, the skip link, and the inner media radius that tiles are built around. Small marks take 6 px (`tag`: the focus ring, agent nodes); round controls and the person's pipeline node are full pills. The phone's corners derive from its width (screen radius 12.8% of width, bezel 3.2%). Borders are 1 px solid hairlines. Icons are drawn in-house on a 24-unit grid, 1.5 stroke, round caps and joins.
+Soft, concentric corners. The working radius is 14 px (`r-2`): buttons, photos, the skip link, and the inner media radius that tiles are built around. Small marks take 6 px (`tag`: the focus ring); round controls are full pills. The phone's corners derive from its width (screen radius 12.8% of width, bezel 3.2%). Borders are 1 px solid hairlines. Icons are drawn in-house on a 24-unit grid, 1.5 stroke, round caps and joins.
 
 The token scale also declares 8, 22 and 30 px (`--r-1`, `--r-3`, `--r-4`); no built surface uses them yet.
 
@@ -279,23 +272,17 @@ Underlined at 35% of the text colour, solid on hover, weight 550, 44 px tall, wi
 44 px circles. The media (pause/play) button sits on `bg-raised` with a `line-strong` ring and sinks to `bg-sunk` on hover; it accompanies every autoplaying video. The theme toggle is borderless muted ink that gains a `line` fill and full ink on hover.
 
 ### Navigation
-A 56 px sticky bar: the name at 15 px weight 600 on the left, body-small muted links on the right that turn ink on hover, then the theme toggle. "How I build" and Resume appear from 768 px; both are repeated in the footer. A translucent blurred ground fades in over the first 32 px of scroll.
+A 56 px sticky bar: the name at 15 px weight 600 on the left, body-small muted links on the right that turn ink on hover, then the theme toggle. Resume appears from 768 px once it exists, and is repeated in the footer. A translucent blurred ground fades in over the first 32 px of scroll.
 
 ### Product Tiles
 - **Corner Style:** concentric (14 px + padding).
 - **Background:** the product's field (`bw-field`, `as-field`, `or-field`), or `bg-raised` for a project with no palette.
 - **Border:** 1 px of the product's line, or `line`.
 - **Internal Padding:** `tile-pad`, fluid 22 to 40 px.
-- **Content:** title, lead one-liner, mono facts, a decision, links, then media. On hover or focus of a link inside, the media rises 2 px.
+- **Content:** title, lead one-liner, mono facts, a decision, links (Demo video among them), then the cropped still. On hover or focus of a link inside, the still rises 2 px.
 
 ### The Phone (signature)
-A flat CSS device sized by one variable, `--phone-w`: a dark body with a real bezel, concentric corners and the one shadow stack, around a 393 x 852 screen. Screens are stacked layers that cross-fade over 420 ms; theme-paired screenshots show only the current theme's copy. In the pinned hero it starts tilted (rotateY -18deg, rotateX 8deg) and straightens on the scroll timeline; on narrow screens it holds a gentler fixed tilt; under Reduce Motion it is flat.
-
-### Story Rail
-Four 3 px ticks beside the pinned phone, muted at rest; the active step's tick grows to 44 px in `bw-accent`. Appears once the first step is reached.
-
-### Review Pipeline
-A drawn track of stations: circles (1.5 px ink ring on `bg-sunk`) are Dani, filled ink squares with 6 px corners are read-only AI agents, whose names are set in mono. Hairline connectors in `line-strong`; a fork carries two reviewers on the same build. Each station lists its real counts as mono data.
+A flat CSS device sized by one variable, `--phone-w`: a dark body with a real bezel, concentric corners and the one shadow stack, around a 393 x 852 screen. Screens are stacked layers that cross-fade over 420 ms; theme-paired screenshots show only the current theme's copy. The three hero phones hold the same gentle fixed tilt (rotateY -10deg, rotateX 6deg); under Reduce Motion they are flat. Tile and case-study phones are flat.
 
 ### Missing material
 Anything still to be supplied (a headshot, the resume) is switched off by a flag in `content/site.ts` and leaves no trace on the page; `scripts/check-built-html.mjs` fails the build if a "[" ever reaches visible text. Never filled with invented material.
@@ -307,7 +294,7 @@ Content that starts below the fold fades in from 0.97 scale over 560 ms once, wi
 
 ### Do:
 - **Do** give every new colour one `light-dark()` line in `:root` and add its text pairs to `lib/palette.test.ts` at 4.5:1 (3:1 for non-text marks).
-- **Do** bring a new project's colour from its own tokens as a `-field`, `-accent` and `-line` triple, and scope it to that project's tile or story.
+- **Do** bring a new project's colour from its own tokens as a `-field`, `-accent` and `-line` triple, and scope it to that project's tile.
 - **Do** set every count in Geist Mono with tabular figures, in full ink beside a muted label.
 - **Do** build radii concentrically: outer = inner + padding.
 - **Do** keep every target at least 44 px and pair every autoplaying video with a pause button.
@@ -316,7 +303,7 @@ Content that starts below the fold fades in from 0.97 scale over 560 ms once, wi
 
 ### Don't:
 - **Don't** introduce a site accent or tint the stage; the products are the only colour.
-- **Don't** use a product's colour outside its own tile or story.
+- **Don't** use a product's colour outside its own tile.
 - **Don't** cast a shadow from anything but the phone.
 - **Don't** set prose or the display, section, step or title levels in Geist Mono; the only mono headings are agent names, which are identifiers.
 - **Don't** use icon fonts or third-party icon sets; draw icons on the 24-unit, 1.5-stroke grid.

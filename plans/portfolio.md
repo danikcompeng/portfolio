@@ -458,6 +458,58 @@ Dani's brief: `~/Documents/claude-inbox/portfolio/05-ascend-orbit-videos.md`.
    come near, one theme only (5.8 MB after a full scroll, Bitewise's tour included). CLS 0 on
    load and after scrolling, at 390 and 1440, light and dark.
 
+## Round 10: three apps as equals (2026-11-27)
+
+Dani's brief (in chat): the home page becomes intro with three phones, the three apps, About.
+1. **Removed**: How I build (`#how`, with "Caught before it shipped"), its nav and footer
+   links, `build` in content/site.ts, its CSS and its test; the four-step Bitewise story
+   (`story`, `StoryStage`, `activeStep`, the pinned layout and rail). The text moves nowhere.
+   The case study stays as it is: its Today screen's alt moves from `story.steps` to
+   `bitewise.screens.today.alt` (same words), and its "Full tour video" link is unchanged.
+   Unused media go: `bitewise-tour-*` (old tour and posters), `bitewise-scan.png`,
+   `bitewise-cost-*`.
+2. **Hero**: headline and subline unchanged; one button, "See the work". Below the text, three
+   equal phones (Bitewise, Ascend, Orbit, in Work's order) on the same 3-column grid as the
+   tiles from 1100 px; below that a swipeable row (scroll-snap, the next phone peeking). Each
+   phone plays its loop (`bitewise-loop`, `ascend-loop`, `orbit-loop`) via `VideoProvider`:
+   theme-matched, muted, playsInline, poster frame first, paused off screen, poster only under
+   Reduce Motion until play is pressed. Each is a figure named by its caption (app name +
+   the loop's caption; the Ascend and Orbit captions move up from the tiles), the phone one
+   `role="img"` with a description, and a 44 px pause button. Loading: a loop's source is set
+   only once its phone is near the viewport AND at least 60% inside the row's scroll box, so
+   on a phone only the snapped one loads; at 1100 px and up all three are visible and load.
+   One gentle static tilt for all three when motion is allowed, flat under Reduce Motion
+   (no scroll-driven untilt: there's no pinned phone any more).
+3. **Work**: three tiles of the same size and layout (3 columns from 1100 px, one below; rows
+   aligned by subgrid): name, line, facts, decision(s), links, then a cropped phone with a
+   theme-matched still of a screen the hero loop doesn't feature. Bitewise: the swap card
+   (`bitewise-swap-*`, Dani's pick), Ascend: Climb scrolled to the top, in space
+   (`habit-tracker` `docs/screenshots/feature-10/climb-top-*` at `5d9acb6`), Orbit: Grace
+   Liu's page from the live demo (name, follow-up, how you met; the timeline is below the
+   first screen, so it isn't in the still). Text as now; Bitewise keeps Try the live demo,
+   Code on GitHub and Read the case study (→ /work/bitewise).
+4. **Demo video** (replaces "Watch the tour" on Ascend and Orbit, new on Bitewise): a button
+   that opens a native `<dialog>` with `showModal()` (dimmed `::backdrop`, the rest of the page
+   inert, Esc closes), the tour in a phone frame centred and sized to the viewport, a 44 px
+   close button, a click on the backdrop closes, focus returns to the button. The `<video>` is
+   rendered only while open (nothing downloads before), source for the theme on screen, muted,
+   playsInline, controls, starts on open; closing unmounts it. Fade/scale on open only when
+   motion is allowed. Files in `public/media`: `bitewise-demo-*` (meal-cost-tracker's
+   `*-real-scan` tours), `ascend-demo-*` (habit-tracker `2901fa6`), `orbit-demo-*`
+   (network-crm `ce70efc`); all faststart. The GitHub tour links leave `links` except
+   `bitewiseTour`, which the case study still uses.
+5. **Checks**: no link to `#how` or a story id; first load measured before and after at 390 and
+   1440, light and dark (expect 390 unchanged, 1440 up by the two other loops, full scroll
+   down by the tour and tile loops); CLS 0; e2e for the hero loops (load rule, Reduce Motion,
+   pause), the dialog (opens, plays, closes by button/Esc/backdrop, focus returns), and the
+   tile stills; bracket check on the build.
+6. **Measured** (Chrome, `next build` + `next start`, network idle, then a full scroll):
+   first load 1.1 MB at 390 in both themes (was 1.1: only the snapped Bitewise loop), 3.0 MB at
+   1440 (was 1.15: all three loops are on screen); after a full scroll 1.2 MB at 390 and 3.0 MB
+   at 1440 (was 5.1 to 5.6: no tour or tile loops any more). A tour loads only when its dialog
+   opens. CLS 0 on load and after scrolling, 390 and 1440, light and dark. 53 unit tests, 49
+   Playwright checks (plus the screenshot run), bracket check clean.
+
 ## Reviews
 
 ### Plan review, logic-checker (2026-11-25)
@@ -658,6 +710,52 @@ Verdict: **Ship after fixes**.
 | 5 | Low | Orbit's facts row leaves a gap (subgrid, as in round 8). | Kept | Not from this change. |
 | 6 | Low | "Summit" capitalised. | Kept | The app's own zone name ("New zone Summit"). |
 
+### Round 10 plan review, logic-checker (2026-11-27)
+Verdict: **Ready after fixes**.
+
+| # | Severity | Finding | Outcome | How |
+|---|---|---|---|---|
+| 1 | High | Esc or Android back closes a native dialog without React knowing: the video keeps loading and the button looks dead. | Fixed | State follows the dialog's `close` event; Esc, the close button and the backdrop all end there. Test: Esc then reopen. |
+| 2 | Medium | Copying the hero's `layout="stacked"` and `STACKED_SIZES` would leave desktop with no source and 1 px posters. | Fixed | `layout`, `active`, `PINNED_*`, the story CSS and `activeStep` removed; real `sizes`. |
+| 3 | Medium | The page behind the dialog scrolls (iOS), its loops keep playing, and an `overflow: hidden` lock shifts the layout by the scrollbar. | Fixed | `html[data-dialog]` locks scroll and pauses every loop (`useDialogOpen`); `scrollbar-gutter: stable`. |
+| 4 | Medium | Dragging the seek bar and releasing outside the video would close the dialog. | Fixed | Closes only when the press started and ended on the backdrop. |
+| 5 | Medium | The tours start on the login screen; play() may be refused in Low Power Mode. | Kept | They're the full tours Dani asked for, from their start; controls are on, so a refused autoplay is one tap away. |
+| 6 | Medium | Alt text missing for the stills; Orbit's should say "demo contact". | Fixed | `still.alt` for all three; Orbit's says demo contact. |
+| 7 | Medium | `bitewise-swap-*` is the mid-scroll frame with the rings cut off. | Fixed | The tile uses the clean `bitewise-swap-sheet-*` (the case study's figure, same alt); the old frames are removed. |
+| 8 | Medium | `overflow-x: auto` would clip the tilt. | Fixed | Block padding on the row. |
+| 9 | Low | Unit tests would fail (stat count, removed tour links). | Fixed | Count floor 5; the pair test now checks loops and demos in `media.ts` and that every file exists. |
+| 10 | Low | Three buttons named "Demo video"; the dialog needs a name; hover lift ignores buttons. | Fixed | "Demo video of X"; dialog named by a hidden h2; lift includes the button. |
+| 11 | Low | Missing tests (loop wrap, theme switch, 390 load rule, dialog source/release, no animation). | Added | smoke and video.e2e. |
+| 12 | Low | SOURCES.md, DESIGN.md, README, CLAUDE.md out of date; keep `id="top"`. | Fixed, except CLAUDE.md | CLAUDE.md is Dani's; left as written (it still lists How I build and the story). `id="top"` kept. |
+
+### Round 10 build review, design-critic (2026-11-27)
+Verdict: **Ship after fixes** (1 blocked).
+
+| # | Severity | Finding | Outcome | How |
+|---|---|---|---|---|
+| 1 | High | Tile phones didn't render; at 390 the tiles cut off their own links and decisions. | Fixed | `.screen-crop` (the size container) stretches to the tile's width instead of auto margins, which had collapsed it to 0; container moved off the tile because containment switched off its subgrid. e2e: each still's phone is over 200 px and every link sits above it, at 390 and 1440. |
+| 2 | Medium | At 390 the next item peeked as a play button, not a phone. | Fixed | Each figure is as wide as its phone; the caption wraps (name, then what it shows); phones at 64vw. |
+| 3 | Medium | At 1440 only about a third of each hero phone was on the first screen, beside an empty right half. | Fixed | From 1100 px the subline and button sit beside the headline's last line; phones 32 px below. Now most of each phone shows. |
+| 4 | Medium | Tiles unequal: Bitewise has two decisions and four links, so the shared rows leave space in the others; facts stretched. | Partly | Facts `content-start`. The two Bitewise decisions are kept (text stays as now): Dani's call whether the home tile shows one. |
+| 5 | Low | Orbit's tour opens on its login screen. | Kept | The full tours from their start, as on GitHub; controls let you skip. |
+| 6 | Low | The dialog doesn't name its app; the close button is far from the phone. | Fixed | Mono caption "Orbit demo video" under the phone (it also names the dialog); from 768 px the close button sits beside the phone's top-right corner. |
+| 7 | Low | The scrollbar gutter isn't dimmed. | Fixed | `html[data-dialog]` takes the backdrop's blend as its background. |
+| 8 | Low | Bitewise's still is the swap sheet, and the loop also swaps. | Kept | Dani's pick; the loop's poster is Today. |
+
+### Round 10 build review, code-reviewer (2026-11-27)
+Verdict: **Ship after fixes**.
+
+| # | Severity | Finding | Outcome | How |
+|---|---|---|---|---|
+| 1 | Medium | A double-click on Demo video opens and closes the dialog (the second click lands on the new backdrop). | Fixed | Backdrop presses in the first 400 ms are ignored. Test. |
+| 2 | Medium | The "loops pause behind the dialog" check passed because the click scrolled the hero away. | Fixed | Own test: opened at the top without scrolling, loops pause, then play again on close. |
+| 3 | Low | The page lock could stick if `showModal` throws or the component unmounts open. | Fixed | Attribute set after `showModal`; removed on unmount. |
+| 4 | Low | A system theme change mid-tour restarts it. | Fixed | The dialog keeps the theme it opened in. |
+| 5 | Low | SOURCES.md said Orbit's map was "turned by hand". | Fixed | "a scripted drag", recorded on the live site's demo account. |
+| 6 | Low | Leftovers: `ArrowDown`, the story tick contrast pair, docs, the design-critic agent's brief. | Fixed, except the agent | Removed; README and DESIGN.md rewritten for round 10. `.claude/agents/design-critic.md` still mentions the pinned story: left for Dani. |
+| 7 | Low | Weak checks: no positive control for the dialog animation; the focus check accepted body. | Fixed | Animates with motion, not without; focus never lands on the page behind (body = the browser's own controls, which a modal allows). |
+| – | Tests | Missing: seek-bar drag, double-click, scroll lock and no shift, lock lifted after a backdrop close, play under Reduce Motion off-snap at 390. | Added | smoke. |
+
 ## Decided while Dani was away
 
 - Theme follows the system with a remembered toggle, over dark-for-everyone: it respects the visitor's setting and is a one-line change (open question 3).
@@ -680,3 +778,7 @@ Verdict: **Ship after fixes**.
 - Round 5: made the hero-loop video test poll for the wrap instead of a fixed 1.2 s wait; it failed once on a busy machine and passed 18 of 18 on repeat.
 - Round 9: used habit-tracker's videos at `2901fa6` over the brief's `0ba6183`: the same videos, re-recorded after Feature 10h, and what the repo's main branch (and the tour links) now serve.
 - Round 9: made each tile's poster the frame its video starts on (Ascend 1.0 s, Orbit 10.0 s) and removed the old screenshots, over keeping them as posters: a different still would visibly jump when the video takes over.
+- Round 10: used the clean swap sheet (`bitewise-swap-sheet-*`, the case study's figure) for the Bitewise tile over the mid-scroll `bitewise-swap-*` frame, whose rings are cut off; the old frames are removed.
+- Round 10: Orbit's still is the top of Grace Liu's page (name, follow-up, how you met), captured from the live demo; her timeline is further down and doesn't fit the same screen.
+- Round 10: the Demo video tours start at 0:00 (the apps' Try the demo screens), like the files on GitHub.
+- Round 10: from 1100 px the subline and button moved beside the headline (same words) so the three phones mostly fit the first screen.

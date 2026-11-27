@@ -5,6 +5,7 @@ import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { basename, dirname, join, extname } from "node:path";
 import { describe, expect, it } from "vitest";
 import * as site from "./site";
+import { ascendLoop, bitewiseLoop, demos, orbitLoop } from "../components/media";
 import type { Stat } from "./site";
 
 /** Every file that ships text to the browser. */
@@ -80,10 +81,13 @@ describe("content rules", () => {
     }
   });
 
-  it("each tour link pair points at its own theme's video", () => {
-    for (const pair of [site.links.ascendTour, site.links.orbitTour]) {
+  it("each video pair points at its own theme's file, and every file is in public/media", () => {
+    const pairs = [bitewiseLoop.sources, ascendLoop.sources, orbitLoop.sources, ...Object.values(demos)];
+    expect(pairs.length).toBe(6);
+    for (const pair of pairs) {
       expect(pair.dark).toMatch(/-dark\.mp4$/);
       expect(pair.light).toMatch(/-light\.mp4$/);
+      for (const src of Object.values(pair)) expect(existsSync(join(process.cwd(), "public", src)), src).toBe(true);
     }
   });
 
@@ -98,7 +102,7 @@ describe("content rules", () => {
 
   it("gives every number a source, a date and a floor no higher than the count", () => {
     const all = stats();
-    expect(all.length).toBeGreaterThan(10);
+    expect(all.length).toBeGreaterThan(5);
     for (const [path, s] of all) {
       expect(s.floor, path).toBeLessThanOrEqual(s.exact);
       expect(s.source.length, `${path} source`).toBeGreaterThan(10);

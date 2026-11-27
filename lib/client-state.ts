@@ -6,11 +6,6 @@ import { useSyncExternalStore } from "react";
 
 export type Theme = "light" | "dark";
 
-/** Pinned story layout (plans/portfolio.md D3). Keep in sync with app/globals.css. */
-export const PINNED_QUERY = "(min-width: 1024px) and (min-height: 540px)";
-/** `sizes` for images that only show in one layout: the other layout asks for 1px. */
-export const PINNED_SIZES = `${PINNED_QUERY} 360px, 1px`;
-export const STACKED_SIZES = `${PINNED_QUERY} 1px, 300px`;
 export const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
 export function useMediaQuery(query: string): boolean {
@@ -67,4 +62,15 @@ export function setTheme(theme: Theme) {
   } catch {
     // Storage can be unavailable (private mode); the choice still applies to this page.
   }
+}
+
+function subscribeDialog(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-dialog"] });
+  return () => observer.disconnect();
+}
+
+/** True while a Demo video dialog is open (`html[data-dialog]`): the page's loops pause behind it. */
+export function useDialogOpen(): boolean {
+  return useSyncExternalStore(subscribeDialog, () => document.documentElement.hasAttribute("data-dialog"), () => false);
 }

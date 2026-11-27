@@ -28,12 +28,6 @@ export const ArrowUpRight = (p: IconProps) => (
   </Icon>
 );
 
-export const ArrowDown = (p: IconProps) => (
-  <Icon {...p}>
-    <path d="M12 5v14M6 13l6 6 6-6" />
-  </Icon>
-);
-
 export const Pause = (p: IconProps) => (
   <Icon {...p}>
     <path d="M9 6v12M15 6v12" />
@@ -75,5 +69,11 @@ export const Check = (p: IconProps) => (
 export const ArrowLeft = (p: IconProps) => (
   <Icon {...p}>
     <path d="M19 12H5m6-6-6 6 6 6" />
+  </Icon>
+);
+
+export const Close = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M6 6l12 12M18 6 6 18" />
   </Icon>
 );

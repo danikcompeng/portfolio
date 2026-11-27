@@ -1,6 +1,6 @@
 // Screenshots for the design-critic: 390 x 844 @3 and 1440 x 900 @2, light and dark.
-// Per size and theme: the first viewport, each section, the four pinned story states
-// (desktop) and a full page at 1x for the overview. Output:
+// Per size and theme: the first viewport, each section, the open Demo video and a full page
+// at 1x for the overview. Output:
 // docs/screenshots/<SHOTS_ROUND or "latest">/<width>-<theme>-<name>.png
 //
 // Bundled Chromium can't decode H.264, so videos show their poster frame: deterministic.
@@ -46,24 +46,17 @@ for (const size of sizes) {
 
       await page.screenshot({ path: file("01-first-viewport") });
 
-      if (size.width >= 1024) {
-        // The pinned story: put each step's top just past the centre line.
-        const tops = await page.$$eval("[data-story-step]", (els) =>
-          els.map((el) => el.getBoundingClientRect().top + window.scrollY),
-        );
-        for (const [i, top] of tops.entries()) {
-          await page.evaluate((y) => window.scrollTo({ top: y, behavior: "instant" }), top - size.height / 2 + 40);
-          await page.waitForTimeout(700);
-          await page.screenshot({ path: file(`02-story-step-${i + 1}`) });
-        }
-        await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
-      }
-
       // Sections without the sticky nav laid over their top edge.
       await page.addStyleTag({ content: ".nav{visibility:hidden}" });
-      for (const [i, id] of ["work", "how", "about"].entries()) {
-        await page.locator(`#${id}`).screenshot({ path: file(`0${i + 3}-${id}`) });
+      for (const [i, id] of ["work", "about"].entries()) {
+        await page.locator(`#${id}`).screenshot({ path: file(`0${i + 2}-${id}`) });
       }
+
+      // The Demo video dialog, open on Orbit's tour (its first frame, or the poster-less phone).
+      await page.getByRole("button", { name: "Demo video of Orbit" }).click();
+      await page.waitForTimeout(1200);
+      await page.screenshot({ path: file("04-demo-video") });
+      await page.keyboard.press("Escape");
 
       // Full page at 1x: the overview.
       const full = await browser.newContext({

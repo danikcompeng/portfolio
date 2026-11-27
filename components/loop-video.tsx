@@ -2,12 +2,12 @@
 
 // A muted, looping product video with one play rule (plans/portfolio.md, logic-checker #7).
 // It plays only while ALL of these hold:
-//   1. its layout is the one on screen (pinned vs stacked), so a hidden copy never loads;
-//   2. it is on screen;
-//   3. its layer is the active one (not covered by a still);
-//   4. the page is visible;
-//   5. the visitor wants it: they pressed play, or they didn't press pause and don't ask
+//   1. it is on screen;
+//   2. the page is visible and no Demo video dialog covers it;
+//   3. the visitor wants it: they pressed play, or they didn't press pause and don't ask
 //      for reduced motion.
+// It loads only once it is near the viewport and, inside a <VideoRow>, at least 60% inside
+// the row's scroll box (so on a phone only the snapped one loads, plans/portfolio.md round 10).
 // No autoPlay attribute; the source is set after mount for the current theme and swapped
 // (keeping the position) when the theme changes. The element stays mounted.
 
@@ -20,7 +20,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { PINNED_QUERY, REDUCED_MOTION_QUERY, useMediaQuery, useTheme } from "@/lib/client-state";
+import { REDUCED_MOTION_QUERY, useDialogOpen, useMediaQuery, useTheme } from "@/lib/client-state";
 import { Pause, Play } from "./icons";
 
 type Intent = "auto" | "play" | "pause";
@@ -31,7 +31,6 @@ type VideoState = {
   src: string | undefined;
   playing: boolean;
   ready: boolean;
-  active: boolean;
   toggle: () => void;
   onPlaying: () => void;
   onPause: () => void;
@@ -42,6 +41,21 @@ type VideoState = {
 };
 
 const VideoContext = createContext<VideoState | null>(null);
+
+/** A horizontal scroll row of videos: the element whose box decides which ones load. */
+const RowContext = createContext<HTMLElement | null | undefined>(undefined);
+
+/** A swipeable row (an <ul>): videos inside load only once mostly inside it. */
+export function VideoRow({ children, className, label }: { children: ReactNode; className?: string; label: string }) {
+  const [row, setRow] = useState<HTMLUListElement | null>(null);
+  return (
+    <RowContext.Provider value={row}>
+      <ul ref={setRow} className={className} aria-label={label}>
+        {children}
+      </ul>
+    </RowContext.Provider>
+  );
+}
 
 function useVideo() {
   const ctx = useContext(VideoContext);
@@ -54,8 +68,6 @@ export function VideoProvider({
   sources,
   start = 0,
   loopFrom,
-  active = true,
-  layout = "any",
   lazy = false,
 }: {
   children: ReactNode;
@@ -64,9 +76,6 @@ export function VideoProvider({
   start?: number;
   /** Where each loop restarts (default: `start`), so it never replays the demo's login. */
   loopFrom?: number;
-  /** False while a still covers the video. */
-  active?: boolean;
-  layout?: "any" | "pinned" | "stacked";
   /** Set the source only once the video is within ~600 px of the viewport. */
   lazy?: boolean;
 }) {
@@ -75,8 +84,11 @@ export function VideoProvider({
   const [frame, setFrame] = useState<HTMLDivElement | null>(null);
   const theme = useTheme();
   const reduced = useMediaQuery(REDUCED_MOTION_QUERY);
-  const pinned = useMediaQuery(PINNED_QUERY);
+  const covered = useDialogOpen();
+  // Inside a <VideoRow>: null until the row mounts, then the row's element.
+  const row = useContext(RowContext);
   const [near, setNear] = useState(!lazy);
+  const [inRow, setInRow] = useState(row === undefined);
   const [inView, setInView] = useState(false);
   const [pageVisible, setPageVisible] = useState(true);
   const [intent, setIntent] = useState<Intent>("auto");
@@ -84,12 +96,12 @@ export function VideoProvider({
   // The source whose first frame is showing; until it matches `src`, the poster shows.
   const [shownSrc, setShownSrc] = useState<string | undefined>();
 
-  const layoutOk = layout === "any" || (layout === "pinned" ? pinned : !pinned);
   // Reduced motion and no choice yet: poster only, nothing downloads until they press play.
   const optedOut = reduced && intent === "auto";
-  const src = layoutOk && near && theme && !optedOut ? sources[theme] : undefined;
+  // Pressing play counts as asking for it, wherever it sits in the row.
+  const src = near && (inRow || intent === "play") && theme && !optedOut ? sources[theme] : undefined;
   const wants = intent === "play" || (intent === "auto" && !reduced);
-  const shouldPlay = Boolean(src) && inView && active && pageVisible && wants;
+  const shouldPlay = Boolean(src) && inView && pageVisible && !covered && wants;
 
   useEffect(() => {
     const el = frame;
@@ -109,11 +121,26 @@ export function VideoProvider({
       );
       nearby.observe(el);
     }
+    // Mostly inside the row's scroll box (once is enough: a loaded video stays loaded).
+    let inside: IntersectionObserver | undefined;
+    if (row) {
+      inside = new IntersectionObserver(
+        ([e]) => {
+          if (e.isIntersecting) {
+            setInRow(true);
+            inside?.disconnect();
+          }
+        },
+        { root: row, threshold: 0.6 },
+      );
+      inside.observe(el);
+    }
     return () => {
       view.disconnect();
       nearby?.disconnect();
+      inside?.disconnect();
     };
-  }, [frame, lazy]);
+  }, [frame, lazy, row]);
 
   useEffect(() => {
     const onChange = () => setPageVisible(document.visibilityState === "visible");
@@ -125,7 +152,7 @@ export function VideoProvider({
     const v = video;
     if (!v) return;
     if (!src) {
-      // Withdrawn (layout switched, Reduce Motion turned on): removing the attribute alone
+      // Withdrawn (Reduce Motion turned on): removing the attribute alone
       // doesn't stop a playing video, so pause it and release the file.
       if (v.currentSrc) {
         v.pause();
@@ -157,7 +184,6 @@ export function VideoProvider({
     src,
     playing,
     ready: Boolean(src) && shownSrc === src,
-    active,
     toggle,
     onPlaying: () => {
       setPlaying(true);
@@ -193,19 +219,17 @@ export function VideoProvider({
 export function VideoLayer({
   posters,
   sizes,
-  dataActive = true,
   priority = false,
 }: {
   posters: { dark: StaticImageData; light: StaticImageData };
   sizes: string;
-  dataActive?: boolean;
   priority?: boolean;
 }) {
   // Destructured: a context object with a callback ref inside reads as a ref to the linter.
   const { setFrame, setVideo, src, ready, onPlaying, onPause, onLoadedMetadata, onSeeked, onTimeUpdate, onEnded } =
     useVideo();
   return (
-    <div className="layer" data-active={dataActive} ref={setFrame} aria-hidden="true">
+    <div className="layer" data-active="true" ref={setFrame} aria-hidden="true">
       {/* Lazy, so the other theme's copy (display: none) never downloads; high priority when
           it may be the largest paint (the hero), so the visible one loads right after layout. */}
       <Image src={posters.dark} alt="" sizes={sizes} fetchPriority={priority ? "high" : "auto"} className="only-dark" />
@@ -230,7 +254,7 @@ export function VideoLayer({
   );
 }
 
-/** Pause/play for the nearest video (WCAG 2.2.2). Hidden while a still covers the video. */
+/** Pause/play for the nearest video (WCAG 2.2.2). */
 export function PauseButton({ label }: { label: string }) {
   const v = useVideo();
   return (
@@ -239,7 +263,6 @@ export function PauseButton({ label }: { label: string }) {
       className="media-button press"
       aria-label={label}
       aria-pressed={!v.playing}
-      style={{ visibility: v.active ? "visible" : "hidden" }}
       onClick={v.toggle}
     >
       {v.playing ? <Pause /> : <Play />}

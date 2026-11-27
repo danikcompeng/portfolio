@@ -31,65 +31,234 @@ test("external links open in a new tab safely, and none point anywhere unplanned
   }
 });
 
-test("Watch the tour: one link per tile, to the tour in the theme on screen", async ({ browser }) => {
+const APPS = [
+  { name: "Bitewise", title: "#bw-title", slug: "bitewise", app: site.bitewise },
+  { name: "Ascend", title: "#as-title", slug: "ascend", app: site.ascend },
+  { name: "Orbit", title: "#or-title", slug: "orbit", app: site.orbit },
+] as const;
+
+test("the home page is the intro, the three apps and About: nothing points at a removed section", async ({ page }) => {
+  await page.goto("/");
+  expect(await page.$$eval("main > section", (ss) => ss.map((s) => s.id))).toEqual(["top", "work", "about"]);
+  await expect(page.locator('a[href*="#how"], #how, [data-story-step], .story-stage')).toHaveCount(0);
+  // Every same-page anchor lands on something.
+  const hashes = await page.$$eval('a[href^="#"], a[href^="/#"]', (as) => as.map((a) => a.getAttribute("href")!.split("#")[1]));
+  for (const id of hashes) await expect(page.locator(`[id="${id}"]`), id).toHaveCount(1);
+  await expect(page.getByRole("link", { name: /Try Bitewise/ })).toHaveCount(0);
+});
+
+test("each hero phone is one image with its description, named by its caption; each tile has its still", async ({ page }) => {
+  await page.goto("/");
+  const hero = page.locator("#top");
+  for (const { name, title, app } of APPS) {
+    await expect(hero.getByRole("img", { name: app.video.alt })).toHaveCount(1);
+    await expect(hero.getByRole("figure", { name: `${name} · ${app.video.caption}` })).toHaveCount(1);
+    await expect(hero.getByRole("button", { name: `Pause the ${name} video` })).toHaveCount(1);
+    // The still: one picture per theme, the visible one only.
+    await expect(page.locator(`article:has(${title})`).getByRole("img", { name: app.still.alt })).toHaveCount(1);
+    await expect(page.locator(`article:has(${title}) video`)).toHaveCount(0);
+  }
+  await expect(page.locator("article:has(#bw-title)").getByRole("link", { name: "Read the case study" })).toHaveAttribute(
+    "href",
+    "/work/bitewise",
+  );
+});
+
+test("the three tiles are the same size, side by side at 1440", async ({ browser }) => {
+  const ctx = await browser.newContext({ ...DESKTOP, reducedMotion: "reduce" });
+  const page = await ctx.newPage();
+  await page.goto("/");
+  const boxes = await page.$$eval("#work article", (as) => as.map((a) => a.getBoundingClientRect().toJSON() as DOMRect));
+  expect(boxes).toHaveLength(3);
+  for (const b of boxes) {
+    expect(Math.abs(b.width - boxes[0].width)).toBeLessThan(1);
+    expect(Math.abs(b.height - boxes[0].height)).toBeLessThan(1);
+    expect(Math.abs(b.top - boxes[0].top)).toBeLessThan(1);
+  }
+  await ctx.close();
+});
+
+for (const [label, opts] of [
+  ["390", PHONE],
+  ["1440", DESKTOP],
+] as const) {
+  test(`each tile's still is a full-size phone, and the tile's links stay inside it (${label})`, async ({ browser }) => {
+    const ctx = await browser.newContext({ ...opts, reducedMotion: "reduce" });
+    const page = await ctx.newPage();
+    await page.goto("/");
+    for (const { title } of APPS) {
+      const article = page.locator(`article:has(${title})`);
+      const phone = await article.locator(".screen-crop .phone").boundingBox();
+      expect(phone!.width, title).toBeGreaterThan(200);
+      const tile = (await article.boundingBox())!;
+      for (const box of await article.locator(".text-link").evaluateAll((ls) => ls.map((l) => l.getBoundingClientRect().toJSON() as DOMRect))) {
+        expect(box.bottom, title).toBeLessThan(phone!.y);
+        expect(box.bottom, title).toBeLessThan(tile.y + tile.height);
+      }
+    }
+    await ctx.close();
+  });
+}
+
+test("Reduce Motion: pressing play on a hero phone loads and plays its video", async ({ browser }) => {
+  const ctx = await browser.newContext({ ...DESKTOP, reducedMotion: "reduce" });
+  const page = await ctx.newPage();
+  await page.goto("/", { waitUntil: "networkidle" });
+  const video = page.locator("#top li").nth(2).locator("video");
+  expect(await video.getAttribute("src")).toBeNull();
+  await page.getByRole("button", { name: "Pause the Orbit video" }).click();
+  await expect.poll(() => video.getAttribute("src")).toMatch(/orbit-loop-(dark|light)\.mp4$/);
+  await ctx.close();
+});
+
+test("at 390, only the hero phone on screen loads its loop; swiping loads the next", async ({ browser }) => {
+  const ctx = await browser.newContext(PHONE);
+  const page = await ctx.newPage();
+  const requested: string[] = [];
+  page.on("request", (r) => {
+    if (r.url().endsWith(".mp4")) requested.push(r.url().split("/").pop()!);
+  });
+  await page.goto("/", { waitUntil: "networkidle" });
+  const srcs = () => page.$$eval("#top li video", (vs) => vs.map((v) => v.getAttribute("src")));
+  await expect.poll(srcs).toEqual([expect.stringMatching(/bitewise-loop-(dark|light)\.mp4$/), null, null]);
+  await page.locator("#top ul").evaluate((ul) => ul.scrollTo({ left: (ul.children[1] as HTMLElement).offsetLeft, behavior: "instant" }));
+  await expect.poll(async () => (await srcs())[1]).toMatch(/ascend-loop-(dark|light)\.mp4$/);
+  expect(requested.filter((f) => f.includes("demo"))).toEqual([]);
+  await ctx.close();
+});
+
+test("at 1440, all three hero loops load and nothing else does", async ({ browser }) => {
+  const ctx = await browser.newContext(DESKTOP);
+  const page = await ctx.newPage();
+  const requested = new Set<string>();
+  page.on("request", (r) => {
+    if (r.url().endsWith(".mp4")) requested.add(r.url().split("/").pop()!.replace(/-(dark|light)\.mp4$/, ""));
+  });
+  await page.goto("/", { waitUntil: "networkidle" });
+  await expect.poll(() => [...requested].sort()).toEqual(["ascend-loop", "bitewise-loop", "orbit-loop"]);
+  await ctx.close();
+});
+
+test("Demo video: one button per tile; the dialog opens on top, Esc and the backdrop close it, focus comes back", async ({ browser }) => {
   for (const theme of ["dark", "light"] as const) {
     const ctx = await browser.newContext({ ...DESKTOP, colorScheme: theme });
     const page = await ctx.newPage();
     await page.goto("/");
-    for (const [tile, app, repo, file] of [
-      ["#as-title", "Ascend", "habit-tracker", "ascend-demo"],
-      ["#or-title", "Orbit", "network-crm", "orbit-demo"],
-    ]) {
-      const link = page
-        .locator(`article:has(${tile})`)
-        .getByRole("link", { name: `Watch the tour of ${app}, a video on GitHub (opens in a new tab)` });
-      await expect(link).toHaveCount(1);
-      await expect(link).toHaveAttribute(
-        "href",
-        `https://github.com/danikcompeng/${repo}/blob/main/design/videos/${file}-${theme}.mp4`,
-      );
+    for (const { name, title, slug } of APPS) {
+      const button = page.locator(`article:has(${title})`).getByRole("button", { name: `Demo video of ${name}` });
+      await expect(button).toHaveCount(1);
+      await expect(button).toHaveText("Demo video");
+      const dialog = page.getByRole("dialog", { name: `${name} demo video` });
+      await expect(dialog).toBeHidden();
+      expect(await page.locator(`video[src*="${slug}-demo"]`).count()).toBe(0);
+
+      await button.click();
+      await expect(dialog).toBeVisible();
+      await expect(dialog.locator("video")).toHaveAttribute("src", `/media/${slug}-demo-${theme}.mp4`);
+      await expect(dialog.getByRole("button", { name: "Close the video" })).toBeFocused();
+      await expect(page.locator("html")).toHaveAttribute("data-dialog", "");
+      await page.keyboard.press("Escape");
+      await expect(dialog).toBeHidden();
+      await expect(button).toBeFocused();
+      await expect(dialog.locator("video")).toHaveCount(0);
+      await expect(page.locator("html")).not.toHaveAttribute("data-dialog");
+
+      // A click on the dimmed area outside the phone closes it too.
+      await button.click();
+      await expect(dialog).toBeVisible();
+      // Past the 400 ms that guards against a double-click closing it.
+      await page.waitForTimeout(450);
+      await page.mouse.click(30, 450);
+      await expect(dialog).toBeHidden();
+      await expect(button).toBeFocused();
     }
     await ctx.close();
   }
 });
 
-test("each tile's recording is one image with its description; the figure is named by its caption", async ({ page }) => {
+test("Demo video: Tab stays inside the open dialog", async ({ page }) => {
   await page.goto("/");
-  for (const [tile, video] of [
-    ["#as-title", site.ascend.video],
-    ["#or-title", site.orbit.video],
-  ] as const) {
-    const article = page.locator(`article:has(${tile})`);
-    await expect(article.getByRole("img", { name: video.alt })).toHaveCount(1);
-    await expect(article.getByRole("figure", { name: video.caption })).toHaveCount(1);
+  await page.getByRole("button", { name: "Demo video of Ascend" }).click();
+  // A modal dialog lets Tab pass to the browser's own controls (activeElement is then body)
+  // and back; nothing on the page behind it may take focus.
+  const where: string[] = [];
+  for (let i = 0; i < 8; i++) {
+    await page.keyboard.press("Tab");
+    where.push(
+      await page.evaluate(() => {
+        const a = document.activeElement;
+        if (!a || a === document.body) return "browser";
+        return a.closest("dialog[open]") ? "dialog" : `page: ${a.outerHTML.slice(0, 80)}`;
+      }),
+    );
   }
-  await expect(page.getByRole("figure", { name: "The full demo tour" })).toHaveCount(1);
+  expect(where.filter((w) => w.startsWith("page"))).toEqual([]);
+  expect(where.filter((w) => w === "dialog").length).toBeGreaterThan(2);
 });
 
-test("Reduce Motion: pressing play on a tile loads and plays its video", async ({ browser }) => {
-  const ctx = await browser.newContext({ ...DESKTOP, reducedMotion: "reduce" });
-  const page = await ctx.newPage();
-  await page.goto("/", { waitUntil: "networkidle" });
-  const article = page.locator("article:has(#or-title)");
-  await article.locator("video").scrollIntoViewIfNeeded();
+test("the Demo video animates in only when motion is allowed", async ({ browser }) => {
+  for (const [reducedMotion, expected] of [
+    ["no-preference", true],
+    ["reduce", false],
+  ] as const) {
+    const ctx = await browser.newContext({ ...DESKTOP, reducedMotion });
+    const page = await ctx.newPage();
+    await page.goto("/");
+    await page.getByRole("button", { name: "Demo video of Orbit" }).click();
+    const animations = await page.evaluate(() => document.querySelector("dialog[open]")!.getAnimations({ subtree: true }).length);
+    expect(animations > 0, reducedMotion).toBe(expected);
+    await ctx.close();
+  }
+});
+
+test("Demo video: a double-click leaves it open; a drag from the video ending outside doesn't close it", async ({ page }) => {
+  await page.goto("/");
+  const dialog = page.getByRole("dialog", { name: "Bitewise demo video" });
+  await page.getByRole("button", { name: "Demo video of Bitewise" }).dblclick();
+  await expect(dialog).toBeVisible();
   await page.waitForTimeout(500);
-  expect(await article.locator("video").getAttribute("src")).toBeNull();
-  await article.getByRole("button", { name: "Pause the Orbit video" }).click();
-  await expect.poll(() => article.locator("video").getAttribute("src")).toMatch(/orbit-loop-(dark|light)\.mp4$/);
+  const video = (await dialog.locator("video").boundingBox())!;
+  await page.mouse.move(video.x + video.width / 2, video.y + video.height - 20);
+  await page.mouse.down();
+  await page.mouse.move(20, 450, { steps: 5 });
+  await page.mouse.up();
+  await expect(dialog).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+});
+
+test("Demo video: the page behind doesn't scroll or shift, and the lock lifts on every way out", async ({ browser }) => {
+  const ctx = await browser.newContext(DESKTOP);
+  const page = await ctx.newPage();
+  await page.goto("/");
+  await page.locator("#work").scrollIntoViewIfNeeded();
+  const before = await page.evaluate(() => ({ y: window.scrollY, w: document.documentElement.clientWidth }));
+  const button = page.getByRole("button", { name: "Demo video of Orbit" });
+  await button.click();
+  const opened = await page.evaluate(() => ({ y: window.scrollY, w: document.documentElement.clientWidth }));
+  await page.mouse.wheel(0, 800);
+  await page.keyboard.press("PageDown");
+  await page.waitForTimeout(300);
+  expect(await page.evaluate(() => ({ y: window.scrollY, w: document.documentElement.clientWidth }))).toEqual(opened);
+  expect(opened.w).toBe(before.w);
+  // Closed from the backdrop: the lock goes too.
+  await page.waitForTimeout(450);
+  await page.mouse.click(30, 450);
+  await expect(page.getByRole("dialog", { name: "Orbit demo video" })).toBeHidden();
+  await expect(page.locator("html")).not.toHaveAttribute("data-dialog");
+  await page.mouse.wheel(0, 400);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(opened.y);
   await ctx.close();
 });
 
-test("the Ascend and Orbit videos load only once their tiles come near", async ({ browser }) => {
-  const ctx = await browser.newContext(PHONE);
+test("Reduce Motion at 390: pressing play on a phone not yet swiped to loads it", async ({ browser }) => {
+  const ctx = await browser.newContext({ ...PHONE, reducedMotion: "reduce" });
   const page = await ctx.newPage();
   await page.goto("/", { waitUntil: "networkidle" });
-  const src = (tile: string) =>
-    page.evaluate((t) => document.querySelector(`article:has(${t}) video`)?.getAttribute("src") ?? null, tile);
-  expect(await src("#as-title")).toBeNull();
-  expect(await src("#or-title")).toBeNull();
-  await page.locator("#or-title").scrollIntoViewIfNeeded();
-  await expect.poll(() => src("#as-title")).toMatch(/\/media\/ascend-loop-(dark|light)\.mp4$/);
-  await expect.poll(() => src("#or-title")).toMatch(/\/media\/orbit-loop-(dark|light)\.mp4$/);
+  const video = page.locator("#top li").nth(1).locator("video");
+  expect(await video.getAttribute("src")).toBeNull();
+  await page.getByRole("button", { name: "Pause the Ascend video" }).click();
+  await expect.poll(() => video.getAttribute("src")).toMatch(/ascend-loop-(dark|light)\.mp4$/);
   await ctx.close();
 });
 
@@ -218,48 +387,32 @@ for (const [name, opts] of [
   }
 }
 
-test("the hero phone is tilted at the top of the page when motion is allowed", async ({ browser }) => {
+test("the hero phones are tilted when motion is allowed", async ({ browser }) => {
   const ctx = await browser.newContext(DESKTOP);
   const page = await ctx.newPage();
   await page.goto("/", { waitUntil: "networkidle" });
-  const tilt = await page.evaluate(() => getComputedStyle(document.querySelector(".story-stage .tilt")!).transform);
-  expect(tilt).not.toBe("none");
+  const tilts = await page.$$eval("#top .tilt", (ts) => ts.map((t) => getComputedStyle(t).transform));
+  expect(tilts).toHaveLength(3);
+  for (const t of tilts) expect(t).not.toBe("none");
   await ctx.close();
 });
 
-test("Reduce Motion: the phone is flat and no video plays or downloads", async ({ browser }) => {
+test("Reduce Motion: the phones are flat and no video plays or downloads", async ({ browser }) => {
   const ctx = await browser.newContext({ ...DESKTOP, reducedMotion: "reduce" });
   const page = await ctx.newPage();
   await page.goto("/", { waitUntil: "networkidle" });
-  // Bring the lazy tile videos near too, so the check covers every video on the page.
-  await page.locator("#or-title").scrollIntoViewIfNeeded();
   await page.waitForTimeout(800);
-  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
-  await page.waitForTimeout(300);
   const state = await page.evaluate(() => ({
     playing: [...document.querySelectorAll("video")].filter((v) => !v.paused).length,
     sources: [...document.querySelectorAll("video")].filter((v) => v.getAttribute("src")).length,
-    tilt: getComputedStyle(document.querySelector(".story-stage .tilt")!).transform,
+    tilts: [...document.querySelectorAll("#top .tilt")].map((t) => getComputedStyle(t).transform),
   }));
   expect(state.playing).toBe(0);
   expect(state.sources).toBe(0);
-  expect(state.tilt).toBe("none");
+  expect(state.tilts).toEqual(["none", "none", "none"]);
   // The visitor can still choose to play it.
-  await page.getByRole("button", { name: "Pause the Bitewise video" }).first().click();
-  await expect.poll(() => page.evaluate(() => document.querySelector(".story-stage video")?.getAttribute("src"))).toMatch(/bitewise-loop/);
-  await ctx.close();
-});
-
-test("Hero video plays only in the layout on screen", async ({ browser }) => {
-  const ctx = await browser.newContext(DESKTOP);
-  const page = await ctx.newPage();
-  await page.goto("/", { waitUntil: "networkidle" });
-  const srcs = await page.evaluate(() => ({
-    pinned: document.querySelector(".story-stage video")?.getAttribute("src") ?? null,
-    inline: document.querySelector(".story-inline-phone video")?.getAttribute("src") ?? null,
-  }));
-  expect(srcs.pinned).toMatch(/bitewise-loop-(dark|light)\.mp4/);
-  expect(srcs.inline).toBeNull();
+  await page.getByRole("button", { name: "Pause the Bitewise video" }).click();
+  await expect.poll(() => page.evaluate(() => document.querySelector("#top li video")?.getAttribute("src"))).toMatch(/bitewise-loop/);
   await ctx.close();
 });
 
@@ -279,20 +432,6 @@ test("the theme toggle is remembered and applied before paint", async ({ browser
   expect(await page.evaluate(() => document.documentElement.getAttribute("data-theme"))).toBe("light");
   await ctx.close();
 });
-
-for (const width of [1024, 1200, 1440]) {
-  test(`How I build: agent names stay on one line at ${width} px`, async ({ browser }) => {
-    const ctx = await browser.newContext({ viewport: { width, height: 800 }, reducedMotion: "reduce" });
-    const page = await ctx.newPage();
-    await page.goto("/");
-    const lines = await page.$$eval("#how h3.font-mono", (hs) =>
-      hs.map((h) => ({ name: h.textContent, lines: h.getBoundingClientRect().height / parseFloat(getComputedStyle(h).lineHeight) })),
-    );
-    expect(lines.length).toBe(3);
-    for (const l of lines) expect(l.lines, l.name ?? "").toBeLessThan(1.5);
-    await ctx.close();
-  });
-}
 
 test("unknown pages get the 404 in the same world", async ({ page }) => {
   const res = await page.goto("/nope");
