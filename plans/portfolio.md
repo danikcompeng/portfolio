@@ -855,6 +855,23 @@ Verdict: **Ship after fixes**.
 | 3 | Low | The dialog opens on an app screen; its caption sits on busy dimmed text at 390. | Fixed | Caption on a backdrop-coloured pill. |
 | 4 | Low | Facts rows differ in height. | Kept | The decisions still line up. |
 
+### Round 12 plan review, logic-checker (2026-11-27)
+Verdict: **Ready after fixes**.
+
+| # | Severity | Finding | Outcome | How |
+|---|---|---|---|---|
+| 1 | High | The tile still isn't the tour's first frame: the expand would cut from one screen to another. | Fixed | A still layer in the dialog's phone shows the tile's own loaded image while it moves, gives way once the tour's first frame is in (or it fails), and comes back as it shrinks. |
+| 2 | High | Closing must not depend on the animation finishing (a cancelled `finished`, a non-cancellable second Esc). | Fixed | `close()` in a `finally`; Esc via `cancel` only when cancellable; all cleanup on the `close` event and unmount. Tests: Esc twice, button then Esc. |
+| 3 | High | The old `demo-in` would stack on the expand and move the fixed close button. | Fixed | Removed; only `.phone` moves; close button and caption fade. |
+| 4 | Medium | The clip would cut the phone's shadow; "off screen" needs a threshold. | Fixed | Negative insets (96 px) around the phone, no `round`; under 40 px of tile phone visible, a plain fade. |
+| 5 | Medium | A reversed animation turns ease-out into ease-in. | Fixed | The close is its own forward animation, ease-out. |
+| 6 | Medium | Fading `::backdrop` with WAAPI may not work in Safari. | Fixed | `data-closing` and CSS transitions. |
+| 7 | Medium | A permanent mask could clip descenders. | Fixed | The mask lives only in the keyframes; LCP is a poster image, not the h1 (measured). |
+| 8 | Low | Tests that would pass for the wrong reason; a throttled trace isn't an iPhone. | Fixed / logged | The expand test freezes the first frame and compares it with the tile's phone; close paths tested; the iPhone check is on the phone-test list. |
+| 9 | Low | The 2 px hover lift fires when focus returns. | Fixed | The lift ignores the Demo video button's focus. |
+| 10 | Low | Reduce Motion should keep the tile phone; pick the still by theme; `--dur-reveal` (560 ms) is over the cap. | Fixed / logged | No `data-away` under Reduce Motion (tested); `img.only-${theme}`; the reveal is from round 1 and outside this brief, left as is. |
+| 11 | – | Simpler option: transform and opacity only. | Partly | Kept the clip (exact crop), but the clip runs as its own animation so the transform can stay on the compositor, and the tour mounts after the expand lands (first-open frame times at 4x CPU: 300 ms worst → 67 ms). |
+
 ## Decided while Dani was away
 
 - Theme follows the system with a remembered toggle, over dark-for-everyone: it respects the visitor's setting and is a one-line change (open question 3).

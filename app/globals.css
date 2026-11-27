@@ -92,7 +92,10 @@ html {
 html[data-dialog] {
   overflow: hidden;
   /* The scrollbar's gutter sits outside the ::backdrop: dim it to match. */
-  background: color-mix(in oklch, var(--bg), oklch(0.1 0.004 260) 78%);
+  background: light-dark(
+    color-mix(in oklch, var(--bg), oklch(0.25 0.004 260) 35%),
+    color-mix(in oklch, var(--bg), oklch(0.1 0.004 260) 60%)
+  );
 }
 @media (prefers-reduced-motion: no-preference) {
   html {
@@ -152,10 +155,40 @@ blockquote {
     display: none !important;
   }
 }
-/* The toggle's icon follows the theme without JS state. */
+/* Two icons in one cell that swap with a quick blur crossfade (round 12): the outgoing one
+   blurs, shrinks and fades as the incoming one sharpens in. Instant under Reduce Motion. */
+.icon-swap {
+  display: inline-grid;
+}
+.icon-swap > .icon {
+  grid-area: 1 / 1;
+  transition:
+    opacity var(--dur-press) var(--ease-out),
+    filter var(--dur-press) var(--ease-out),
+    transform var(--dur-press) var(--ease-out);
+}
+.icon-swap > [data-shown="false"],
 :root[data-theme="light"] .icon-when-dark,
 :root[data-theme="dark"] .icon-when-light {
-  display: none;
+  opacity: 0;
+  filter: blur(4px);
+  transform: scale(0.8);
+}
+/* The toggle's icon follows the theme without JS state (and the system setting before it). */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .icon-when-light {
+    opacity: 0;
+  }
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) .icon-when-dark {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .icon-swap > .icon {
+    transition: none;
+  }
 }
 
 .skip-link {
@@ -404,6 +437,10 @@ button.text-link {
   overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
+  /* Without paint containment, Chrome's phone layout counts the scrolled-off phones in the
+     page's width (a 638 px layout viewport at 390, round 12). Swipe row only: from 1100 px
+     the row is visible overflow and the tilt's shadows must not clip. */
+  contain: paint;
 }
 .hero-phones::-webkit-scrollbar {
   display: none;
@@ -430,6 +467,7 @@ button.text-link {
     margin-inline: 0;
     padding-inline: 0;
     overflow: visible;
+    contain: none;
   }
   .hero-phones > li {
     justify-self: center;
@@ -442,6 +480,40 @@ button.text-link {
 @media (prefers-reduced-motion: no-preference) {
   .tilt {
     transform: perspective(1400px) rotateY(-10deg) rotateX(6deg);
+  }
+}
+
+/* The headline reveals once on load (round 12): a soft-edged mask wipes it in left to right.
+   CSS only, so it runs once per page load and never on scroll; without mask support it's
+   simply shown. None under Reduce Motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-title {
+    /* 400 ms (--dur-ui + --dur-press) on a plain ease-out: the expo curve finished the wipe
+       before it could be seen (design-critic, round 12). */
+    animation: headline-wipe calc(var(--dur-ui) + var(--dur-press)) ease-out backwards;
+  }
+}
+/* The mask exists only while the wipe runs, so nothing (a descender) is clipped afterwards. */
+@keyframes headline-wipe {
+  from {
+    -webkit-mask-image: linear-gradient(90deg, #000 40%, transparent 60%);
+    mask-image: linear-gradient(90deg, #000 40%, transparent 60%);
+    -webkit-mask-size: 250% 100%;
+    mask-size: 250% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
+  }
+  to {
+    -webkit-mask-image: linear-gradient(90deg, #000 40%, transparent 60%);
+    mask-image: linear-gradient(90deg, #000 40%, transparent 60%);
+    -webkit-mask-size: 250% 100%;
+    mask-size: 250% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: 0 0;
+    mask-position: 0 0;
   }
 }
 
@@ -495,7 +567,8 @@ button.text-link {
     box-shadow var(--dur-ui) var(--ease-out);
 }
 @media (prefers-reduced-motion: no-preference) {
-  .tile:has(a:hover, a:focus-visible, button.text-link:hover, button.text-link:focus-visible) .tile-media {
+  /* Not on the Demo video button's focus: focus returns there as the phone lands back. */
+  .tile:has(a:hover, a:focus-visible, button.text-link:hover) .tile-media {
     translate: 0 -2px;
   }
 }
@@ -512,6 +585,10 @@ button.text-link {
 }
 .screen-crop > .phone {
   margin-inline: auto;
+}
+/* While its Demo video is open, the tile's phone is "in" the dialog (round 12). */
+.screen-crop[data-away] > .phone {
+  visibility: hidden;
 }
 
 
@@ -616,8 +693,12 @@ button.text-link {
   display: grid;
   place-items: center;
 }
+/* Stage the focus (round 12): the page behind dims and softly blurs. */
 .demo-dialog::backdrop {
-  background: oklch(0.1 0.004 260 / 0.78);
+  /* Lighter in light mode, so the page behind reads as dimmed, not muddy. */
+  background: light-dark(oklch(0.25 0.004 260 / 0.35), oklch(0.1 0.004 260 / 0.6));
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
 }
 .demo-phone {
   --phone-w: min(calc(100vw - 32px), calc((100svh - 140px) / 2.0932), 420px);
@@ -657,23 +738,47 @@ button.text-link {
     left: calc(100% + 16px);
   }
 }
+/* The tile's picture over the tour while the phone moves; it gives way to the tour's first
+   frame. Clicks go through to the video's controls. */
+.demo-still {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  transition: opacity var(--dur-press) var(--ease-out);
+}
+.demo-still[data-shown="false"] {
+  opacity: 0;
+}
+/* The phone itself grows from the tile (components/demo-video.tsx); the backdrop, the close
+   button and the caption fade in and out around it. */
 @media (prefers-reduced-motion: no-preference) {
-  .demo-dialog[open]::backdrop {
+  .demo-dialog[open]::backdrop,
+  .demo-dialog[open] .demo-close,
+  .demo-dialog[open] .demo-caption {
     animation: demo-fade var(--dur-ui) var(--ease-out);
   }
-  .demo-dialog[open] .demo-phone {
-    animation: demo-in var(--dur-screen) var(--ease-out);
+  .demo-dialog::backdrop,
+  .demo-close,
+  .demo-caption {
+    transition: opacity var(--dur-ui) var(--ease-out);
+  }
+  .demo-dialog[data-closing]::backdrop,
+  .demo-dialog[data-closing] .demo-close,
+  .demo-dialog[data-closing] .demo-caption {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .demo-still {
+    transition: none;
   }
 }
 @keyframes demo-fade {
   from {
     opacity: 0;
-  }
-}
-@keyframes demo-in {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.97);
   }
 }
 

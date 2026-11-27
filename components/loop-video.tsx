@@ -298,7 +298,11 @@ export function PauseButton({ label }: { label: string }) {
       aria-pressed={!v.playing}
       onClick={v.toggle}
     >
-      {v.playing ? <Pause /> : <Play />}
+      {/* Both icons stay in one cell and blur-crossfade (round 12). */}
+      <span className="icon-swap">
+        <Pause data-shown={v.playing} />
+        <Play data-shown={!v.playing} />
+      </span>
     </button>
   );
 }

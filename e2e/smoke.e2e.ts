@@ -132,6 +132,16 @@ test("Reduce Motion: pressing play on a hero phone loads and plays its video", a
   await ctx.close();
 });
 
+test("at 390 the page is exactly as wide as the phone (no sideways overflow)", async ({ browser }) => {
+  const ctx = await browser.newContext(PHONE);
+  const page = await ctx.newPage();
+  await page.goto("/", { waitUntil: "networkidle" });
+  expect(await page.evaluate(() => ({ inner: innerWidth, scroll: document.documentElement.scrollWidth }))).toEqual({ inner: 390, scroll: 390 });
+  await page.getByRole("button", { name: "Demo video of Orbit" }).click();
+  expect(await page.evaluate(() => innerWidth)).toBe(390);
+  await ctx.close();
+});
+
 test("at 390, only the hero phone on screen loads its loop; swiping loads the next", async ({ browser }) => {
   const ctx = await browser.newContext(PHONE);
   const page = await ctx.newPage();
@@ -459,4 +469,210 @@ test("unknown pages get the 404 in the same world", async ({ page }) => {
   expect(res?.status()).toBe(404);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("That page doesn't exist.");
   await expect(page.getByRole("link", { name: "Go to the home page" })).toBeVisible();
+});
+
+// Round 12: motion polish.
+test("Demo video grows out of the tile's phone and shrinks back into it", async ({ browser }) => {
+  const ctx = await browser.newContext(DESKTOP);
+  const page = await ctx.newPage();
+  await page.goto("/");
+  const article = page.locator("article:has(#as-title)");
+  await article.locator(".screen-crop").scrollIntoViewIfNeeded();
+  // Let the tile's own scroll reveal (scale .97 → 1, 560 ms) finish first.
+  await expect.poll(() => article.evaluate((a) => a.getAnimations({ subtree: true }).length + (a.getAttribute("data-reveal") === "hidden" ? 1 : 0))).toBe(0);
+  await page.waitForTimeout(700);
+  const tile = (await article.locator(".screen-crop .phone").boundingBox())!;
+  // Lazy: wait until the tile's picture has loaded (without it the dialog simply has no still).
+  const tileImg = article.locator(".screen-crop img:visible");
+  await expect.poll(() => tileImg.evaluate((i: HTMLImageElement) => i.complete && i.currentSrc)).toBeTruthy();
+  const tileSrc = await tileImg.evaluate((i: HTMLImageElement) => i.currentSrc);
+  await article.getByRole("button", { name: "Demo video of Ascend" }).click();
+  // Freeze the expand at its first frame: the dialog's phone sits exactly on the tile's.
+  const start = await page.evaluate(() => {
+    const phone = document.querySelector<HTMLElement>("dialog[open] .phone")!;
+    for (const a of phone.getAnimations()) {
+      a.pause();
+      a.currentTime = 0;
+    }
+    const r = phone.getBoundingClientRect();
+    // The tile's phone right now (hidden, but laid out; possibly lifted by the hover).
+    const t = document.querySelector("article:has(#as-title) .screen-crop .phone")!.getBoundingClientRect();
+    return { x: r.x, y: r.y, width: r.width, tile: { x: t.x, y: t.y, width: t.width }, still: document.querySelector<HTMLImageElement>("dialog[open] .demo-still")?.src ?? null };
+  });
+  expect(Math.abs(start.tile.width - tile.width)).toBeLessThan(1);
+  expect(Math.abs(start.x - start.tile.x)).toBeLessThan(2);
+  expect(Math.abs(start.y - start.tile.y)).toBeLessThan(3);
+  expect(Math.abs(start.width - start.tile.width)).toBeLessThan(2);
+  // It shows the tile's own (already loaded) picture while it moves.
+  expect(start.still).toBe(tileSrc);
+  // The tile's phone is "in" the dialog meanwhile.
+  await expect(article.locator(".screen-crop .phone")).toBeHidden();
+  await page.evaluate(() => document.querySelector<HTMLElement>("dialog[open] .phone")!.getAnimations().forEach((a) => a.finish()));
+
+  // Close: it plays the shrink with the dialog still open, then closes and puts everything back.
+  await page.waitForTimeout(450);
+  await page.getByRole("button", { name: "Close the video" }).click();
+  await expect(page.locator("dialog[data-closing]")).toHaveCount(1);
+  await expect(page.getByRole("dialog", { name: "Ascend demo video" })).toBeHidden();
+  await expect(article.locator(".screen-crop .phone")).toBeVisible();
+  await expect(article.getByRole("button", { name: "Demo video of Ascend" })).toBeFocused();
+  await expect(page.locator("html")).not.toHaveAttribute("data-dialog");
+  await ctx.close();
+});
+
+for (const [label, keys] of [
+  ["Esc twice, fast", ["Escape", "Escape"]],
+  ["the close button, then Esc", ["Close", "Escape"]],
+] as const) {
+  test(`Demo video: ${label} closes cleanly`, async ({ browser }) => {
+    const ctx = await browser.newContext(DESKTOP);
+    const page = await ctx.newPage();
+    await page.goto("/");
+    const button = page.getByRole("button", { name: "Demo video of Orbit" });
+    await button.click();
+    await page.waitForTimeout(300);
+    const [first, second] = keys;
+    if (first === "Close") await page.getByRole("button", { name: "Close the video" }).click();
+    else await page.keyboard.press(first);
+    // Hold the shrink where it is, so only the second key can close it.
+    await expect(page.locator("dialog[data-closing]")).toHaveCount(1);
+    await page.evaluate(() => document.querySelector("dialog[open] .phone")!.getAnimations().forEach((a) => a.pause()));
+    await page.keyboard.press(second);
+    await expect(page.getByRole("dialog", { name: "Orbit demo video" })).toBeHidden();
+    await expect(page.locator("[data-away]")).toHaveCount(0);
+    await expect(page.locator("html")).not.toHaveAttribute("data-dialog");
+    await expect(button).toBeFocused();
+    // The page scrolls again.
+    const y = await page.evaluate(() => window.scrollY);
+    await page.mouse.wheel(0, 400);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(y);
+    // And it opens again.
+    await button.click();
+    await expect(page.getByRole("dialog", { name: "Orbit demo video" })).toBeVisible();
+    await ctx.close();
+  });
+}
+
+test("Esc during the expand closes cleanly and never downloads the tour", async ({ browser }) => {
+  const ctx = await browser.newContext(DESKTOP);
+  const page = await ctx.newPage();
+  const requested: string[] = [];
+  page.on("request", (r) => {
+    if (r.url().includes("-demo-")) requested.push(r.url());
+  });
+  await page.goto("/");
+  const button = page.getByRole("button", { name: "Demo video of Bitewise" });
+  await button.click();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog", { name: "Bitewise demo video" })).toBeHidden();
+  await page.waitForTimeout(500);
+  expect(requested).toEqual([]);
+  await expect(page.locator("[data-away]")).toHaveCount(0);
+  // No inline styles left on its phone (the close kept the mid-expand position in them).
+  expect(await page.locator("dialog:has(#demo-bitewise-title) .phone").evaluate((p: HTMLElement) => p.style.cssText)).toBe("");
+  await ctx.close();
+});
+
+test("at 390 in dark, the expand starts on the tile's phone with the dark picture; the poster takes over", async ({ browser }) => {
+  const ctx = await browser.newContext({ ...PHONE, colorScheme: "dark" });
+  await ctx.addInitScript(() => localStorage.setItem("theme", "dark"));
+  const page = await ctx.newPage();
+  await page.goto("/");
+  const article = page.locator("article:has(#or-title)");
+  await article.locator(".screen-crop").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(900);
+  const tileImg = article.locator(".screen-crop img:visible");
+  await expect.poll(() => tileImg.evaluate((i: HTMLImageElement) => i.complete && i.currentSrc)).toBeTruthy();
+  await article.getByRole("button", { name: "Demo video of Orbit" }).click();
+  const start = await page.evaluate(() => {
+    const phone = document.querySelector<HTMLElement>("dialog[open] .phone")!;
+    for (const a of phone.getAnimations()) {
+      a.pause();
+      a.currentTime = 0;
+    }
+    const r = phone.getBoundingClientRect();
+    const t = document.querySelector("article:has(#or-title) .screen-crop .phone")!.getBoundingClientRect();
+    return { dx: r.x - t.x, dy: r.y - t.y, dw: r.width - t.width, still: document.querySelector<HTMLImageElement>("dialog[open] .demo-still")!.src };
+  });
+  expect(Math.abs(start.dx)).toBeLessThan(2);
+  expect(Math.abs(start.dy)).toBeLessThan(3);
+  expect(Math.abs(start.dw)).toBeLessThan(2);
+  expect(decodeURIComponent(start.still)).toContain("orbit-person-dark");
+  // Once it lands, the video is mounted with the same picture as its poster, and the still steps aside.
+  await page.evaluate(() => document.querySelector<HTMLElement>("dialog[open] .phone")!.getAnimations().forEach((a) => a.finish()));
+  const video = page.locator("dialog[open] video");
+  await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.poster)).toBe(start.still);
+  await expect(page.locator("dialog[open] .demo-still")).toHaveAttribute("data-shown", "false");
+  await ctx.close();
+});
+
+test("Reduce Motion: the Demo video opens in place, the tile's phone stays put", async ({ browser }) => {
+  const ctx = await browser.newContext({ ...DESKTOP, reducedMotion: "reduce" });
+  const page = await ctx.newPage();
+  await page.goto("/");
+  await page.getByRole("button", { name: "Demo video of Bitewise" }).click();
+  await expect(page.locator("[data-away]")).toHaveCount(0);
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog", { name: "Bitewise demo video" })).toBeHidden();
+  await ctx.close();
+});
+
+test("the page behind an open Demo video dims and blurs", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Demo video of Ascend" }).click();
+  const backdrop = await page.evaluate(() => getComputedStyle(document.querySelector("dialog[open]")!, "::backdrop").backdropFilter);
+  expect(backdrop).toContain("blur(6px)");
+});
+
+test("the headline wipes in once on load, with no mask left afterwards; not under Reduce Motion", async ({ browser }) => {
+  for (const [reducedMotion, name] of [
+    ["no-preference", "headline-wipe"],
+    ["reduce", "none"],
+  ] as const) {
+    const ctx = await browser.newContext({ ...DESKTOP, reducedMotion });
+    const page = await ctx.newPage();
+    // Freeze the wipe at its start to read the mask it applies.
+    await page.addInitScript(() =>
+      document.addEventListener("animationstart", (e) => {
+        if (e.animationName !== "headline-wipe") return;
+        const a = (e.target as Element).getAnimations()[0];
+        a.pause();
+        a.currentTime = 0;
+        (window as unknown as { __mask?: string }).__mask = getComputedStyle(e.target as Element).maskImage;
+        a.play();
+      }),
+    );
+    await page.goto("/");
+    const h1 = page.locator("h1");
+    expect(await h1.evaluate((e) => getComputedStyle(e).animationName)).toBe(name);
+    if (name === "headline-wipe") {
+      await expect.poll(() => page.evaluate(() => (window as unknown as { __mask?: string }).__mask)).toContain("linear-gradient");
+    }
+    await page.waitForTimeout(600);
+    expect(await h1.evaluate((e) => getComputedStyle(e).maskImage)).toBe("none");
+    await ctx.close();
+  }
+});
+
+test("icon swaps blur-crossfade (theme toggle, pause/play); instant under Reduce Motion", async ({ browser }) => {
+  for (const [reducedMotion, duration] of [
+    ["no-preference", "0.16s"],
+    ["reduce", "0s"],
+  ] as const) {
+    const ctx = await browser.newContext({ ...DESKTOP, colorScheme: "dark", reducedMotion });
+    const page = await ctx.newPage();
+    await page.goto("/");
+    const toggle = page.getByRole("button", { name: "Dark theme" });
+    const moon = toggle.locator(".icon-when-dark");
+    expect(await moon.evaluate((e) => getComputedStyle(e).transitionDuration.split(",")[0].trim())).toBe(duration);
+    await toggle.click();
+    await expect.poll(() => moon.evaluate((e) => getComputedStyle(e).opacity)).toBe("0");
+    expect(await moon.evaluate((e) => getComputedStyle(e).filter)).toBe("blur(4px)");
+    // Both pause-button icons share one cell; only one shows.
+    const shown = await page.getByRole("button", { name: "Pause the Bitewise video" }).locator("svg").evaluateAll((s) =>
+      s.map((e) => e.getAttribute("data-shown")),
+    );
+    expect(shown.sort()).toEqual(["false", "true"]);
+    await ctx.close();
+  }
 });

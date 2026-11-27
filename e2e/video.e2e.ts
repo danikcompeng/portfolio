@@ -163,9 +163,11 @@ test("the hero loops pause behind an open Demo video and play again after it clo
   await page.getByRole("button", { name: "Demo video of Ascend" }).evaluate((b: HTMLElement) => b.click());
   await expect(page.getByRole("dialog", { name: "Ascend demo video" })).toBeVisible();
   expect(await page.evaluate(() => window.scrollY)).toBe(0);
-  await expect.poll(loops).toEqual([false, false, false]);
+  await expect.poll(loops, { timeout: 15_000 }).toEqual([false, false, false]);
   await page.keyboard.press("Escape");
-  await expect.poll(loops).toEqual([true, true, true]);
+  // The phone shrinks back first (240 ms), then the dialog closes and the loops resume.
+  await expect(page.getByRole("dialog", { name: "Ascend demo video" })).toBeHidden();
+  await expect.poll(loops, { timeout: 15_000 }).toEqual([true, true, true]);
 });
 
 // Demo video (round 10): each tile's tour opens in a dialog, plays there, and closes.
@@ -217,6 +219,8 @@ for (const { name, slug, title } of [
       expect(await page.evaluate(() => (window as unknown as { __t0?: number }).__t0)).toBeGreaterThanOrEqual(START[slug][theme] - 0.1);
       expect([...new Set(requested)]).toEqual([`${slug}-demo-${theme}.mp4`]);
 
+      // The tile's picture gave way to the tour once its first frame was in.
+      await expect(dialog.locator(".demo-still")).toHaveAttribute("data-shown", "false");
       await dialog.getByRole("button", { name: "Close the video" }).click();
       await expect(dialog).toBeHidden();
       await expect(page.locator("dialog video")).toHaveCount(0);

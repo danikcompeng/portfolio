@@ -10,7 +10,7 @@ export function ThemeToggle() {
   return (
     <button
       type="button"
-      className="press inline-grid size-11 place-items-center rounded-full text-ink-muted hover:bg-line hover:text-ink"
+      className="press icon-swap size-11 place-items-center rounded-full text-ink-muted hover:bg-line hover:text-ink"
       aria-label="Dark theme"
       aria-pressed={theme === null ? undefined : theme === "dark"}
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}

@@ -19,7 +19,7 @@ export function Hero() {
     <section id="top" className="hero" aria-labelledby="hero-title">
       <div className="mx-auto max-w-[var(--max)] px-[var(--gutter)]">
         <div className="hero-text">
-          <h1 id="hero-title" className="t-display max-w-[16ch]">
+          <h1 id="hero-title" className="hero-title t-display max-w-[16ch]">
             {hero.title}
           </h1>
           <div>

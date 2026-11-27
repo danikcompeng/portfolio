@@ -25,7 +25,7 @@ A landing page that works like a product launch page, with me as the maker: the 
 - **Plan first.** [`plans/portfolio.md`](plans/portfolio.md) has every decision and why, and the source of every number.
 - **Reviewed before any code.** A read-only logic-checker agent reviewed the plan and found 16 problems (1 critical, 3 high). The critical one: my "How I build" copy claimed more than my own review logs showed. Every finding and its fix is in the plan's Reviews log.
 - **Built with the Impeccable design skill**, then reviewed by a code-reviewer, a design-critic (Playwright screenshots at 390 and 1440 px, light and dark) and a finish reviewer. The code-reviewer caught a video that kept decoding after Reduce Motion was turned on, and a theme switch that restarted the video from 0. The agents are in [`.claude/agents/`](.claude/agents).
-- **Tested.** 53 unit tests (contrast of every text colour in both themes read from the CSS, the content rules, every video file in place) and 54 Playwright checks (axe at both sizes and themes, links, Reduce Motion, the theme toggle, the 404 page, the Demo video dialog's keyboard and focus, and the videos in real Chrome: they play, pause, keep their place across a theme switch, load only when seen and loop back to their start).
+- **Tested.** 53 unit tests (contrast of every text colour in both themes read from the CSS, the content rules, every video file in place) and 64 Playwright checks (axe at both sizes and themes, links, Reduce Motion, the theme toggle, the 404 page, the Demo video dialog's keyboard and focus, and the videos in real Chrome: they play, pause, keep their place across a theme switch, load only when seen and loop back to their start).
 
 ## Stack
 
